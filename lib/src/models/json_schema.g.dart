@@ -7,8 +7,8 @@ part of 'json_schema.dart';
 // **************************************************************************
 
 JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
-      title: json['title'] as String,
-      type: $enumDecode(_$JsonTypeEnumMap, json['type']),
+      title: json['title'] as String?,
+      type: $enumDecodeNullable(_$JsonTypeEnumMap, json['type']),
       properties: (json['properties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, JsonSchema.fromJson(e as Map<String, dynamic>)),
       ),
@@ -24,7 +24,7 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
 Map<String, dynamic> _$JsonSchemaToJson(JsonSchema instance) =>
     <String, dynamic>{
       'title': instance.title,
-      'type': _$JsonTypeEnumMap[instance.type]!,
+      'type': _$JsonTypeEnumMap[instance.type],
       'properties': instance.properties,
       'enum': instance.enumValue,
       'const': instance.constValue,

@@ -33,13 +33,13 @@ class JsonSchema extends Equatable {
   /// A human-readable name or label for a particular schema or field.
   /// It’s often displayed as the label or header when generating forms based
   /// on the schema. Can be empty.
-  final String title;
+  final String? title;
 
   /// Defines the data type of a field or schema element.
   /// Possible types include "string", "number", "boolean", "array", and
   /// "object"
   /// It tells the UI what kind of input widget needs to be rendered
-  final JsonType type;
+  final JsonType? type;
 
   /// When type is "object", properties is used to define the schema for each of
   /// the fields within that object.

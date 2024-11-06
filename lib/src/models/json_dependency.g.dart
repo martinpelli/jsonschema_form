@@ -9,7 +9,7 @@ part of 'json_dependency.dart';
 JsonDependency _$JsonDependencyFromJson(Map<String, dynamic> json) =>
     JsonDependency(
       oneOf: (json['oneOf'] as List<dynamic>)
-          .map((e) => e as Map<String, dynamic>)
+          .map((e) => JsonSchema.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
