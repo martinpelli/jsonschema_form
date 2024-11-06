@@ -1,0 +1,373 @@
+{
+        "jsonSchema": {
+            "title": "",
+            "type": "object",
+            "properties": {
+                "issueMatch": {
+                    "type": "object",
+                    "title": "",
+                    "properties": {
+                        "matchDescription": {
+                            "type": "string",
+                            "title": "Does the issue on site match the description provided by the client?",
+                            "enum": [
+                                "Yes",
+                                "No"
+                            ]
+                        }
+                    },
+                    "dependencies": {
+                        "matchDescription": {
+                            "oneOf": [
+                                {
+                                    "properties": {
+                                        "matchDescription": {
+                                            "const": "No"
+                                        },
+                                        "issueDescription": {
+                                            "type": "string",
+                                            "title": "Please describe the issue on site."
+                                        }
+                                    }
+                                },
+                                {
+                                    "properties": {
+                                        "matchDescription": {
+                                            "const": "Yes"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "issueCause": {
+                    "type": "string",
+                    "title": "What is the cause of the issue?"
+                },
+                "tempRepair": {
+                    "type": "object",
+                    "title": "",
+                    "properties": {
+                        "canRepair": {
+                            "type": "string",
+                            "title": "Can a temporary repair be made?",
+                            "enum": [
+                                "Yes",
+                                "No"
+                            ]
+                        }
+                    },
+                    "dependencies": {
+                        "canRepair": {
+                            "oneOf": [
+                                {
+                                    "properties": {
+                                        "canRepair": {
+                                            "const": "Yes"
+                                        },
+                                        "parts": {
+                                            "type": "string",
+                                            "title": "What parts, materials, and units will be used to resolve the issue in the temporary repair?"
+                                        },
+                                        "equipments": {
+                                            "type": "string",
+                                            "title": "What equipments are needed to resolve the issue for a temporary repair?"
+                                        },
+                                        "techNeed": {
+                                            "type": "string",
+                                            "title": "Will the tech need labor support, which could be a helper or another tech for the temporary repair?",
+                                            "enum": [
+                                                "Yes",
+                                                "No"
+                                            ]
+                                        },
+                                        "long": {
+                                            "type": "string",
+                                            "title": "How long did the tech spend on assessing the issue (hours)?"
+                                        },
+                                        "steps": {
+                                            "type": "string",
+                                            "title": "What are the steps needed to resolve the issue permanently?"
+                                        },
+                                        "partsPerm": {
+                                            "type": "string",
+                                            "title": "What parts, materials and units will be used to resolve the issue permanently?"
+                                        },
+                                        "equipPerm": {
+                                            "type": "string",
+                                            "title": "What equipments are needed to resolve the issue permanently?"
+                                        }
+                                    }
+                                },
+                                {
+                                    "properties": {
+                                        "canRepair": {
+                                            "const": "No"
+                                        },
+                                        "long": {
+                                            "type": "string",
+                                            "title": "How long did the tech spend on assessing the issue (hours)?"
+                                        },
+                                        "perm": {
+                                            "type": "string",
+                                            "title": "What are the steps needed to resolve the issue permanently?"
+                                        },
+                                        "parts": {
+                                            "type": "string",
+                                            "title": "What parts, materials and units will be used to resolve the issue permanently?"
+                                        },
+                                        "equip": {
+                                            "type": "string",
+                                            "title": "What equipments are needed to resolve the issue permanently?"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "workDuration": {
+                    "title": "",
+                    "type": "object",
+                    "properties": {
+                        "duration": {
+                            "title": "Work Duration",
+                            "type": "string",
+                            "enum": [
+                                "Hours",
+                                "Days"
+                            ]
+                        }
+                    },
+                    "dependencies": {
+                        "duration": {
+                            "oneOf": [
+                                {
+                                    "properties": {
+                                        "duration": {
+                                            "const": "Hours"
+                                        },
+                                        "hoursCount": {
+                                            "type": "string",
+                                            "title": "Number of hours?"
+                                        }
+                                    }
+                                },
+                                {
+                                    "properties": {
+                                        "duration": {
+                                            "const": "Days"
+                                        },
+                                        "hoursCount": {
+                                            "type": "string",
+                                            "title": "Number of days?"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "needLabor": {
+                    "type": "object",
+                    "title": "",
+                    "properties": {
+                        "laborSupport": {
+                            "type": "string",
+                            "title": "Will the tech need labor support, such as a helper or another tech for the proposed fix?"
+                        }
+                    }
+                },
+                "addlFee": {
+                    "type": "object",
+                    "title": "",
+                    "properties": {
+                        "fee": {
+                            "type": "string",
+                            "title": "Are there any additional fees?"
+                        }
+                    }
+                },
+                "disturb": {
+                    "type": "object",
+                    "title": "",
+                    "properties": {
+                        "disturbBusiness": {
+                            "type": "string",
+                            "title": "Will the proposed repair disturb the business or foot traffic?",
+                            "enum": [
+                                "Yes",
+                                "No"
+                            ]
+                        }
+                    },
+                    "dependencies": {
+                        "disturbBusiness": {
+                            "oneOf": [
+                                {
+                                    "properties": {
+                                        "disturbBusiness": {
+                                            "const": "Yes"
+                                        },
+                                        "disturbReason": {
+                                            "type": "string",
+                                            "title": "Explain why it will disturb the business or foot traffic."
+                                        },
+                                        "repairTiming": {
+                                            "type": "string",
+                                            "title": "Do we need to do this repair before or after hours?",
+                                            "enum": [
+                                                "Yes",
+                                                "No"
+                                            ]
+                                        }
+                                    },
+                                    "dependencies": {
+                                        "repairTiming": {
+                                            "oneOf": [
+                                                {
+                                                    "properties": {
+                                                        "repairTiming": {
+                                                            "const": "Yes"
+                                                        },
+                                                        "afterHoursReason": {
+                                                            "type": "string",
+                                                            "title": "Explain why it needs to be done after hours."
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "properties": {
+                                                        "repairTiming": {
+                                                            "const": "No"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "properties": {
+                                        "disturbBusiness": {
+                                            "const": "No"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "hazard": {
+                    "type": "object",
+                    "title": "",
+                    "properties": {
+                        "safetyHazard": {
+                            "type": "string",
+                            "title": "Is there a safety hazard?",
+                            "enum": [
+                                "Yes",
+                                "No"
+                            ]
+                        }
+                    },
+                    "dependencies": {
+                        "safetyHazard": {
+                            "oneOf": [
+                                {
+                                    "properties": {
+                                        "safetyHazard": {
+                                            "const": "Yes"
+                                        },
+                                        "issueDescription": {
+                                            "type": "string",
+                                            "title": "Describe the safety hazard."
+                                        }
+                                    }
+                                },
+                                {
+                                    "properties": {
+                                        "safetyHazard": {
+                                            "const": "No"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "uiSchema": {
+            "issueMatch": {
+                "matchDescription": {
+                    "ui:widget": "radio",
+                    "classNames": "custom-radio-class"
+                }
+            },
+            "tempRepair": {
+                "canRepair": {
+                    "ui:widget": "radio",
+                    "classNames": "custom-radio-class"
+                },
+                "techNeed": {
+                    "ui:widget": "radio",
+                    "classNames": "custom-radio-class"
+                }
+            },
+            "disturb": {
+                "disturbBusiness": {
+                    "ui:widget": "radio",
+                    "classNames": "custom-radio-class"
+                },
+                "repairTiming": {
+                    "ui:widget": "radio",
+                    "classNames": "custom-radio-class"
+                }
+            },
+            "hazard": {
+                "safetyHazard": {
+                    "ui:widget": "radio",
+                    "classNames": "custom-radio-class"
+                }
+            }
+        },
+        "formData": {
+            "issueMatch": {
+                "matchDescription": "Yes",
+                "issueDescription": ""
+            },
+            "issueCause": "test",
+            "tempRepair": {
+                "canRepair": "Yes",
+                "parts": "",
+                "equipments": "",
+                "techNeed": "Yes",
+                "long": "",
+                "steps": "",
+                "partsPerm": "",
+                "equipPerm": ""
+            },
+            "workDuration": {
+                "duration": "Hours",
+                "hoursCount": ""
+            },
+            "needLabor": {
+                "laborSupport": ""
+            },
+            "addlFee": {
+                "fee": ""
+            },
+            "disturb": {
+                "disturbBusiness": "Yes",
+                "disturbReason": "",
+                "repairTiming": "Yes",
+                "afterHoursReason": ""
+            },
+            "hazard": {
+                "safetyHazard": "Yes",
+                "issueDescription": "testt"
+            }
+    }
+}
