@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
+import 'package:jsonschema_form/src/models/ui_schema.dart';
+import 'package:jsonschema_form/src/models/ui_type.dart';
+
+part 'widgets/custom_dropdown_menu.dart';
+part 'widgets/custom_text_form_field.dart';
+part 'widgets/custom_radio_group.dart';
 
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
@@ -27,56 +33,66 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: _buildJsonschemaForm(_jsonSchemaForm.jsonSchema, null, null),
+      child: _buildJsonschemaForm(
+        _jsonSchemaForm.jsonSchema,
+        _jsonSchemaForm.uiSchema,
+      ),
     );
   }
 
   Widget _buildJsonschemaForm(
-    JsonSchema schema,
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema, {
     String? jsonKey,
     JsonSchema? previousSchema,
-  ) {
+    String? previousJsonKey,
+  }) {
     return Column(
       children: [
-        if (schema.type == JsonType.object) ...[
-          if (schema.title?.isNotEmpty ?? false) Text(schema.title!),
-          for (final entry in schema.properties!.entries)
-            _buildJsonschemaForm(entry.value, entry.key, schema),
-        ] else if (schema.type == JsonType.string &&
-            (schema.enumValue == null || schema.enumValue!.isEmpty))
-          TextFormField(
-            decoration: InputDecoration(labelText: schema.title),
-          )
-        else if (schema.type == JsonType.string &&
-            (schema.enumValue != null || schema.enumValue!.isNotEmpty))
-          _CustomDropdownMenu(
-            jsonKey: jsonKey!,
-            label: schema.title,
-            items: schema.enumValue!,
-            onDropdownValueSelected: _onDropdownValueSelected,
+        if (jsonSchema.type == JsonType.object) ...[
+          if (jsonSchema.title?.isNotEmpty ?? false) Text(jsonSchema.title!),
+          for (final entry in jsonSchema.properties!.entries)
+            _buildJsonschemaForm(
+              entry.value,
+              uiSchema?.children?[entry.key],
+              jsonKey: entry.key,
+              previousSchema: jsonSchema,
+              previousJsonKey: jsonKey,
+            ),
+        ] else if (jsonSchema.type == JsonType.string &&
+            (jsonSchema.enumValue == null || jsonSchema.enumValue!.isEmpty))
+          _buildWidgetFromUiSchema(jsonSchema, uiSchema, jsonKey)
+        else if (jsonSchema.type == JsonType.string &&
+            (jsonSchema.enumValue != null || jsonSchema.enumValue!.isNotEmpty))
+          _buildWidgetFromUiSchema(
+            jsonSchema,
+            uiSchema,
+            jsonKey,
           ),
         if (previousSchema?.dependencies != null &&
             jsonKey != null &&
             _selectedEnumValues.containsKey(jsonKey))
           ..._getDependencies(
+            jsonSchema,
+            uiSchema,
             jsonKey,
             previousSchema!.dependencies![jsonKey]!.oneOf,
-            schema,
           ),
       ],
     );
   }
 
-  void _onDropdownValueSelected(String key, String value) {
+  void _onEnumValueSelected(String key, String value) {
     _selectedEnumValues[key] = value;
 
     setState(() {});
   }
 
   List<Widget> _getDependencies(
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
     String jsonKey,
     List<JsonSchema> dependencies,
-    JsonSchema schema,
   ) {
     /// This is neccessary in order to match the dependency from the current
     /// schema
@@ -95,63 +111,42 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     final widgets = <Widget>[];
 
     for (final entry in dependencySchema) {
-      widgets.add(_buildJsonschemaForm(entry.value, entry.key, schema));
+      widgets.add(
+        _buildJsonschemaForm(
+          entry.value,
+          uiSchema?.children?[entry.key],
+          jsonKey: entry.key,
+          previousSchema: jsonSchema,
+          previousJsonKey: jsonKey,
+        ),
+      );
     }
 
     return widgets;
   }
-}
 
-class _CustomDropdownMenu extends StatefulWidget {
-  const _CustomDropdownMenu({
-    required this.jsonKey,
-    required this.label,
-    required this.items,
-    required this.onDropdownValueSelected,
-  });
-
-  final String jsonKey;
-  final String? label;
-  final List<String> items;
-  final void Function(String, String) onDropdownValueSelected;
-
-  @override
-  State<_CustomDropdownMenu> createState() => _CustomDropdownMenuState();
-}
-
-class _CustomDropdownMenuState extends State<_CustomDropdownMenu> {
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController iconController = TextEditingController();
-  String? selectedItem;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child: DropdownMenu<String>(
-        enableSearch: false,
-        width: double.infinity,
-        controller: colorController,
-        requestFocusOnTap: true,
-        label: widget.label == null ? null : Text(widget.label!),
-        onSelected: (String? item) {
-          if (item != null) {
-            widget.onDropdownValueSelected(widget.jsonKey, item);
-          }
-          setState(() {
-            selectedItem = item;
-          });
-        },
-        dropdownMenuEntries:
-            widget.items.map<DropdownMenuEntry<String>>((String item) {
-          return DropdownMenuEntry<String>(
-            value: item,
-            label: item,
-            style: MenuItemButton.styleFrom(),
-          );
-        }).toList(),
-      ),
-    );
+  Widget _buildWidgetFromUiSchema(
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    String? jsonKey,
+  ) {
+    switch (uiSchema?.widget) {
+      case UiType.select:
+        return _CustomDropdownMenu(
+          jsonKey: jsonKey!,
+          label: jsonSchema.title,
+          items: jsonSchema.enumValue!,
+          onDropdownValueSelected: _onEnumValueSelected,
+        );
+      case UiType.radio:
+        return _CustomRadioGroup(
+          jsonKey: jsonKey!,
+          label: jsonSchema.title,
+          items: jsonSchema.enumValue!,
+          onRadioValueSelected: _onEnumValueSelected,
+        );
+      case UiType.text || null:
+        return _CustomTextFormField(labelText: jsonSchema.title);
+    }
   }
 }

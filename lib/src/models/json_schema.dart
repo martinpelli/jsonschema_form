@@ -14,11 +14,11 @@ part 'json_schema.g.dart';
 /// [dependencies]
 ///
 /// [JsonSchema]s are immutable, they can
-/// being serialized and deserialized using [toJson] and [fromJson]
+/// being deserialized using [fromJson]
 /// respectively.
 /// {@endtemplate}
 @immutable
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class JsonSchema extends Equatable {
   /// {@macro json_schema}
   const JsonSchema({
@@ -70,11 +70,10 @@ class JsonSchema extends Equatable {
   /// field has a specific value.
   final Map<String, JsonDependency>? dependencies;
 
+  //TODO define items property which is used when the type is array
+
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);
-
-  /// Converts this [JsonSchema] into a [JsonMap].
-  JsonMap toJson() => _$JsonSchemaToJson(this);
 
   @override
   List<Object?> get props => [

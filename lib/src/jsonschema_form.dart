@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:jsonschema_form/src/models/json_schema.dart';
+import 'package:jsonschema_form/src/models/ui_schema.dart';
 
 /// {@template jsonschema_form}
 /// A Flutter package capable of using JSON Schema to declaratively build and
@@ -19,8 +20,14 @@ class JsonschemaForm {
 
     jsonSchema =
         JsonSchema.fromJson(decodedJson['jsonSchema'] as Map<String, dynamic>);
+
+    uiSchema =
+        UiSchema.fromJson(decodedJson['uiSchema'] as Map<String, dynamic>);
   }
 
   /// Contains the decoded Json Schema that tells how to build the layout
   late final JsonSchema jsonSchema;
+
+  /// Contains the decoded UI Schema that tells how to build the UI
+  late final UiSchema uiSchema;
 }

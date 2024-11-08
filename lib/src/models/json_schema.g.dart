@@ -21,16 +21,6 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       ),
     );
 
-Map<String, dynamic> _$JsonSchemaToJson(JsonSchema instance) =>
-    <String, dynamic>{
-      'title': instance.title,
-      'type': _$JsonTypeEnumMap[instance.type],
-      'properties': instance.properties,
-      'enum': instance.enumValue,
-      'const': instance.constValue,
-      'dependencies': instance.dependencies,
-    };
-
 const _$JsonTypeEnumMap = {
   JsonType.string: 'string',
   JsonType.number: 'number',

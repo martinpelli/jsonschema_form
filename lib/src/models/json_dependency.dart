@@ -12,11 +12,11 @@ part 'json_dependency.g.dart';
 /// Contains a [oneOf]
 ///
 /// [JsonDependency]s are immutable, they can
-/// being serialized and deserialized using [toJson] and [fromJson]
+/// being serialized and deserialized using [fromJson]
 /// respectively.
 /// {@endtemplate}
 @immutable
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class JsonDependency extends Equatable {
   /// {@macro todo_item}
   const JsonDependency({
@@ -33,9 +33,6 @@ class JsonDependency extends Equatable {
   /// Deserializes the given [JsonMap] into a [JsonDependency].
   static JsonDependency fromJson(JsonMap json) =>
       _$JsonDependencyFromJson(json);
-
-  /// Converts this [JsonDependency] into a [JsonMap].
-  JsonMap toJson() => _$JsonDependencyToJson(this);
 
   @override
   List<Object?> get props => [oneOf];

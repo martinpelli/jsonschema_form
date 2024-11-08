@@ -12,8 +12,3 @@ JsonDependency _$JsonDependencyFromJson(Map<String, dynamic> json) =>
           .map((e) => JsonSchema.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
-
-Map<String, dynamic> _$JsonDependencyToJson(JsonDependency instance) =>
-    <String, dynamic>{
-      'oneOf': instance.oneOf,
-    };
