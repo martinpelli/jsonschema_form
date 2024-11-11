@@ -8,6 +8,7 @@ import 'package:jsonschema_form/src/models/ui_type.dart';
 part 'widgets/custom_dropdown_menu.dart';
 part 'widgets/custom_text_form_field.dart';
 part 'widgets/custom_radio_group.dart';
+part 'widgets/custom_checkbox_group.dart';
 
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
@@ -21,7 +22,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   late final JsonschemaForm _jsonSchemaForm;
 
-  final Map<String, String> _selectedEnumValues = {};
+  final Map<String, dynamic> _selectedEnumValues = {};
 
   final List<JsonSchema> _arrayItems = [];
 
@@ -73,7 +74,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             jsonKey,
           )
         else if (jsonSchema.type == JsonType.array && jsonSchema.items != null)
-          ..._buildArrayItems(jsonSchema, uiSchema),
+          ..._buildArrayItems(jsonSchema, uiSchema, jsonKey),
         if (previousSchema?.dependencies != null &&
             jsonKey != null &&
             _selectedEnumValues.containsKey(jsonKey))
@@ -87,9 +88,115 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     );
   }
 
+  Widget _buildWidgetFromUiSchema(
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    String? jsonKey,
+  ) {
+    switch (uiSchema?.widget) {
+      case UiType.select:
+        return _CustomDropdownMenu(
+          jsonKey: jsonKey!,
+          label: jsonSchema.title,
+          items: jsonSchema.enumValue!,
+          onDropdownValueSelected: _onEnumValueSelected,
+        );
+      case UiType.radio:
+        return _CustomRadioGroup(
+          jsonKey: jsonKey!,
+          label: jsonSchema.title,
+          items: jsonSchema.enumValue!,
+          onRadioValueSelected: _onEnumValueSelected,
+        );
+      case UiType.checkboxes:
+        return _CustomCheckboxGroup(
+          jsonKey: jsonKey!,
+          label: jsonSchema.title,
+          items: jsonSchema.enumValue!,
+          onCheckboxValuesSelected: _onMultipleEnumValuesSelected,
+        );
+      case UiType.text || null:
+        return _CustomTextFormField(labelText: jsonSchema.title);
+    }
+  }
+
   void _onEnumValueSelected(String key, String value) {
     _selectedEnumValues[key] = value;
 
+    setState(() {});
+  }
+
+  void _onMultipleEnumValuesSelected(String key, List<String> value) {
+    _selectedEnumValues[key] = value;
+
+    setState(() {});
+  }
+
+  List<Widget> _buildArrayItems(
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    String? jsonKey,
+  ) {
+    final items = <Widget>[];
+
+    if (jsonSchema.title?.isNotEmpty ?? false) {
+      items.add(
+        Text(jsonSchema.title!),
+      );
+    }
+
+    final hasAdditionalItems = jsonSchema.additionalItems != null;
+
+    if (hasAdditionalItems) {
+      for (final item in jsonSchema.items as List<JsonSchema>) {
+        items.add(
+          _buildJsonschemaForm(item, uiSchema, jsonKey: jsonKey),
+        );
+      }
+    }
+
+    for (var i = 0; i < _arrayItems.length; i++) {
+      final removeButton = Align(
+        alignment: Alignment.centerRight,
+        child: IconButton(
+          onPressed: () => _removeArrayItem(i),
+          icon: const Icon(Icons.remove),
+        ),
+      );
+
+      items
+        ..add(removeButton)
+        ..add(
+          _buildJsonschemaForm(_arrayItems[i], uiSchema, jsonKey: jsonKey),
+        );
+    }
+
+    final addButton = Align(
+      alignment: Alignment.centerRight,
+      child: IconButton(
+        onPressed: () {
+          if (hasAdditionalItems) {
+            _addArrayItem(jsonSchema.additionalItems!);
+          } else {
+            _addArrayItem(jsonSchema.items as JsonSchema);
+          }
+        },
+        icon: const Icon(Icons.add),
+      ),
+    );
+
+    items.add(addButton);
+
+    return items;
+  }
+
+  void _addArrayItem(JsonSchema jsonSchema) {
+    _arrayItems.add(jsonSchema);
+    setState(() {});
+  }
+
+  void _removeArrayItem(int index) {
+    _arrayItems.removeAt(index);
     setState(() {});
   }
 
@@ -128,94 +235,5 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     }
 
     return widgets;
-  }
-
-  Widget _buildWidgetFromUiSchema(
-    JsonSchema jsonSchema,
-    UiSchema? uiSchema,
-    String? jsonKey,
-  ) {
-    switch (uiSchema?.widget) {
-      case UiType.select:
-        return _CustomDropdownMenu(
-          jsonKey: jsonKey!,
-          label: jsonSchema.title,
-          items: jsonSchema.enumValue!,
-          onDropdownValueSelected: _onEnumValueSelected,
-        );
-      case UiType.radio:
-        return _CustomRadioGroup(
-          jsonKey: jsonKey!,
-          label: jsonSchema.title,
-          items: jsonSchema.enumValue!,
-          onRadioValueSelected: _onEnumValueSelected,
-        );
-      case UiType.text || null:
-        return _CustomTextFormField(labelText: jsonSchema.title);
-    }
-  }
-
-  List<Widget> _buildArrayItems(JsonSchema jsonSchema, UiSchema? uiSchema) {
-    final items = <Widget>[];
-
-    if (jsonSchema.title?.isNotEmpty ?? false) {
-      items.add(
-        Text(jsonSchema.title!),
-      );
-    }
-
-    final hasAdditionalItems = jsonSchema.additionalItems != null;
-
-    if (hasAdditionalItems) {
-      for (final item in jsonSchema.items as List<JsonSchema>) {
-        items.add(
-          _buildJsonschemaForm(item, uiSchema),
-        );
-      }
-    }
-
-    for (var i = 0; i < _arrayItems.length; i++) {
-      final removeButton = Align(
-        alignment: Alignment.centerRight,
-        child: IconButton(
-          onPressed: () => _removeArrayItem(i),
-          icon: const Icon(Icons.remove),
-        ),
-      );
-
-      items
-        ..add(removeButton)
-        ..add(
-          _buildJsonschemaForm(_arrayItems[i], uiSchema),
-        );
-    }
-
-    final addButton = Align(
-      alignment: Alignment.centerRight,
-      child: IconButton(
-        onPressed: () {
-          if (hasAdditionalItems) {
-            _addArrayItem(jsonSchema.additionalItems!);
-          } else {
-            _addArrayItem(jsonSchema.items as JsonSchema);
-          }
-        },
-        icon: const Icon(Icons.add),
-      ),
-    );
-
-    items.add(addButton);
-
-    return items;
-  }
-
-  void _addArrayItem(JsonSchema jsonSchema) {
-    _arrayItems.add(jsonSchema);
-    setState(() {});
-  }
-
-  void _removeArrayItem(int index) {
-    _arrayItems.removeAt(index);
-    setState(() {});
   }
 }

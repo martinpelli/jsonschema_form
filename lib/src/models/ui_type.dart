@@ -7,5 +7,8 @@ enum UiType {
   select,
 
   /// Represents a RadioListTile in Flutter
-  radio;
+  radio,
+
+  /// Represents a CheckboxListTile in Flutter
+  checkboxes;
 }
