@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
+import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
 
@@ -156,36 +157,47 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     }
 
     for (var i = 0; i < _arrayItems.length; i++) {
-      final removeButton = Align(
+      final hasRemoveButton =
+          (uiSchema?.options?.containsKey(UiOptions.removable.name) ?? false) &&
+              uiSchema!.options![UiOptions.removable.name]!;
+
+      if (hasRemoveButton) {
+        final removeButton = Align(
+          alignment: Alignment.centerRight,
+          child: IconButton(
+            onPressed: () => _removeArrayItem(i),
+            icon: const Icon(Icons.remove),
+          ),
+        );
+        items.add(removeButton);
+      }
+
+      items.add(
+        _buildJsonschemaForm(_arrayItems[i], uiSchema, jsonKey: jsonKey),
+      );
+    }
+
+    final hasAddButton =
+        (uiSchema?.options?.containsKey(UiOptions.addable.name) ?? false) &&
+            uiSchema!.options![UiOptions.addable.name]!;
+
+    if (hasAddButton) {
+      final addButton = Align(
         alignment: Alignment.centerRight,
         child: IconButton(
-          onPressed: () => _removeArrayItem(i),
-          icon: const Icon(Icons.remove),
+          onPressed: () {
+            if (hasAdditionalItems) {
+              _addArrayItem(jsonSchema.additionalItems!);
+            } else {
+              _addArrayItem(jsonSchema.items as JsonSchema);
+            }
+          },
+          icon: const Icon(Icons.add),
         ),
       );
 
-      items
-        ..add(removeButton)
-        ..add(
-          _buildJsonschemaForm(_arrayItems[i], uiSchema, jsonKey: jsonKey),
-        );
+      items.add(addButton);
     }
-
-    final addButton = Align(
-      alignment: Alignment.centerRight,
-      child: IconButton(
-        onPressed: () {
-          if (hasAdditionalItems) {
-            _addArrayItem(jsonSchema.additionalItems!);
-          } else {
-            _addArrayItem(jsonSchema.items as JsonSchema);
-          }
-        },
-        icon: const Icon(Icons.add),
-      ),
-    );
-
-    items.add(addButton);
 
     return items;
   }

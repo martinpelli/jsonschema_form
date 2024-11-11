@@ -20,7 +20,11 @@
       },
         "uiSchema": {
             "multipleChoicesList": {
-                "ui:widget": "checkboxes"
+                "ui:widget": "checkboxes",
+                "ui:options": {
+                  "removable": false,
+                  "addable": false
+                }
               }
         },
         "formData": {

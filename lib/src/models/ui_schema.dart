@@ -19,6 +19,7 @@ class UiSchema extends Equatable {
   const UiSchema({
     this.children,
     this.widget,
+    this.options,
   });
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
@@ -36,8 +37,19 @@ class UiSchema extends Equatable {
       });
     }
 
+    late final Map<String, bool>? options;
+
+    if (json['ui:options'] == null) {
+      options = null;
+    } else {
+      options = (json['ui:options'] as Map<String, dynamic>).map((key, value) {
+        return MapEntry(key, value as bool);
+      });
+    }
+
     return UiSchema(
       widget: $enumDecodeNullable(_$UiTypeEnumMap, json['ui:widget']),
+      options: options,
       children: parsedChildren,
     );
   }
@@ -47,6 +59,13 @@ class UiSchema extends Equatable {
 
   /// Defines the type of widget to be used for the given key
   final UiType? widget;
+
+  /// Defines options to be used for the given key, for instance: if options
+  /// is {
+  ///   removable: false
+  /// }
+  /// then this indicates user can't delete items from array
+  final Map<String, bool>? options;
 
   @override
   List<Object?> get props => [
