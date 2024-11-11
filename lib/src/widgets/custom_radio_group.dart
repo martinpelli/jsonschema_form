@@ -27,19 +27,20 @@ class _CustomRadioGroupState extends State<_CustomRadioGroup> {
       children: [
         if (widget.label != null) Text(widget.label!),
         Wrap(
-            children: widget.items
-                .map(
-                  (item) => RadioListTile(
-                    value: _selectedItem == item,
-                    groupValue: true,
-                    title: Text(item),
-                    onChanged: (_) {
-                      _selectedItem = item;
-                      widget.onRadioValueSelected(widget.jsonKey, item);
-                    },
-                  ),
-                )
-                .toList()),
+          children: widget.items
+              .map(
+                (item) => RadioListTile(
+                  value: _selectedItem == item,
+                  groupValue: true,
+                  title: Text(item),
+                  onChanged: (_) {
+                    _selectedItem = item;
+                    widget.onRadioValueSelected(widget.jsonKey, item);
+                  },
+                ),
+              )
+              .toList(),
+        ),
       ],
     );
   }

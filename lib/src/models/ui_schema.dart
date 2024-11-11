@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 /// Contains a [widget]
 ///
 /// [UiSchema]s are immutable, they can
-/// being serialized and deserialized using [fromJson]
+/// being serialized and deserialized using [UiSchema.fromJson]
 /// respectively.
 /// {@endtemplate}
 @immutable
@@ -21,14 +21,8 @@ class UiSchema extends Equatable {
     this.widget,
   });
 
-  /// Map to hold child nodes for nested fields
-  final Map<String, UiSchema>? children;
-
-  /// Defines the type of widget to be used for the given key
-  final UiType? widget;
-
   /// Deserializes the given [JsonMap] into a [UiSchema].
-  static UiSchema fromJson(Map<String, dynamic> json) {
+  factory UiSchema.fromJson(Map<String, dynamic> json) {
     Map<String, UiSchema>? parsedChildren;
 
     // Check for child nodes and recursively parse them
@@ -47,6 +41,12 @@ class UiSchema extends Equatable {
       children: parsedChildren,
     );
   }
+
+  /// Map to hold child nodes for nested fields
+  final Map<String, UiSchema>? children;
+
+  /// Defines the type of widget to be used for the given key
+  final UiType? widget;
 
   @override
   List<Object?> get props => [
