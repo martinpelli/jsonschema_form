@@ -28,6 +28,7 @@ class JsonSchema extends Equatable {
     required this.enumValue,
     required this.constValue,
     required this.dependencies,
+    required this.items,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -70,7 +71,10 @@ class JsonSchema extends Equatable {
   /// field has a specific value.
   final Map<String, JsonDependency>? dependencies;
 
-  //TODO define items property which is used when the type is array
+  /// Items is only present when [type] is equal to array
+  /// The form generated will have fields that allow users to enter multiple
+  /// entries, essentially creating a dynamic list of inputs.
+  final JsonSchema? items;
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);

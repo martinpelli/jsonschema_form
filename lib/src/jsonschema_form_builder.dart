@@ -23,6 +23,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
   final Map<String, String> _selectedEnumValues = {};
 
+  final List<JsonSchema> _arrayItems = [];
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +50,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? previousJsonKey,
   }) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (jsonSchema.type == JsonType.object) ...[
           if (jsonSchema.title?.isNotEmpty ?? false) Text(jsonSchema.title!),
@@ -68,7 +71,28 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             jsonSchema,
             uiSchema,
             jsonKey,
+          )
+        else if (jsonSchema.type == JsonType.array &&
+            jsonSchema.items != null) ...[
+          if (jsonSchema.title?.isNotEmpty ?? false) Text(jsonSchema.title!),
+          for (int i = 0; i < _arrayItems.length; i++) ...[
+            Align(
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                onPressed: () => _removeArrayItem(i),
+                icon: const Icon(Icons.remove),
+              ),
+            ),
+            _buildJsonschemaForm(_arrayItems[i], uiSchema),
+          ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              onPressed: () => _addArrayItem(jsonSchema.items!),
+              icon: const Icon(Icons.add),
+            ),
           ),
+        ],
         if (previousSchema?.dependencies != null &&
             jsonKey != null &&
             _selectedEnumValues.containsKey(jsonKey))
@@ -148,5 +172,15 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       case UiType.text || null:
         return _CustomTextFormField(labelText: jsonSchema.title);
     }
+  }
+
+  void _addArrayItem(JsonSchema jsonSchema) {
+    _arrayItems.add(jsonSchema);
+    setState(() {});
+  }
+
+  void _removeArrayItem(int index) {
+    _arrayItems.removeAt(index);
+    setState(() {});
   }
 }

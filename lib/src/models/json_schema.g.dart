@@ -19,6 +19,9 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
         (k, e) =>
             MapEntry(k, JsonDependency.fromJson(e as Map<String, dynamic>)),
       ),
+      items: json['items'] == null
+          ? null
+          : JsonSchema.fromJson(json['items'] as Map<String, dynamic>),
     );
 
 const _$JsonTypeEnumMap = {
