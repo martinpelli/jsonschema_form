@@ -1,0 +1,30 @@
+{
+    "jsonSchema": {
+            "title": "Fixed array without buttons",
+            "type": "array",
+            "items": [
+              {
+                "title": "A number",
+                "type": "string",
+                "default": 42
+              },
+              {
+                "title": "A boolean",
+                "type": "string",
+                "default": false
+              }
+            ],
+            "additionalItems": {
+              "title": "A string",
+              "type": "string",
+              "default": "lorem ipsum"
+            }
+          
+        },
+        "uiSchema": {
+           
+        },
+        "formData": {
+        }
+      
+}

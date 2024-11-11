@@ -72,27 +72,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             uiSchema,
             jsonKey,
           )
-        else if (jsonSchema.type == JsonType.array &&
-            jsonSchema.items != null) ...[
-          if (jsonSchema.title?.isNotEmpty ?? false) Text(jsonSchema.title!),
-          for (int i = 0; i < _arrayItems.length; i++) ...[
-            Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                onPressed: () => _removeArrayItem(i),
-                icon: const Icon(Icons.remove),
-              ),
-            ),
-            _buildJsonschemaForm(_arrayItems[i], uiSchema),
-          ],
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              onPressed: () => _addArrayItem(jsonSchema.items!),
-              icon: const Icon(Icons.add),
-            ),
-          ),
-        ],
+        else if (jsonSchema.type == JsonType.array && jsonSchema.items != null)
+          ..._buildArrayItems(jsonSchema, uiSchema),
         if (previousSchema?.dependencies != null &&
             jsonKey != null &&
             _selectedEnumValues.containsKey(jsonKey))
@@ -172,6 +153,60 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       case UiType.text || null:
         return _CustomTextFormField(labelText: jsonSchema.title);
     }
+  }
+
+  List<Widget> _buildArrayItems(JsonSchema jsonSchema, UiSchema? uiSchema) {
+    final items = <Widget>[];
+
+    if (jsonSchema.title?.isNotEmpty ?? false) {
+      items.add(
+        Text(jsonSchema.title!),
+      );
+    }
+
+    final hasAdditionalItems = jsonSchema.additionalItems != null;
+
+    if (hasAdditionalItems) {
+      for (final item in jsonSchema.items as List<JsonSchema>) {
+        items.add(
+          _buildJsonschemaForm(item, uiSchema),
+        );
+      }
+    }
+
+    for (var i = 0; i < _arrayItems.length; i++) {
+      final removeButton = Align(
+        alignment: Alignment.centerRight,
+        child: IconButton(
+          onPressed: () => _removeArrayItem(i),
+          icon: const Icon(Icons.remove),
+        ),
+      );
+
+      items
+        ..add(removeButton)
+        ..add(
+          _buildJsonschemaForm(_arrayItems[i], uiSchema),
+        );
+    }
+
+    final addButton = Align(
+      alignment: Alignment.centerRight,
+      child: IconButton(
+        onPressed: () {
+          if (hasAdditionalItems) {
+            _addArrayItem(jsonSchema.additionalItems!);
+          } else {
+            _addArrayItem(jsonSchema.items as JsonSchema);
+          }
+        },
+        icon: const Icon(Icons.add),
+      ),
+    );
+
+    items.add(addButton);
+
+    return items;
   }
 
   void _addArrayItem(JsonSchema jsonSchema) {

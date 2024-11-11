@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:jsonschema_form/src/models/json_dependency.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
+import 'package:jsonschema_form/src/utils/items_json_parser.dart';
 import 'package:meta/meta.dart';
 
 part 'json_schema.g.dart';
@@ -18,6 +19,7 @@ part 'json_schema.g.dart';
 /// respectively.
 /// {@endtemplate}
 @immutable
+@ItemsJsonParser()
 @JsonSerializable(createToJson: false)
 class JsonSchema extends Equatable {
   /// {@macro json_schema}
@@ -29,6 +31,7 @@ class JsonSchema extends Equatable {
     required this.constValue,
     required this.dependencies,
     required this.items,
+    required this.additionalItems,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -74,7 +77,14 @@ class JsonSchema extends Equatable {
   /// Items is only present when [type] is equal to array
   /// The form generated will have fields that allow users to enter multiple
   /// entries, essentially creating a dynamic list of inputs.
-  final JsonSchema? items;
+  /// If [additionalItems] is null then the type of [items] will be JsonSchema
+  /// If [additionalItems] is not null then the type if [items] will be Array
+  final dynamic items;
+
+  /// When [additionalItems] is not null, then [items] will be an array of
+  /// items. Form will show those items by default and pressing add button will
+  /// show [additionalItems]
+  final JsonSchema? additionalItems;
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);
