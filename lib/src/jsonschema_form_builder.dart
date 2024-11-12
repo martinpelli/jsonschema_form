@@ -162,7 +162,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
     /// if the [jsonSchema] has the [uniqueItems] property then this form will
     /// be considered a multiple choice list and the [enum] value from items
-    /// must not be null
+    /// must not be null as they will be the possible choices
 
     if (jsonSchema.uniqueItems ?? false) {
       final schemaFromItems = jsonSchema.items as JsonSchema;
