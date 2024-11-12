@@ -78,4 +78,6 @@ const _$UiTypeEnumMap = {
   UiType.select: 'select',
   UiType.radio: 'radio',
   UiType.checkboxes: 'checkboxes',
+  UiType.updown: 'updown',
+  UiType.textarea: 'textarea',
 };

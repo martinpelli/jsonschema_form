@@ -3,6 +3,12 @@ enum UiType {
   /// Represents a TextFormField in Flutter
   text,
 
+  /// Represents a TextFormField with multiple lines in Flutter
+  textarea,
+
+  /// Represents a numeric TextFormField in Flutter
+  updown,
+
   /// Represents a DropdownMenu in Flutter
   select,
 

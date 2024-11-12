@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
@@ -64,16 +65,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousSchema: jsonSchema,
               previousJsonKey: jsonKey,
             ),
-        ] else if (jsonSchema.type == JsonType.string &&
-            (jsonSchema.enumValue == null || jsonSchema.enumValue!.isEmpty))
+        ] else if (jsonSchema.type != JsonType.object &&
+            jsonSchema.type != JsonType.array)
           _buildWidgetFromUiSchema(jsonSchema, uiSchema, jsonKey)
-        else if (jsonSchema.type == JsonType.string &&
-            (jsonSchema.enumValue != null || jsonSchema.enumValue!.isNotEmpty))
-          _buildWidgetFromUiSchema(
-            jsonSchema,
-            uiSchema,
-            jsonKey,
-          )
         else if (jsonSchema.type == JsonType.array && jsonSchema.items != null)
           ..._buildArrayItems(jsonSchema, uiSchema, jsonKey),
         if (previousSchema?.dependencies != null &&
@@ -115,6 +109,18 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           label: jsonSchema.title,
           items: jsonSchema.enumValue!,
           onCheckboxValuesSelected: _onMultipleEnumValuesSelected,
+        );
+      case UiType.textarea:
+        return _CustomTextFormField(
+          labelText: jsonSchema.title,
+          minLines: 4,
+          maxLines: null,
+        );
+      case UiType.updown:
+        return _CustomTextFormField(
+          labelText: jsonSchema.title,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         );
       case UiType.text || null:
         return _CustomTextFormField(labelText: jsonSchema.title);

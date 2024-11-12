@@ -32,6 +32,7 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
 const _$JsonTypeEnumMap = {
   JsonType.string: 'string',
   JsonType.number: 'number',
+  JsonType.integer: 'integer',
   JsonType.boolean: 'boolean',
   JsonType.array: 'array',
   JsonType.object: 'object',
