@@ -32,6 +32,9 @@ class JsonSchema extends Equatable {
     required this.dependencies,
     required this.items,
     required this.additionalItems,
+    required this.minItems,
+    required this.maxItems,
+    required this.uniqueItems,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -85,6 +88,17 @@ class JsonSchema extends Equatable {
   /// items. Form will show those items by default and pressing add button will
   /// show [additionalItems]
   final JsonSchema? additionalItems;
+
+  /// If the array needs to be populated, you can specify the minimum number of
+  /// items using this property
+  final int? minItems;
+
+  /// If the array needs to be populated, you can specify the maximum number of
+  /// items using this property
+  final int? maxItems;
+
+  /// When is set to true, all items from the array follows the same schema
+  final bool? uniqueItems;
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);

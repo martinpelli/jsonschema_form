@@ -146,6 +146,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       );
     }
 
+    /// If [additionalItems] property from the corresponding [jsonSchema] is
+    /// present then the user is allowed to add additional items for the given
+    /// [jsonSchema]
+
     final hasAdditionalItems = jsonSchema.additionalItems != null;
 
     if (hasAdditionalItems) {
@@ -156,10 +160,42 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       }
     }
 
+    /// if the [jsonSchema] has the [uniqueItems] property then this form will
+    /// be considered a multiple choice list and the [enum] value from items
+    /// must not be null
+
+    if (jsonSchema.uniqueItems ?? false) {
+      final schemaFromItems = jsonSchema.items as JsonSchema;
+      if (schemaFromItems.enumValue != null) {
+        items.add(
+          _buildJsonschemaForm(schemaFromItems, uiSchema, jsonKey: jsonKey),
+        );
+      }
+    }
+
+    /// if the [jsonSchema] has the [minItems] property then [items] will be
+    /// added at first and user can't remove them
+
+    final minItems = jsonSchema.minItems ?? 0;
+
+    for (var i = 0; i < minItems; i++) {
+      items.add(
+        _buildJsonschemaForm(
+          jsonSchema.items as JsonSchema,
+          uiSchema,
+          jsonKey: jsonKey,
+        ),
+      );
+    }
+
+    /// Builds items that user has added using (+) button from the form
+    /// They can be removed if [removable] is not present or is set to false
+    /// in the corresponding [uiSchema] property
+
     for (var i = 0; i < _arrayItems.length; i++) {
-      final hasRemoveButton =
-          (uiSchema?.options?.containsKey(UiOptions.removable.name) ?? false) &&
-              uiSchema!.options![UiOptions.removable.name]!;
+      final hasRemoveButton = uiSchema?.options == null ||
+          (uiSchema!.options!.containsKey(UiOptions.removable.name) &&
+              (uiSchema.options![UiOptions.removable.name] ?? true));
 
       if (hasRemoveButton) {
         final removeButton = Align(
@@ -177,11 +213,19 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       );
     }
 
-    final hasAddButton =
-        (uiSchema?.options?.containsKey(UiOptions.addable.name) ?? false) &&
-            uiSchema!.options![UiOptions.addable.name]!;
+    /// The (+) button is added by default unless [addable] is
+    /// provided to the corresponding [uiSchema] property and set to false
+    /// If [maxItems] property specified in [jsonSchema] and the array
+    /// has reached [maxItems] then (+) is not added
 
-    if (hasAddButton) {
+    final isMaxReached = jsonSchema.maxItems != null &&
+        _arrayItems.length + minItems >= jsonSchema.maxItems!;
+
+    final hasAddButton = uiSchema?.options == null ||
+        (uiSchema!.options!.containsKey(UiOptions.addable.name) &&
+            (uiSchema.options![UiOptions.addable.name] ?? true));
+
+    if (hasAddButton && !isMaxReached) {
       final addButton = Align(
         alignment: Alignment.centerRight,
         child: IconButton(
