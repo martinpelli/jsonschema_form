@@ -25,6 +25,8 @@ class JsonSchema extends Equatable {
   /// {@macro json_schema}
   const JsonSchema({
     required this.title,
+    required this.description,
+    required this.defaultValue,
     required this.type,
     required this.properties,
     required this.enumValue,
@@ -41,6 +43,16 @@ class JsonSchema extends Equatable {
   /// It’s often displayed as the label or header when generating forms based
   /// on the schema. Can be empty.
   final String? title;
+
+  /// [description] is shown above each field if is not null, providing
+  /// neccessary information if needed
+  final String? description;
+
+  @JsonKey(name: 'default')
+
+  /// [default] is the default value that this field takes. If there is data
+  /// present on the corresponding formData property then [default] is ignored
+  final String? defaultValue;
 
   /// Defines the data type of a field or schema element.
   /// Possible types include "string", "number", "boolean", "array", and

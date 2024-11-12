@@ -1,12 +1,16 @@
 part of '../jsonschema_form_builder.dart';
 
-class _CustomTextFormField extends StatelessWidget {
+class _CustomTextFormField extends StatefulWidget {
   const _CustomTextFormField({
     this.labelText,
     this.keyboardType,
     this.inputFormatters,
     this.minLines,
     this.maxLines = 1,
+    this.defaultValue,
+    this.emptyValue,
+    this.placeholder,
+    this.autofocus = false,
   });
 
   final String? labelText;
@@ -14,15 +18,53 @@ class _CustomTextFormField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int? minLines;
   final int? maxLines;
+  final String? defaultValue;
+  final String? emptyValue;
+  final String? placeholder;
+  final bool? autofocus;
+
+  @override
+  State<_CustomTextFormField> createState() => _CustomTextFormFieldState();
+}
+
+class _CustomTextFormFieldState extends State<_CustomTextFormField> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.defaultValue != null) _controller.text = widget.defaultValue!;
+
+    if (_controller.text.isEmpty && widget.emptyValue != null) {
+      _controller.text = widget.emptyValue!;
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      decoration: InputDecoration(labelText: labelText),
-      keyboardType: keyboardType,
-      inputFormatters: inputFormatters,
-      minLines: minLines,
-      maxLines: maxLines,
+      autofocus: widget.autofocus ?? false,
+      controller: _controller,
+      decoration: InputDecoration(
+        labelText: widget.labelText,
+        hintText: widget.placeholder,
+      ),
+      keyboardType: widget.keyboardType,
+      inputFormatters: widget.inputFormatters,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      onChanged: (value) {
+        if (value.isEmpty && widget.emptyValue != null) {
+          _controller.text = widget.emptyValue!;
+        }
+      },
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

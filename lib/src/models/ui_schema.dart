@@ -19,6 +19,10 @@ class UiSchema extends Equatable {
   const UiSchema({
     this.children,
     this.widget,
+    this.autofocus,
+    this.emptyValue,
+    this.placeholder,
+    this.description,
     this.options,
   });
 
@@ -49,6 +53,10 @@ class UiSchema extends Equatable {
 
     return UiSchema(
       widget: $enumDecodeNullable(_$UiTypeEnumMap, json['ui:widget']),
+      autofocus: json['ui:autofocus'] as bool?,
+      emptyValue: json['ui:emptyValue'] as String?,
+      placeholder: json['ui:placeholder'] as String?,
+      description: json['ui:description'] as String?,
       options: options,
       children: parsedChildren,
     );
@@ -59,6 +67,19 @@ class UiSchema extends Equatable {
 
   /// Defines the type of widget to be used for the given key
   final UiType? widget;
+
+  /// Automatically focus on a text input or textarea input when is true
+  final bool? autofocus;
+
+  /// Provides the default value to use when an input for a field is empty
+  final String? emptyValue;
+
+  /// Add placeholder text to an input
+  final String? placeholder;
+
+  /// Sometimes it's convenient to change the description of a field. This will
+  /// be shown as a Text widget above the field
+  final String? description;
 
   /// Defines options to be used for the given key, for instance: if options
   /// is {

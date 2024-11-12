@@ -55,8 +55,19 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty)
+          Text(uiSchema.description!),
         if (jsonSchema.type == JsonType.object) ...[
-          if (jsonSchema.title?.isNotEmpty ?? false) Text(jsonSchema.title!),
+          if (jsonSchema.title?.isNotEmpty ?? false) ...[
+            Text(
+              jsonSchema.title!,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Divider(),
+          ],
           for (final entry in jsonSchema.properties!.entries)
             _buildJsonschemaForm(
               entry.value,
@@ -115,15 +126,29 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           labelText: jsonSchema.title,
           minLines: 4,
           maxLines: null,
+          defaultValue: jsonSchema.defaultValue,
+          emptyValue: uiSchema?.emptyValue,
+          placeholder: uiSchema?.placeholder,
+          autofocus: uiSchema?.autofocus,
         );
       case UiType.updown:
         return _CustomTextFormField(
           labelText: jsonSchema.title,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          defaultValue: jsonSchema.defaultValue,
+          emptyValue: uiSchema?.emptyValue,
+          placeholder: uiSchema?.placeholder,
+          autofocus: uiSchema?.autofocus,
         );
       case UiType.text || null:
-        return _CustomTextFormField(labelText: jsonSchema.title);
+        return _CustomTextFormField(
+          labelText: jsonSchema.title,
+          defaultValue: jsonSchema.defaultValue,
+          emptyValue: uiSchema?.emptyValue,
+          placeholder: uiSchema?.placeholder,
+          autofocus: uiSchema?.autofocus,
+        );
     }
   }
 

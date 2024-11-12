@@ -8,6 +8,8 @@ part of 'json_schema.dart';
 
 JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       title: json['title'] as String?,
+      description: json['description'] as String?,
+      defaultValue: json['default'] as String?,
       type: $enumDecodeNullable(_$JsonTypeEnumMap, json['type']),
       properties: (json['properties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, JsonSchema.fromJson(e as Map<String, dynamic>)),
