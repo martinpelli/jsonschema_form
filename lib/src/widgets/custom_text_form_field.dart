@@ -2,6 +2,7 @@ part of '../jsonschema_form_builder.dart';
 
 class _CustomTextFormField extends StatefulWidget {
   const _CustomTextFormField({
+    required this.onChanged,
     this.labelText,
     this.keyboardType,
     this.inputFormatters,
@@ -13,6 +14,7 @@ class _CustomTextFormField extends StatefulWidget {
     this.autofocus = false,
   });
 
+  final void Function(String) onChanged;
   final String? labelText;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
@@ -58,6 +60,7 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
         if (value.isEmpty && widget.emptyValue != null) {
           _controller.text = widget.emptyValue!;
         }
+        widget.onChanged(value);
       },
     );
   }

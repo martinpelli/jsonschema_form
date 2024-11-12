@@ -24,23 +24,38 @@ class JsonschemaFormBuilder extends StatefulWidget {
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   late final JsonschemaForm _jsonSchemaForm;
 
-  final Map<String, dynamic> _selectedEnumValues = {};
-
   final List<JsonSchema> _arrayItems = [];
+
+  late final Map<String, dynamic> _formData;
 
   @override
   void initState() {
     super.initState();
 
     _jsonSchemaForm = JsonschemaForm();
+
+    _formData = _jsonSchemaForm.formData;
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: _buildJsonschemaForm(
-        _jsonSchemaForm.jsonSchema,
-        _jsonSchemaForm.uiSchema,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildJsonschemaForm(
+            _jsonSchemaForm.jsonSchema,
+            _jsonSchemaForm.uiSchema,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              // TODO implement form submit
+              print("form submitted: $_formData");
+            },
+            child: const Text('Submit'),
+          ),
+        ],
       ),
     );
   }
@@ -53,6 +68,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? previousJsonKey,
   }) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty)
@@ -83,7 +99,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           ..._buildArrayItems(jsonSchema, uiSchema, jsonKey),
         if (previousSchema?.dependencies != null &&
             jsonKey != null &&
-            _selectedEnumValues.containsKey(jsonKey))
+            _formData.containsKey(jsonKey))
           ..._getDependencies(
             jsonSchema,
             uiSchema,
@@ -123,6 +139,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         );
       case UiType.textarea:
         return _CustomTextFormField(
+          onChanged: (value) {
+            _formData[jsonKey!] = value;
+          },
           labelText: jsonSchema.title,
           minLines: 4,
           maxLines: null,
@@ -133,6 +152,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         );
       case UiType.updown:
         return _CustomTextFormField(
+          onChanged: (value) {
+            _formData[jsonKey!] = value;
+          },
           labelText: jsonSchema.title,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -143,6 +165,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         );
       case UiType.text || null:
         return _CustomTextFormField(
+          onChanged: (value) {
+            _formData[jsonKey!] = value;
+          },
           labelText: jsonSchema.title,
           defaultValue: jsonSchema.defaultValue,
           emptyValue: uiSchema?.emptyValue,
@@ -153,13 +178,13 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   }
 
   void _onEnumValueSelected(String key, String value) {
-    _selectedEnumValues[key] = value;
+    _formData[key] = value;
 
     setState(() {});
   }
 
   void _onMultipleEnumValuesSelected(String key, List<String> value) {
-    _selectedEnumValues[key] = value;
+    _formData[key] = value;
 
     setState(() {});
   }
@@ -300,8 +325,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     final dependencySchema = dependencies
         .firstWhere(
           (element) =>
-              element.properties![jsonKey]!.constValue ==
-              _selectedEnumValues[jsonKey],
+              element.properties![jsonKey]!.constValue == _formData[jsonKey],
         )
         .properties!
         .entries
