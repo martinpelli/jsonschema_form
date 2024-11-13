@@ -28,6 +28,7 @@ class JsonSchema extends Equatable {
     required this.description,
     required this.defaultValue,
     required this.type,
+    required this.requiredFields,
     required this.properties,
     required this.enumValue,
     required this.constValue,
@@ -59,6 +60,12 @@ class JsonSchema extends Equatable {
   /// "object"
   /// It tells the UI what kind of input widget needs to be rendered
   final JsonType? type;
+
+  @JsonKey(name: 'required')
+
+  /// A list of required fields, is composed by the key properties
+  /// that corresponds to the jsonSchema
+  final List<String>? requiredFields;
 
   /// When type is "object", properties is used to define the schema for each of
   /// the fields within that object.

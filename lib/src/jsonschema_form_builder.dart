@@ -11,6 +11,7 @@ part 'widgets/custom_dropdown_menu.dart';
 part 'widgets/custom_text_form_field.dart';
 part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_checkbox_group.dart';
+part 'widgets/custom_form_field_validator.dart';
 
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
@@ -22,11 +23,15 @@ class JsonschemaFormBuilder extends StatefulWidget {
 }
 
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
+  final _formKey = GlobalKey<FormState>();
+
   late final JsonschemaForm _jsonSchemaForm;
+
+  late final Map<String, dynamic> _formData;
 
   final List<JsonSchema> _arrayItems = [];
 
-  late final Map<String, dynamic> _formData;
+  late final List<String>? _requiredFields;
 
   @override
   void initState() {
@@ -35,27 +40,39 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     _jsonSchemaForm = JsonschemaForm();
 
     _formData = _jsonSchemaForm.formData;
+
+    _requiredFields = _jsonSchemaForm.jsonSchema.requiredFields;
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildJsonschemaForm(
-            _jsonSchemaForm.jsonSchema,
-            _jsonSchemaForm.uiSchema,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              // TODO implement form submit
-              print("form submitted: $_formData");
-            },
-            child: const Text('Submit'),
-          ),
-        ],
+      child: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.onUnfocus,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildJsonschemaForm(
+              _jsonSchemaForm.jsonSchema,
+              _jsonSchemaForm.uiSchema,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+
+                final isFormValid = _formKey.currentState?.validate() ?? false;
+
+                if (isFormValid) {
+                  // TODO implement form submit
+                  print("form submitted: $_formData");
+                }
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -115,33 +132,72 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     UiSchema? uiSchema,
     String? jsonKey,
   ) {
+    final hasValidator = _requiredFields?.contains(jsonKey) ?? false;
+
     switch (uiSchema?.widget) {
       case UiType.select:
-        return _CustomDropdownMenu(
-          jsonKey: jsonKey!,
-          label: jsonSchema.title,
-          items: jsonSchema.enumValue!,
-          onDropdownValueSelected: _onEnumValueSelected,
+        return _CustomFormFieldValidator<String>(
+          isEnabled: hasValidator,
+          isEmpty: (value) => value.isEmpty,
+          childFormBuilder: (field) {
+            return _CustomDropdownMenu(
+              jsonKey: jsonKey!,
+              label: jsonSchema.title,
+              items: jsonSchema.enumValue!,
+              onDropdownValueSelected: (key, value) {
+                field?.didChange(value);
+                if (field?.isValid ?? true) {
+                  _onEnumValueSelected(key, value);
+                }
+              },
+            );
+          },
         );
+
       case UiType.radio:
-        return _CustomRadioGroup(
-          jsonKey: jsonKey!,
-          label: jsonSchema.title,
-          items: jsonSchema.enumValue!,
-          onRadioValueSelected: _onEnumValueSelected,
+        return _CustomFormFieldValidator<String>(
+          isEnabled: hasValidator,
+          isEmpty: (value) => value.isEmpty,
+          childFormBuilder: (field) {
+            return _CustomRadioGroup(
+              jsonKey: jsonKey!,
+              label: jsonSchema.title,
+              items: jsonSchema.enumValue!,
+              onRadioValueSelected: (key, value) {
+                field?.didChange(value);
+                if (field?.isValid ?? true) {
+                  _onEnumValueSelected(key, value);
+                }
+              },
+            );
+          },
         );
+
       case UiType.checkboxes:
-        return _CustomCheckboxGroup(
-          jsonKey: jsonKey!,
-          label: jsonSchema.title,
-          items: jsonSchema.enumValue!,
-          onCheckboxValuesSelected: _onMultipleEnumValuesSelected,
+        return _CustomFormFieldValidator<List<String>>(
+          isEnabled: hasValidator,
+          isEmpty: (value) => value.isEmpty,
+          childFormBuilder: (field) {
+            return _CustomCheckboxGroup(
+              jsonKey: jsonKey!,
+              label: jsonSchema.title,
+              items: jsonSchema.enumValue!,
+              onCheckboxValuesSelected: (key, value) {
+                field?.didChange(value);
+                if (field?.isValid ?? true) {
+                  _onMultipleEnumValuesSelected(key, value);
+                }
+              },
+            );
+          },
         );
+
       case UiType.textarea:
         return _CustomTextFormField(
           onChanged: (value) {
             _formData[jsonKey!] = value;
           },
+          hasValidator: hasValidator,
           labelText: jsonSchema.title,
           minLines: 4,
           maxLines: null,
@@ -155,6 +211,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           onChanged: (value) {
             _formData[jsonKey!] = value;
           },
+          hasValidator: hasValidator,
           labelText: jsonSchema.title,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -168,6 +225,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           onChanged: (value) {
             _formData[jsonKey!] = value;
           },
+          hasValidator: hasValidator,
           labelText: jsonSchema.title,
           defaultValue: jsonSchema.defaultValue,
           emptyValue: uiSchema?.emptyValue,

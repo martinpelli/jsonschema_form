@@ -11,6 +11,9 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       description: json['description'] as String?,
       defaultValue: json['default'] as String?,
       type: $enumDecodeNullable(_$JsonTypeEnumMap, json['type']),
+      requiredFields: (json['required'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       properties: (json['properties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, JsonSchema.fromJson(e as Map<String, dynamic>)),
       ),
