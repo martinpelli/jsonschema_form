@@ -49,7 +49,9 @@ class _FormState extends State<_Form> {
   Future<void> _getJson() async {
     _isLoading = true;
 
-    _jsonschemaForm = await JsonschemaForm.fromJsonAsset('assets/array.json');
+    _jsonschemaForm = JsonschemaForm();
+
+    await _jsonschemaForm!.initFromJsonAsset('assets/array.json');
 
     _isLoading = false;
 

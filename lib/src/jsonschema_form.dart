@@ -9,38 +9,41 @@ import 'package:jsonschema_form/src/models/ui_schema.dart';
 /// {@endtemplate}
 class JsonschemaForm {
   /// Private constructor for internal initialization.
-  JsonschemaForm._({
-    required this.jsonSchema,
-    required this.uiSchema,
-    required this.formData,
+  JsonschemaForm({
+    this.jsonSchema,
+    this.uiSchema,
+    this.formData,
   });
 
-  /// Factory constructor to create a `JsonschemaForm` from a decoded JSON map.
-  factory JsonschemaForm.fromDecodedJson(Map<String, dynamic> decodedJson) {
-    return JsonschemaForm._(
-      jsonSchema: JsonSchema.fromJson(
-        decodedJson['jsonSchema'] as Map<String, dynamic>,
-      ),
-      uiSchema:
-          UiSchema.fromJson(decodedJson['uiSchema'] as Map<String, dynamic>),
-      formData: decodedJson['formData'] as Map<String, dynamic>,
-    );
+  /// Decoded JSON Schema that defines the layout.
+  JsonSchema? jsonSchema;
+
+  /// Decoded UI Schema that customizes the form's UI.
+  UiSchema? uiSchema;
+
+  /// Form data that pre-populates the form and gets updated with user input.
+  Map<String, dynamic>? formData;
+
+  /// Asynchronous factory constructor to load a `JsonschemaForm` from an asset
+  /// file.
+  Future<void> initFromJsonAsset(String pathToJson) async {
+    final jsonString = await rootBundle.loadString(pathToJson);
+    final decodedJson = jsonDecode(jsonString) as Map<String, dynamic>;
+    _init(decodedJson);
   }
 
   /// Asynchronous factory constructor to load a `JsonschemaForm` from an asset
   /// file.
-  static Future<JsonschemaForm> fromJsonAsset(String pathToJson) async {
-    final jsonString = await rootBundle.loadString(pathToJson);
-    final decodedJson = jsonDecode(jsonString) as Map<String, dynamic>;
-    return JsonschemaForm.fromDecodedJson(decodedJson);
+  void initFromDecodedJson(Map<String, dynamic> decodedJson) {
+    _init(decodedJson);
   }
 
-  /// Decoded JSON Schema that defines the layout.
-  final JsonSchema jsonSchema;
-
-  /// Decoded UI Schema that customizes the form's UI.
-  final UiSchema uiSchema;
-
-  /// Form data that pre-populates the form and gets updated with user input.
-  final Map<String, dynamic> formData;
+  void _init(Map<String, dynamic> decodedJson) {
+    jsonSchema = JsonSchema.fromJson(
+      decodedJson['jsonSchema'] as Map<String, dynamic>,
+    );
+    uiSchema =
+        UiSchema.fromJson(decodedJson['uiSchema'] as Map<String, dynamic>);
+    formData = decodedJson['formData'] as Map<String, dynamic>;
+  }
 }

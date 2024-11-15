@@ -64,7 +64,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildJsonschemaForm(
-              widget.jsonSchemaForm.jsonSchema,
+              widget.jsonSchemaForm.jsonSchema!,
               widget.jsonSchemaForm.uiSchema,
             ),
             const SizedBox(height: 20),
@@ -142,7 +142,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? jsonKey,
   ) {
     final hasValidator =
-        widget.jsonSchemaForm.jsonSchema.requiredFields?.contains(jsonKey) ??
+        widget.jsonSchemaForm.jsonSchema!.requiredFields?.contains(jsonKey) ??
             false;
 
     switch (uiSchema?.widget) {
