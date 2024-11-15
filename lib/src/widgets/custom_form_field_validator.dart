@@ -19,25 +19,28 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
       return childFormBuilder(null);
     }
 
-    return FormField<T>(validator: (value) {
-      if (value == null || isEmpty(value)) {
-        return 'This field is required';
-      }
+    return FormField<T>(
+      validator: (value) {
+        if (value == null || isEmpty(value)) {
+          return 'This field is required';
+        }
 
-      return null;
-    }, builder: (field) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          childFormBuilder(field),
-          if (field.hasError)
-            Text(
-              field.errorText!,
-              style: const TextStyle(color: Colors.red),
-            ),
-        ],
-      );
-    });
+        return null;
+      },
+      builder: (field) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            childFormBuilder(field),
+            if (field.hasError)
+              Text(
+                field.errorText!,
+                style: const TextStyle(color: Colors.red),
+              ),
+          ],
+        );
+      },
+    );
   }
 }

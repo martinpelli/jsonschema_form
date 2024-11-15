@@ -28,7 +28,8 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       additionalItems: json['additionalItems'] == null
           ? null
           : JsonSchema.fromJson(
-              json['additionalItems'] as Map<String, dynamic>),
+              json['additionalItems'] as Map<String, dynamic>,
+            ),
       minItems: (json['minItems'] as num?)?.toInt(),
       maxItems: (json['maxItems'] as num?)?.toInt(),
       uniqueItems: json['uniqueItems'] as bool?,

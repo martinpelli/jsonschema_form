@@ -16,7 +16,25 @@ part 'widgets/custom_form_field_validator.dart';
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
-  const JsonschemaFormBuilder({super.key});
+  const JsonschemaFormBuilder({
+    required this.jsonSchemaForm,
+    required this.formData,
+    required this.onFormSubmitted,
+    super.key,
+  });
+
+  /// The json schema for the form.
+  final JsonschemaForm jsonSchemaForm;
+
+  /// The data filled in the form. If there is no initial data then
+  /// pass an empty map {} otherwise the form will
+  /// automatically fill according to the properties in this map.
+  final Map<String, dynamic> formData;
+
+  /// Method triggered when the field is succesfully submitted, if there is any
+  /// error on the form, this will not trigger. The method receives the final
+  /// [formData] filled by the user
+  final void Function(Map<String, dynamic> formData) onFormSubmitted;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -25,23 +43,15 @@ class JsonschemaFormBuilder extends StatefulWidget {
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   final _formKey = GlobalKey<FormState>();
 
-  late final JsonschemaForm _jsonSchemaForm;
-
   late final Map<String, dynamic> _formData;
 
   final List<JsonSchema> _arrayItems = [];
-
-  late final List<String>? _requiredFields;
 
   @override
   void initState() {
     super.initState();
 
-    _jsonSchemaForm = JsonschemaForm();
-
-    _formData = _jsonSchemaForm.formData;
-
-    _requiredFields = _jsonSchemaForm.jsonSchema.requiredFields;
+    _formData = Map.from(widget.formData);
   }
 
   @override
@@ -54,8 +64,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildJsonschemaForm(
-              _jsonSchemaForm.jsonSchema,
-              _jsonSchemaForm.uiSchema,
+              widget.jsonSchemaForm.jsonSchema,
+              widget.jsonSchemaForm.uiSchema,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -65,8 +75,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
                 final isFormValid = _formKey.currentState?.validate() ?? false;
 
                 if (isFormValid) {
-                  // TODO implement form submit
-                  print("form submitted: $_formData");
+                  widget.onFormSubmitted(_formData);
                 }
               },
               child: const Text('Submit'),
@@ -132,7 +141,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     UiSchema? uiSchema,
     String? jsonKey,
   ) {
-    final hasValidator = _requiredFields?.contains(jsonKey) ?? false;
+    final hasValidator =
+        widget.jsonSchemaForm.jsonSchema.requiredFields?.contains(jsonKey) ??
+            false;
 
     switch (uiSchema?.widget) {
       case UiType.select:
