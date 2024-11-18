@@ -20,18 +20,12 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
-    required this.formData,
     required this.onFormSubmitted,
     super.key,
   });
 
   /// The json schema for the form.
   final JsonschemaForm jsonSchemaForm;
-
-  /// The data filled in the form. If there is no initial data then
-  /// pass an empty map {} otherwise the form will
-  /// automatically fill according to the properties in this map.
-  final Map<String, dynamic> formData;
 
   /// Method triggered when the field is succesfully submitted, if there is any
   /// error on the form, this will not trigger. The method receives the final
@@ -52,8 +46,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   @override
   void initState() {
     super.initState();
-
-    _formData = Map.from(widget.formData);
+    if (widget.jsonSchemaForm.formData != null) {
+      _formData = Map.from(widget.jsonSchemaForm.formData!);
+    }
   }
 
   @override
@@ -163,6 +158,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
     final title = jsonSchema.title ?? jsonKey;
 
+    final defaultValue = _formData.containsKey(jsonKey)
+        ? _formData[jsonKey].toString()
+        : jsonSchema.defaultValue;
+
     switch (uiSchema?.widget) {
       case UiType.select:
         return _CustomFormFieldValidator<String>(
@@ -235,7 +234,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           labelText: title,
           minLines: 4,
           maxLines: null,
-          defaultValue: jsonSchema.defaultValue,
+          defaultValue: defaultValue,
           emptyValue: uiSchema?.emptyValue,
           placeholder: uiSchema?.placeholder,
           autofocus: uiSchema?.autofocus,
@@ -253,7 +252,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           labelText: title,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          defaultValue: jsonSchema.defaultValue,
+          defaultValue: defaultValue,
           emptyValue: uiSchema?.emptyValue,
           placeholder: uiSchema?.placeholder,
           autofocus: uiSchema?.autofocus,
@@ -269,7 +268,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           },
           hasValidator: hasValidator,
           labelText: title,
-          defaultValue: jsonSchema.defaultValue,
+          defaultValue: defaultValue,
           emptyValue: uiSchema?.emptyValue,
           placeholder: uiSchema?.placeholder,
           autofocus: uiSchema?.autofocus,
