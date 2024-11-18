@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
@@ -7,11 +8,12 @@ import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
 
-part 'widgets/custom_dropdown_menu.dart';
-part 'widgets/custom_text_form_field.dart';
-part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_checkbox_group.dart';
+part 'widgets/custom_dropdown_menu.dart';
 part 'widgets/custom_form_field_validator.dart';
+part 'widgets/custom_radio_group.dart';
+part 'widgets/custom_text_form_field.dart';
+part 'widgets/one_of.dart';
 
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
@@ -59,12 +61,13 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        autovalidateMode: AutovalidateMode.onUnfocus,
+        autovalidateMode: AutovalidateMode.disabled,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildJsonschemaForm(
               widget.jsonSchemaForm.jsonSchema!,
+              null,
               widget.jsonSchemaForm.uiSchema,
             ),
             const SizedBox(height: 20),
@@ -88,8 +91,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
   Widget _buildJsonschemaForm(
     JsonSchema jsonSchema,
-    UiSchema? uiSchema, {
     String? jsonKey,
+    UiSchema? uiSchema, {
     JsonSchema? previousSchema,
     String? previousJsonKey,
   }) {
@@ -99,7 +102,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       children: [
         if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty)
           Text(uiSchema.description!),
-        if (jsonSchema.type == JsonType.object) ...[
+        if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
           if (jsonSchema.title?.isNotEmpty ?? false) ...[
             Text(
               jsonSchema.title!,
@@ -110,27 +113,40 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
             const Divider(),
           ],
-          for (final entry in jsonSchema.properties!.entries)
+          for (final entry in jsonSchema.properties?.entries ??
+              <MapEntry<String, JsonSchema>>[])
             _buildJsonschemaForm(
               entry.value,
+              entry.key,
               uiSchema?.children?[entry.key],
-              jsonKey: entry.key,
               previousSchema: jsonSchema,
               previousJsonKey: jsonKey,
             ),
+          if (jsonSchema.oneOf != null)
+            _OneOfForm(
+              jsonSchema: jsonSchema,
+              jsonKey: jsonKey,
+              uiSchema: uiSchema,
+              buildJsonschemaForm: _buildJsonschemaForm,
+              formData: _formData,
+            ),
         ] else if (jsonSchema.type != JsonType.object &&
             jsonSchema.type != JsonType.array)
-          _buildWidgetFromUiSchema(jsonSchema, uiSchema, jsonKey)
+          _buildWidgetFromUiSchema(
+            jsonSchema,
+            jsonKey,
+            uiSchema,
+            previousSchema,
+          )
         else if (jsonSchema.type == JsonType.array && jsonSchema.items != null)
-          ..._buildArrayItems(jsonSchema, uiSchema, jsonKey),
+          ..._buildArrayItems(jsonSchema, jsonKey, uiSchema),
         if (previousSchema?.dependencies != null &&
-            jsonKey != null &&
             _formData.containsKey(jsonKey))
           ..._getDependencies(
             jsonSchema,
-            uiSchema,
             jsonKey,
-            previousSchema!.dependencies![jsonKey]!.oneOf,
+            uiSchema,
+            previousSchema!.dependencies![jsonKey]!.oneOf!,
           ),
       ],
     );
@@ -138,12 +154,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
   Widget _buildWidgetFromUiSchema(
     JsonSchema jsonSchema,
-    UiSchema? uiSchema,
     String? jsonKey,
+    UiSchema? uiSchema,
+    JsonSchema? previousSchema,
   ) {
     final hasValidator =
-        widget.jsonSchemaForm.jsonSchema!.requiredFields?.contains(jsonKey) ??
-            false;
+        previousSchema?.requiredFields?.contains(jsonKey) ?? false;
+
+    final title = jsonSchema.title ?? jsonKey;
 
     switch (uiSchema?.widget) {
       case UiType.select:
@@ -151,14 +169,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           isEnabled: hasValidator,
           isEmpty: (value) => value.isEmpty,
           childFormBuilder: (field) {
-            return _CustomDropdownMenu(
-              jsonKey: jsonKey!,
-              label: jsonSchema.title,
+            return _CustomDropdownMenu<String>(
+              label: title,
+              itemLabel: (_, item) => item,
               items: jsonSchema.enumValue!,
-              onDropdownValueSelected: (key, value) {
+              onDropdownValueSelected: (value) {
                 field?.didChange(value);
                 if (field?.isValid ?? true) {
-                  _onEnumValueSelected(key, value);
+                  _onEnumValueSelected(jsonKey!, value);
                 }
               },
             );
@@ -170,9 +188,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           isEnabled: hasValidator,
           isEmpty: (value) => value.isEmpty,
           childFormBuilder: (field) {
-            return _CustomRadioGroup(
+            return _CustomRadioGroup<String>(
               jsonKey: jsonKey!,
-              label: jsonSchema.title,
+              label: title,
+              itemLabel: (_, item) => item,
               items: jsonSchema.enumValue!,
               onRadioValueSelected: (key, value) {
                 field?.didChange(value);
@@ -191,7 +210,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           childFormBuilder: (field) {
             return _CustomCheckboxGroup(
               jsonKey: jsonKey!,
-              label: jsonSchema.title,
+              label: title,
               items: jsonSchema.enumValue!,
               onCheckboxValuesSelected: (key, value) {
                 field?.didChange(value);
@@ -206,10 +225,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       case UiType.textarea:
         return _CustomTextFormField(
           onChanged: (value) {
-            _formData[jsonKey!] = value;
+            if (value.isEmpty) {
+              _formData.remove(jsonKey);
+            } else {
+              _formData[jsonKey!] = value;
+            }
           },
           hasValidator: hasValidator,
-          labelText: jsonSchema.title,
+          labelText: title,
           minLines: 4,
           maxLines: null,
           defaultValue: jsonSchema.defaultValue,
@@ -220,10 +243,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       case UiType.updown:
         return _CustomTextFormField(
           onChanged: (value) {
-            _formData[jsonKey!] = value;
+            if (value.isEmpty) {
+              _formData.remove(jsonKey);
+            } else {
+              _formData[jsonKey!] = value;
+            }
           },
           hasValidator: hasValidator,
-          labelText: jsonSchema.title,
+          labelText: title,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           defaultValue: jsonSchema.defaultValue,
@@ -234,10 +261,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       case UiType.text || null:
         return _CustomTextFormField(
           onChanged: (value) {
-            _formData[jsonKey!] = value;
+            if (value.isEmpty) {
+              _formData.remove(jsonKey);
+            } else {
+              _formData[jsonKey!] = value;
+            }
           },
           hasValidator: hasValidator,
-          labelText: jsonSchema.title,
+          labelText: title,
           defaultValue: jsonSchema.defaultValue,
           emptyValue: uiSchema?.emptyValue,
           placeholder: uiSchema?.placeholder,
@@ -247,21 +278,29 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   }
 
   void _onEnumValueSelected(String key, String value) {
-    _formData[key] = value;
+    if (value.isEmpty) {
+      _formData.remove(key);
+    } else {
+      _formData[key] = value;
+    }
 
     setState(() {});
   }
 
   void _onMultipleEnumValuesSelected(String key, List<String> value) {
-    _formData[key] = value;
+    if (value.isEmpty) {
+      _formData.remove(key);
+    } else {
+      _formData[key] = value;
+    }
 
     setState(() {});
   }
 
   List<Widget> _buildArrayItems(
     JsonSchema jsonSchema,
-    UiSchema? uiSchema,
     String? jsonKey,
+    UiSchema? uiSchema,
   ) {
     final items = <Widget>[];
 
@@ -280,7 +319,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     if (hasAdditionalItems) {
       for (final item in jsonSchema.items as List<JsonSchema>) {
         items.add(
-          _buildJsonschemaForm(item, uiSchema, jsonKey: jsonKey),
+          _buildJsonschemaForm(item, jsonKey, uiSchema),
         );
       }
     }
@@ -293,7 +332,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       final schemaFromItems = jsonSchema.items as JsonSchema;
       if (schemaFromItems.enumValue != null) {
         items.add(
-          _buildJsonschemaForm(schemaFromItems, uiSchema, jsonKey: jsonKey),
+          _buildJsonschemaForm(schemaFromItems, jsonKey, uiSchema),
         );
       }
     }
@@ -305,11 +344,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
     for (var i = 0; i < minItems; i++) {
       items.add(
-        _buildJsonschemaForm(
-          jsonSchema.items as JsonSchema,
-          uiSchema,
-          jsonKey: jsonKey,
-        ),
+        _buildJsonschemaForm(jsonSchema.items as JsonSchema, jsonKey, uiSchema),
       );
     }
 
@@ -334,7 +369,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       }
 
       items.add(
-        _buildJsonschemaForm(_arrayItems[i], uiSchema, jsonKey: jsonKey),
+        _buildJsonschemaForm(_arrayItems[i], jsonKey, uiSchema),
       );
     }
 
@@ -383,8 +418,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
   List<Widget> _getDependencies(
     JsonSchema jsonSchema,
+    String? jsonKey,
     UiSchema? uiSchema,
-    String jsonKey,
     List<JsonSchema> dependencies,
   ) {
     /// This is neccessary in order to match the dependency from the current
@@ -406,8 +441,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       widgets.add(
         _buildJsonschemaForm(
           entry.value,
+          entry.key,
           uiSchema?.children?[entry.key],
-          jsonKey: entry.key,
           previousSchema: jsonSchema,
           previousJsonKey: jsonKey,
         ),

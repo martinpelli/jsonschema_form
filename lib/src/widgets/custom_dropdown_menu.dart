@@ -1,51 +1,59 @@
 part of '../jsonschema_form_builder.dart';
 
-class _CustomDropdownMenu extends StatefulWidget {
+class _CustomDropdownMenu<T> extends StatefulWidget {
   const _CustomDropdownMenu({
-    required this.jsonKey,
     required this.label,
+    required this.itemLabel,
     required this.items,
     required this.onDropdownValueSelected,
+    this.selectedItem,
   });
 
-  final String jsonKey;
   final String? label;
-  final List<String> items;
-  final void Function(String, String) onDropdownValueSelected;
+  final String Function(int index, T item) itemLabel;
+  final List<T> items;
+  final void Function(T) onDropdownValueSelected;
+  final T? selectedItem;
 
   @override
-  State<_CustomDropdownMenu> createState() => _CustomDropdownMenuState();
+  State<_CustomDropdownMenu<T>> createState() => _CustomDropdownMenuState<T>();
 }
 
-class _CustomDropdownMenuState extends State<_CustomDropdownMenu> {
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController iconController = TextEditingController();
-  String? selectedItem;
+class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
+  T? _selectedItem;
+
+  @override
+  void initState() {
+    if (widget.selectedItem != null) {
+      _selectedItem = widget.selectedItem;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child: DropdownMenu<String>(
+      child: DropdownMenu<T>(
         enableSearch: false,
         width: double.infinity,
-        controller: colorController,
         requestFocusOnTap: true,
         label: widget.label == null ? null : Text(widget.label!),
-        onSelected: (String? item) {
+        initialSelection: _selectedItem,
+        onSelected: (T? item) {
           if (item != null) {
-            widget.onDropdownValueSelected(widget.jsonKey, item);
+            widget.onDropdownValueSelected(item);
           }
           setState(() {
-            selectedItem = item;
+            _selectedItem = item;
           });
         },
         dropdownMenuEntries:
-            widget.items.map<DropdownMenuEntry<String>>((String item) {
-          return DropdownMenuEntry<String>(
+            widget.items.mapIndexed<DropdownMenuEntry<T>>((int index, T item) {
+          return DropdownMenuEntry<T>(
             value: item,
-            label: item,
+            label: widget.itemLabel(index, item),
             style: MenuItemButton.styleFrom(),
           );
         }).toList(),

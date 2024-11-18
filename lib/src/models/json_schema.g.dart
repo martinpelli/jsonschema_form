@@ -21,8 +21,7 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
           (json['enum'] as List<dynamic>?)?.map((e) => e as String).toList(),
       constValue: json['const'] as String?,
       dependencies: (json['dependencies'] as Map<String, dynamic>?)?.map(
-        (k, e) =>
-            MapEntry(k, JsonDependency.fromJson(e as Map<String, dynamic>)),
+        (k, e) => MapEntry(k, JsonSchema.fromJson(e as Map<String, dynamic>)),
       ),
       items: const ItemsJsonParser().fromJson(json['items']),
       additionalItems: json['additionalItems'] == null
@@ -33,6 +32,9 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       minItems: (json['minItems'] as num?)?.toInt(),
       maxItems: (json['maxItems'] as num?)?.toInt(),
       uniqueItems: json['uniqueItems'] as bool?,
+      oneOf: (json['oneOf'] as List<dynamic>?)
+          ?.map((e) => JsonSchema.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 const _$JsonTypeEnumMap = {

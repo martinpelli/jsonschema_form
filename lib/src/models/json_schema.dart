@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:jsonschema_form/src/models/json_dependency.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/utils/items_json_parser.dart';
@@ -38,6 +37,7 @@ class JsonSchema extends Equatable {
     required this.minItems,
     required this.maxItems,
     required this.uniqueItems,
+    required this.oneOf,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -94,7 +94,7 @@ class JsonSchema extends Equatable {
   /// if another field exists.
   /// Property dependencies: Where certain fields are only required if another
   /// field has a specific value.
-  final Map<String, JsonDependency>? dependencies;
+  final Map<String, JsonSchema>? dependencies;
 
   /// Items is only present when [type] is equal to array
   /// The form generated will have fields that allow users to enter multiple
@@ -118,6 +118,13 @@ class JsonSchema extends Equatable {
 
   /// When is set to true, all items from the array follows the same schema
   final bool? uniqueItems;
+
+  /// A way to define conditional schemas where only one of multiple schemas
+  /// must be valid, depending on specific conditions.
+  /// When dependencies is used with oneOf, it enables conditional logic based
+  /// on the fields in the JSON data, allowing the schema to adapt according to
+  /// certain field value
+  final List<JsonSchema>? oneOf;
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);

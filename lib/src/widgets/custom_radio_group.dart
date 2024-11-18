@@ -1,24 +1,26 @@
 part of '../jsonschema_form_builder.dart';
 
-class _CustomRadioGroup extends StatefulWidget {
+class _CustomRadioGroup<T> extends StatefulWidget {
   const _CustomRadioGroup({
     required this.jsonKey,
     required this.label,
     required this.items,
+    required this.itemLabel,
     required this.onRadioValueSelected,
   });
 
   final String? label;
-  final List<String> items;
-  final void Function(String, String) onRadioValueSelected;
+  final List<T> items;
+  final String Function(int index, T item) itemLabel;
+  final void Function(String, T) onRadioValueSelected;
   final String jsonKey;
 
   @override
-  State<_CustomRadioGroup> createState() => _CustomRadioGroupState();
+  State<_CustomRadioGroup<T>> createState() => _CustomRadioGroupState<T>();
 }
 
-class _CustomRadioGroupState extends State<_CustomRadioGroup> {
-  String? _selectedItem;
+class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
+  T? _selectedItem;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +30,11 @@ class _CustomRadioGroupState extends State<_CustomRadioGroup> {
         if (widget.label != null) Text(widget.label!),
         Wrap(
           children: widget.items
-              .map(
-                (item) => RadioListTile(
+              .mapIndexed(
+                (index, item) => RadioListTile(
                   value: _selectedItem == item,
                   groupValue: true,
-                  title: Text(item),
+                  title: Text(widget.itemLabel(index, item)),
                   onChanged: (_) {
                     _selectedItem = item;
                     widget.onRadioValueSelected(widget.jsonKey, item);

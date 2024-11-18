@@ -1,5 +1,6 @@
 name: jsonschema_form
-description: A Flutter package capable of using JSON Schema to declaratively build and customize Flutter forms
+description: A Flutter package capable of using JSON Schema to declaratively
+  build and customize Flutter forms
 version: 0.1.0+1
 publish_to: none
 
@@ -8,6 +9,7 @@ environment:
   flutter: ^3.24.0
 
 dependencies:
+  collection: ^1.18.0
   equatable: ^2.0.3
   flutter:
     sdk: flutter
