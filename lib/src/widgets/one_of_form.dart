@@ -1,12 +1,12 @@
 part of '../jsonschema_form_builder.dart';
 
 class _OneOfForm extends StatefulWidget {
-  const _OneOfForm({
-    required this.jsonSchema,
-    required this.jsonKey,
-    required this.uiSchema,
+  const _OneOfForm(
+    this.jsonSchema,
+    this.jsonKey,
+    this.uiSchema,
+    this.formData, {
     required this.buildJsonschemaForm,
-    required this.formData,
   });
 
   final JsonSchema jsonSchema;

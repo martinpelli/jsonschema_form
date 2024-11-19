@@ -20,15 +20,13 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       enumValue:
           (json['enum'] as List<dynamic>?)?.map((e) => e as String).toList(),
       constValue: json['const'] as String?,
-      dependencies: (json['dependencies'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, JsonSchema.fromJson(e as Map<String, dynamic>)),
-      ),
+      dependencies:
+          const DependenciesJsonParser().fromJson(json['dependencies']),
       items: const ItemsJsonParser().fromJson(json['items']),
       additionalItems: json['additionalItems'] == null
           ? null
           : JsonSchema.fromJson(
-              json['additionalItems'] as Map<String, dynamic>,
-            ),
+              json['additionalItems'] as Map<String, dynamic>),
       minItems: (json['minItems'] as num?)?.toInt(),
       maxItems: (json['maxItems'] as num?)?.toInt(),
       uniqueItems: json['uniqueItems'] as bool?,
