@@ -170,12 +170,17 @@ class _UiWidget extends StatelessWidget {
     }
   }
 
+  /// Property dependencies: unidirectional and bidirectional
   void _rebuildFormIfHasDependants() {
     if (_hasDependants()) {
       rebuildForm();
     }
   }
 
+  /// Property dependencies: unidirectional and bidirectional
+  /// If a field has dependants, it means that when the field is changed, the
+  /// whole form will be rebuilt so that the dependants fields are required or
+  /// not, depending if the value is valid or not
   bool _hasDependants() {
     if (previousSchema?.dependencies != null &&
         previousSchema!.dependencies!.keys.contains(jsonKey)) {
@@ -184,6 +189,9 @@ class _UiWidget extends StatelessWidget {
     return false;
   }
 
+  /// Property dependencies: unidirectional and bidirectional
+  /// If a filed is dependant then it will add a required validation if the
+  /// field which depends on is filled with a vaalid value
   bool _isDependantAndDependencyHasValue() {
     List<String>? dependencies;
     if (previousSchema?.dependencies != null) {
