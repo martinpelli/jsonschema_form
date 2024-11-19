@@ -31,126 +31,123 @@ class _UiWidget extends StatelessWidget {
         (previousSchema?.requiredFields?.contains(jsonKey) ?? false) ||
             _isDependantAndDependencyHasValue();
 
-    switch (uiSchema?.widget) {
-      case UiType.select:
-        return _CustomFormFieldValidator<String>(
-          isEnabled: hasValidator,
-          isEmpty: (value) => value.isEmpty,
-          childFormBuilder: (field) {
-            return _CustomDropdownMenu<String>(
-              label: title,
-              itemLabel: (_, item) => item,
-              items: jsonSchema.enumValue!,
-              onDropdownValueSelected: (value) {
-                field?.didChange(value);
-                if (field?.isValid ?? true) {
-                  _onEnumValueSelected(jsonKey!, value);
-                  _rebuildFormIfHasDependants();
-                }
-              },
-            );
-          },
-        );
-
-      case UiType.radio:
-        return _CustomFormFieldValidator<String>(
-          isEnabled: hasValidator,
-          isEmpty: (value) => value.isEmpty,
-          childFormBuilder: (field) {
-            return _CustomRadioGroup<String>(
-              jsonKey: jsonKey!,
-              label: title,
-              itemLabel: (_, item) => item,
-              items: jsonSchema.enumValue!,
-              onRadioValueSelected: (key, value) {
-                field?.didChange(value);
-                if (field?.isValid ?? true) {
-                  _onEnumValueSelected(key, value);
-                  _rebuildFormIfHasDependants();
-                }
-              },
-            );
-          },
-        );
-
-      case UiType.checkboxes:
-        return _CustomFormFieldValidator<List<String>>(
-          isEnabled: hasValidator,
-          isEmpty: (value) => value.isEmpty,
-          childFormBuilder: (field) {
-            return _CustomCheckboxGroup(
-              jsonKey: jsonKey!,
-              label: title,
-              items: jsonSchema.enumValue!,
-              onCheckboxValuesSelected: (key, value) {
-                field?.didChange(value);
-                if (field?.isValid ?? true) {
-                  _onMultipleEnumValuesSelected(key, value);
-                  _rebuildFormIfHasDependants();
-                }
-              },
-            );
-          },
-        );
-
-      case UiType.textarea:
-        return _CustomTextFormField(
-          onChanged: (value) {
-            if (value.isEmpty) {
-              formData.remove(jsonKey);
-            } else {
-              formData[jsonKey!] = value;
-              _rebuildFormIfHasDependants();
-            }
-          },
-          hasValidator: hasValidator,
-          labelText: title,
-          minLines: 4,
-          maxLines: null,
-          defaultValue: defaultValue,
-          emptyValue: uiSchema?.emptyValue,
-          placeholder: uiSchema?.placeholder,
-          helperText: uiSchema?.help,
-          autofocus: uiSchema?.autofocus,
-        );
-      case UiType.updown:
-        return _CustomTextFormField(
-          onChanged: (value) {
-            if (value.isEmpty) {
-              formData.remove(jsonKey);
-            } else {
-              formData[jsonKey!] = value;
-              _rebuildFormIfHasDependants();
-            }
-          },
-          hasValidator: hasValidator,
-          labelText: title,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          defaultValue: defaultValue,
-          emptyValue: uiSchema?.emptyValue,
-          placeholder: uiSchema?.placeholder,
-          helperText: uiSchema?.help,
-          autofocus: uiSchema?.autofocus,
-        );
-      case UiType.text || null:
-        return _CustomTextFormField(
-          onChanged: (value) {
-            if (value.isEmpty) {
-              formData.remove(jsonKey);
-            } else {
-              formData[jsonKey!] = value;
-              _rebuildFormIfHasDependants();
-            }
-          },
-          hasValidator: hasValidator,
-          labelText: title,
-          defaultValue: defaultValue,
-          emptyValue: uiSchema?.emptyValue,
-          placeholder: uiSchema?.placeholder,
-          helperText: uiSchema?.help,
-          autofocus: uiSchema?.autofocus,
-        );
+    if (uiSchema?.widget == UiType.select ||
+        (uiSchema?.widget == null && jsonSchema.enumValue != null)) {
+      return _CustomFormFieldValidator<String>(
+        isEnabled: hasValidator,
+        isEmpty: (value) => value.isEmpty,
+        childFormBuilder: (field) {
+          return _CustomDropdownMenu<String>(
+            label: title,
+            itemLabel: (_, item) => item,
+            items: jsonSchema.enumValue!,
+            onDropdownValueSelected: (value) {
+              field?.didChange(value);
+              if (field?.isValid ?? true) {
+                _onEnumValueSelected(jsonKey!, value);
+                _rebuildFormIfHasDependants();
+              }
+            },
+          );
+        },
+      );
+    } else if (uiSchema?.widget == UiType.radio) {
+      return _CustomFormFieldValidator<String>(
+        isEnabled: hasValidator,
+        isEmpty: (value) => value.isEmpty,
+        childFormBuilder: (field) {
+          return _CustomRadioGroup<String>(
+            jsonKey: jsonKey!,
+            label: title,
+            itemLabel: (_, item) => item,
+            items: jsonSchema.enumValue!,
+            onRadioValueSelected: (key, value) {
+              field?.didChange(value);
+              if (field?.isValid ?? true) {
+                _onEnumValueSelected(key, value);
+                _rebuildFormIfHasDependants();
+              }
+            },
+          );
+        },
+      );
+    } else if (uiSchema?.widget == UiType.checkboxes) {
+      return _CustomFormFieldValidator<List<String>>(
+        isEnabled: hasValidator,
+        isEmpty: (value) => value.isEmpty,
+        childFormBuilder: (field) {
+          return _CustomCheckboxGroup(
+            jsonKey: jsonKey!,
+            label: title,
+            items: jsonSchema.enumValue!,
+            onCheckboxValuesSelected: (key, value) {
+              field?.didChange(value);
+              if (field?.isValid ?? true) {
+                _onMultipleEnumValuesSelected(key, value);
+                _rebuildFormIfHasDependants();
+              }
+            },
+          );
+        },
+      );
+    } else if (uiSchema?.widget == UiType.textarea) {
+      return _CustomTextFormField(
+        onChanged: (value) {
+          if (value.isEmpty) {
+            formData.remove(jsonKey);
+          } else {
+            formData[jsonKey!] = value;
+            _rebuildFormIfHasDependants();
+          }
+        },
+        hasValidator: hasValidator,
+        labelText: title,
+        minLines: 4,
+        maxLines: null,
+        defaultValue: defaultValue,
+        emptyValue: uiSchema?.emptyValue,
+        placeholder: uiSchema?.placeholder,
+        helperText: uiSchema?.help,
+        autofocus: uiSchema?.autofocus,
+      );
+    } else if (uiSchema?.widget == UiType.updown) {
+      return _CustomTextFormField(
+        onChanged: (value) {
+          if (value.isEmpty) {
+            formData.remove(jsonKey);
+          } else {
+            formData[jsonKey!] = value;
+            _rebuildFormIfHasDependants();
+          }
+        },
+        hasValidator: hasValidator,
+        labelText: title,
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        defaultValue: defaultValue,
+        emptyValue: uiSchema?.emptyValue,
+        placeholder: uiSchema?.placeholder,
+        helperText: uiSchema?.help,
+        autofocus: uiSchema?.autofocus,
+      );
+    } else {
+      return _CustomTextFormField(
+        onChanged: (value) {
+          if (value.isEmpty) {
+            formData.remove(jsonKey);
+          } else {
+            formData[jsonKey!] = value;
+            _rebuildFormIfHasDependants();
+          }
+        },
+        hasValidator: hasValidator,
+        labelText: title,
+        defaultValue: defaultValue,
+        emptyValue: uiSchema?.emptyValue,
+        placeholder: uiSchema?.placeholder,
+        helperText: uiSchema?.help,
+        autofocus: uiSchema?.autofocus,
+      );
     }
   }
 
