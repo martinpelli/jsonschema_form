@@ -16,7 +16,8 @@ class _OneOfForm extends StatefulWidget {
   final Widget Function(
     JsonSchema jsonSchema,
     String? jsonKey,
-    UiSchema? uiSchema, {
+    UiSchema? uiSchema,
+    dynamic formData, {
     JsonSchema? previousSchema,
     String? previousJsonKey,
   }) buildJsonschemaForm;
@@ -50,6 +51,7 @@ class _OneOfFormState extends State<_OneOfForm> {
           selectedOneOfJsonSchema,
           widget.jsonKey,
           widget.uiSchema,
+          widget.formData,
         ),
       ],
     );

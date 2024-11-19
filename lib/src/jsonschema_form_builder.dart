@@ -122,6 +122,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousSchema: jsonSchema,
               previousJsonKey: jsonKey,
             ),
+          if (jsonSchema.oneOf != null)
+            _OneOfForm(
+              jsonSchema: jsonSchema,
+              jsonKey: jsonKey,
+              uiSchema: uiSchema,
+              buildJsonschemaForm: _buildJsonschemaForm,
+              formData: _formData,
+            ),
         ] else
           _buildWidgetFromUiSchema(
             jsonSchema,
