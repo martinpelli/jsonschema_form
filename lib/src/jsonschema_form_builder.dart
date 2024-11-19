@@ -114,6 +114,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
             const Divider(),
           ],
+          if (jsonSchema.description?.isNotEmpty ?? false)
+            Text(jsonSchema.description!),
           for (final entry in jsonSchema.properties?.entries ??
               <MapEntry<String, JsonSchema>>[])
             _buildJsonschemaForm(
