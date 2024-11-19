@@ -4,6 +4,7 @@ class _CustomTextFormField extends StatefulWidget {
   const _CustomTextFormField({
     required this.onChanged,
     this.labelText,
+    this.helperText,
     this.keyboardType,
     this.inputFormatters,
     this.minLines,
@@ -17,6 +18,7 @@ class _CustomTextFormField extends StatefulWidget {
 
   final void Function(String) onChanged;
   final String? labelText;
+  final String? helperText;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final int? minLines;
@@ -53,6 +55,7 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: widget.placeholder,
+        helperText: widget.helperText,
       ),
       keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,

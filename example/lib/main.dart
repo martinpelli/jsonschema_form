@@ -35,8 +35,6 @@ class _Form extends StatefulWidget {
 class _FormState extends State<_Form> {
   JsonschemaForm? _jsonschemaForm;
 
-  final Map<String, dynamic> _formData = {};
-
   bool _isLoading = false;
 
   @override
@@ -51,7 +49,7 @@ class _FormState extends State<_Form> {
 
     _jsonschemaForm = JsonschemaForm();
 
-    await _jsonschemaForm!.initFromJsonAsset('assets/array.json');
+    await _jsonschemaForm!.initFromJsonAsset('assets/simple.json');
 
     _isLoading = false;
 
@@ -70,7 +68,6 @@ class _FormState extends State<_Form> {
 
     return JsonschemaFormBuilder(
       jsonSchemaForm: _jsonschemaForm!,
-      formData: _formData,
       onFormSubmitted: (formData) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(formData.toString()),

@@ -23,6 +23,7 @@ class UiSchema extends Equatable {
     this.emptyValue,
     this.placeholder,
     this.description,
+    this.help,
     this.options,
   });
 
@@ -41,13 +42,13 @@ class UiSchema extends Equatable {
       });
     }
 
-    late final Map<String, bool>? options;
+    late final Map<String, dynamic>? options;
 
     if (json['ui:options'] == null) {
       options = null;
     } else {
       options = (json['ui:options'] as Map<String, dynamic>).map((key, value) {
-        return MapEntry(key, value as bool);
+        return MapEntry(key, value as dynamic);
       });
     }
 
@@ -57,6 +58,7 @@ class UiSchema extends Equatable {
       emptyValue: json['ui:emptyValue'] as String?,
       placeholder: json['ui:placeholder'] as String?,
       description: json['ui:description'] as String?,
+      help: json['ui:help'] as String?,
       options: options,
       children: parsedChildren,
     );
@@ -81,12 +83,15 @@ class UiSchema extends Equatable {
   /// be shown as a Text widget above the field
   final String? description;
 
+  /// Provides a brief description for helping de user
+  final String? help;
+
   /// Defines options to be used for the given key, for instance: if options
   /// is {
   ///   removable: false
   /// }
   /// then this indicates user can't delete items from array
-  final Map<String, bool>? options;
+  final Map<String, dynamic>? options;
 
   @override
   List<Object?> get props => [
