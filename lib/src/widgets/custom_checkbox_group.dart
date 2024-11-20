@@ -43,6 +43,8 @@ class _CustomCheckboxGroupState extends State<_CustomCheckboxGroup> {
                       widget.jsonKey,
                       _selectedItems,
                     );
+
+                    setState(() {});
                   },
                 ),
               )

@@ -29,7 +29,7 @@ class _UiWidget extends StatelessWidget {
 
     final hasValidator =
         (previousSchema?.requiredFields?.contains(jsonKey) ?? false) ||
-            _isDependantAndDependencyHasValue();
+            _isPropertyDependantAndDependencyHasValue();
 
     if (uiSchema?.widget == UiType.select ||
         (uiSchema?.widget == null && jsonSchema.enumValue != null)) {
@@ -45,8 +45,8 @@ class _UiWidget extends StatelessWidget {
               field?.didChange(value);
               if (field?.isValid ?? true) {
                 _onEnumValueSelected(jsonKey!, value);
-                _rebuildFormIfHasDependants();
               }
+              _rebuildFormIfHasDependants();
             },
           );
         },
@@ -65,8 +65,27 @@ class _UiWidget extends StatelessWidget {
               field?.didChange(value);
               if (field?.isValid ?? true) {
                 _onEnumValueSelected(key, value);
-                _rebuildFormIfHasDependants();
               }
+              _rebuildFormIfHasDependants();
+            },
+          );
+        },
+      );
+    } else if (jsonSchema.type == JsonType.boolean) {
+      return _CustomFormFieldValidator<bool>(
+        isEnabled: hasValidator,
+        childFormBuilder: (field) {
+          return _CustomRadioGroup<bool>(
+            jsonKey: jsonKey!,
+            label: title,
+            itemLabel: (_, item) => item ? 'Yes' : 'No',
+            items: const [false, true],
+            onRadioValueSelected: (key, value) {
+              field?.didChange(value);
+              if (field?.isValid ?? true) {
+                _onEnumValueSelected(key, value);
+              }
+              _rebuildFormIfHasDependants();
             },
           );
         },
@@ -84,8 +103,8 @@ class _UiWidget extends StatelessWidget {
               field?.didChange(value);
               if (field?.isValid ?? true) {
                 _onMultipleEnumValuesSelected(key, value);
-                _rebuildFormIfHasDependants();
               }
+              _rebuildFormIfHasDependants();
             },
           );
         },
@@ -97,8 +116,8 @@ class _UiWidget extends StatelessWidget {
             formData.remove(jsonKey);
           } else {
             formData[jsonKey!] = value;
-            _rebuildFormIfHasDependants();
           }
+          _rebuildFormIfHasDependants();
         },
         hasValidator: hasValidator,
         labelText: title,
@@ -117,8 +136,8 @@ class _UiWidget extends StatelessWidget {
             formData.remove(jsonKey);
           } else {
             formData[jsonKey!] = value;
-            _rebuildFormIfHasDependants();
           }
+          _rebuildFormIfHasDependants();
         },
         hasValidator: hasValidator,
         labelText: title,
@@ -137,8 +156,8 @@ class _UiWidget extends StatelessWidget {
             formData.remove(jsonKey);
           } else {
             formData[jsonKey!] = value;
-            _rebuildFormIfHasDependants();
           }
+          _rebuildFormIfHasDependants();
         },
         hasValidator: hasValidator,
         labelText: title,
@@ -151,8 +170,8 @@ class _UiWidget extends StatelessWidget {
     }
   }
 
-  void _onEnumValueSelected(String key, String value) {
-    if (value.isEmpty) {
+  void _onEnumValueSelected(String key, dynamic value) {
+    if (value is String && value.isEmpty) {
       formData.remove(key);
     } else {
       formData[key] = value;
@@ -186,15 +205,14 @@ class _UiWidget extends StatelessWidget {
     return false;
   }
 
-  /// Property dependencies: unidirectional and bidirectional
-  /// If a filed is dependant then it will add a required validation if the
-  /// field which depends on is filled with a vaalid value
-  bool _isDependantAndDependencyHasValue() {
-    List<String>? dependencies;
+  /// If a field is dependant of another one then it will add a required
+  /// validation if the field which depends on is filled with a valid value
+  bool _isPropertyDependantAndDependencyHasValue() {
     if (previousSchema?.dependencies != null) {
       for (final dependency in previousSchema!.dependencies!.entries) {
+        /// Property dependency
         if (dependency.value is List<String>) {
-          dependencies = dependency.value as List<String>;
+          final dependencies = dependency.value as List<String>;
 
           if (dependencies.contains(jsonKey) &&
               (previousFormData?.containsKey(dependency.key) ?? false)) {

@@ -117,7 +117,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           if (jsonSchema.description?.isNotEmpty ?? false)
             Text(jsonSchema.description!),
           for (final entry in jsonSchema.properties?.entries ??
-              <MapEntry<String, JsonSchema>>[])
+              <MapEntry<String, JsonSchema>>[]) ...[
+            /// Build one Widget for each property in the schema
             _buildJsonschemaForm(
               entry.value,
               entry.key,
@@ -126,12 +127,31 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousSchema: jsonSchema,
               previousJsonKey: jsonKey,
             ),
+
+            /// Build Schema dependencies, widgets that will be added
+            /// dynamically depending on other field values
+            if (jsonSchema.dependencies != null &&
+                jsonSchema.dependencies!.keys.contains(entry.key) &&
+                ((newFormData as Map<String, dynamic>?)
+                        ?.containsKey(entry.key) ??
+                    false))
+              _buildJsonschemaForm(
+                jsonSchema.dependencies![entry.key] as JsonSchema,
+                entry.key,
+                uiSchema,
+                newFormData,
+                previousSchema: jsonSchema,
+                previousJsonKey: jsonKey,
+              ),
+          ],
           if (jsonSchema.oneOf != null)
             _OneOfForm(
               jsonSchema,
               jsonKey,
               uiSchema,
-              formData as Map<String, dynamic>,
+              newFormData as Map<String, dynamic>,
+              previousSchema: previousSchema,
+              previousJsonKey: previousJsonKey,
               buildJsonschemaForm: _buildJsonschemaForm,
             ),
         ] else

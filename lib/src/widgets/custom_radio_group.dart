@@ -38,6 +38,7 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                   onChanged: (_) {
                     _selectedItem = item;
                     widget.onRadioValueSelected(widget.jsonKey, item);
+                    setState(() {});
                   },
                 ),
               )
