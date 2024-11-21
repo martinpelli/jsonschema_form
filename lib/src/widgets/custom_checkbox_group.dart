@@ -10,7 +10,7 @@ class _CustomCheckboxGroup extends StatefulWidget {
 
   final String? label;
   final List<String> items;
-  final void Function(String, List<String>) onCheckboxValuesSelected;
+  final void Function(List<String>) onCheckboxValuesSelected;
   final String jsonKey;
 
   @override
@@ -40,7 +40,6 @@ class _CustomCheckboxGroupState extends State<_CustomCheckboxGroup> {
                     }
 
                     widget.onCheckboxValuesSelected(
-                      widget.jsonKey,
                       _selectedItems,
                     );
 

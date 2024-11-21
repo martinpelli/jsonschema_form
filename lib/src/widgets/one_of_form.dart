@@ -128,7 +128,7 @@ class _OneOfFormState extends State<_OneOfForm> {
         itemLabel: itemLabel,
         jsonKey: widget.jsonKey!,
         items: widget.jsonSchema.oneOf!,
-        onRadioValueSelected: (_, value) => onValueSelected(value),
+        onRadioValueSelected: onValueSelected,
       );
     }
   }

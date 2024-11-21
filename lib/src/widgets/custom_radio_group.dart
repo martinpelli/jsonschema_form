@@ -12,7 +12,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   final String? label;
   final List<T> items;
   final String Function(int index, T item) itemLabel;
-  final void Function(String, T) onRadioValueSelected;
+  final void Function(T) onRadioValueSelected;
   final String jsonKey;
 
   @override
@@ -37,7 +37,7 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                   title: Text(widget.itemLabel(index, item)),
                   onChanged: (_) {
                     _selectedItem = item;
-                    widget.onRadioValueSelected(widget.jsonKey, item);
+                    widget.onRadioValueSelected(item);
                     setState(() {});
                   },
                 ),

@@ -9,27 +9,36 @@ class _UiWidget extends StatelessWidget {
     required this.rebuildForm,
     required this.previousSchema,
     required this.previousFormData,
+    required this.arrayIndex,
   });
 
   final JsonSchema jsonSchema;
   final String? jsonKey;
   final UiSchema? uiSchema;
-  final Map<String, dynamic> formData;
+  final dynamic formData;
   final void Function() rebuildForm;
   final JsonSchema? previousSchema;
-  final Map<String, dynamic>? previousFormData;
+  final dynamic previousFormData;
+  final int? arrayIndex;
 
   @override
   Widget build(BuildContext context) {
     final title = jsonSchema.title ?? jsonKey;
 
-    final defaultValue = formData.containsKey(jsonKey)
-        ? formData[jsonKey]?.toString()
-        : jsonSchema.defaultValue;
+    final defaultValue = _getDefaultValue();
+
+    if (defaultValue != null) {
+      _setValueInFormData(defaultValue);
+    }
 
     final hasValidator =
         (previousSchema?.requiredFields?.contains(jsonKey) ?? false) ||
             _isPropertyDependantAndDependencyHasValue();
+
+    void onFieldChanged(dynamic value) {
+      _setValueInFormData(value);
+      _rebuildFormIfHasDependants();
+    }
 
     if (uiSchema?.widget == UiType.select ||
         (uiSchema?.widget == null && jsonSchema.enumValue != null)) {
@@ -44,7 +53,7 @@ class _UiWidget extends StatelessWidget {
             onDropdownValueSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
-                _onEnumValueSelected(jsonKey!, value);
+                onFieldChanged(value);
               }
               _rebuildFormIfHasDependants();
             },
@@ -61,10 +70,10 @@ class _UiWidget extends StatelessWidget {
             label: title,
             itemLabel: (_, item) => item,
             items: jsonSchema.enumValue!,
-            onRadioValueSelected: (key, value) {
+            onRadioValueSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
-                _onEnumValueSelected(key, value);
+                onFieldChanged(value);
               }
               _rebuildFormIfHasDependants();
             },
@@ -80,10 +89,10 @@ class _UiWidget extends StatelessWidget {
             label: title,
             itemLabel: (_, item) => item ? 'Yes' : 'No',
             items: const [false, true],
-            onRadioValueSelected: (key, value) {
+            onRadioValueSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
-                _onEnumValueSelected(key, value);
+                onFieldChanged(value);
               }
               _rebuildFormIfHasDependants();
             },
@@ -99,10 +108,10 @@ class _UiWidget extends StatelessWidget {
             jsonKey: jsonKey!,
             label: title,
             items: jsonSchema.enumValue!,
-            onCheckboxValuesSelected: (key, value) {
+            onCheckboxValuesSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
-                _onMultipleEnumValuesSelected(key, value);
+                onFieldChanged(value);
               }
               _rebuildFormIfHasDependants();
             },
@@ -111,19 +120,12 @@ class _UiWidget extends StatelessWidget {
       );
     } else if (uiSchema?.widget == UiType.textarea) {
       return _CustomTextFormField(
-        onChanged: (value) {
-          if (value.isEmpty) {
-            formData.remove(jsonKey);
-          } else {
-            formData[jsonKey!] = value;
-          }
-          _rebuildFormIfHasDependants();
-        },
+        onChanged: onFieldChanged,
         hasValidator: hasValidator,
         labelText: title,
         minLines: 4,
         maxLines: null,
-        defaultValue: defaultValue,
+        defaultValue: defaultValue?.toString(),
         emptyValue: uiSchema?.emptyValue,
         placeholder: uiSchema?.placeholder,
         helperText: uiSchema?.help,
@@ -131,19 +133,12 @@ class _UiWidget extends StatelessWidget {
       );
     } else if (uiSchema?.widget == UiType.updown) {
       return _CustomTextFormField(
-        onChanged: (value) {
-          if (value.isEmpty) {
-            formData.remove(jsonKey);
-          } else {
-            formData[jsonKey!] = value;
-          }
-          _rebuildFormIfHasDependants();
-        },
+        onChanged: onFieldChanged,
         hasValidator: hasValidator,
         labelText: title,
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        defaultValue: defaultValue,
+        defaultValue: defaultValue?.toString(),
         emptyValue: uiSchema?.emptyValue,
         placeholder: uiSchema?.placeholder,
         helperText: uiSchema?.help,
@@ -151,17 +146,10 @@ class _UiWidget extends StatelessWidget {
       );
     } else {
       return _CustomTextFormField(
-        onChanged: (value) {
-          if (value.isEmpty) {
-            formData.remove(jsonKey);
-          } else {
-            formData[jsonKey!] = value;
-          }
-          _rebuildFormIfHasDependants();
-        },
+        onChanged: onFieldChanged,
         hasValidator: hasValidator,
         labelText: title,
-        defaultValue: defaultValue,
+        defaultValue: defaultValue?.toString(),
         emptyValue: uiSchema?.emptyValue,
         placeholder: uiSchema?.placeholder,
         helperText: uiSchema?.help,
@@ -170,19 +158,37 @@ class _UiWidget extends StatelessWidget {
     }
   }
 
-  void _onEnumValueSelected(String key, dynamic value) {
-    if (value is String && value.isEmpty) {
-      formData.remove(key);
-    } else {
-      formData[key] = value;
+  dynamic _getDefaultValue() {
+    if (formData is Map) {
+      final data = formData as Map;
+      if (data.containsKey(jsonKey)) {
+        return data[jsonKey]?.toString() ?? jsonSchema.defaultValue;
+      } else {
+        return jsonSchema.defaultValue;
+      }
+    } else if (formData is List) {
+      final data = formData as List;
+      if (arrayIndex! <= data.length - 1) {
+        return data[arrayIndex!]?.toString() ?? jsonSchema.defaultValue;
+      } else {
+        return jsonSchema.defaultValue;
+      }
     }
   }
 
-  void _onMultipleEnumValuesSelected(String key, List<String> value) {
-    if (value.isEmpty) {
-      formData.remove(key);
+  void _setValueInFormData(dynamic value) {
+    if (value is String && value.isEmpty) {
+      if (formData is Map) {
+        (formData as Map).remove(jsonKey);
+      } else {
+        (formData as List)[arrayIndex!] = null;
+      }
     } else {
-      formData[key] = value;
+      if (formData is Map) {
+        (formData as Map)[jsonKey!] = value;
+      } else {
+        (formData as List)[arrayIndex!] = value;
+      }
     }
   }
 
@@ -215,7 +221,9 @@ class _UiWidget extends StatelessWidget {
           final dependencies = dependency.value as List<String>;
 
           if (dependencies.contains(jsonKey) &&
-              (previousFormData?.containsKey(dependency.key) ?? false)) {
+              ((previousFormData as Map<String, dynamic>?)
+                      ?.containsKey(dependency.key) ??
+                  false)) {
             return true;
           }
         }

@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/utils/dependencies_json_parser.dart';
 import 'package:jsonschema_form/src/utils/items_json_parser.dart';
-import 'package:meta/meta.dart';
 
 part 'json_schema.g.dart';
 
@@ -20,7 +20,6 @@ part 'json_schema.g.dart';
 /// {@endtemplate}
 @immutable
 @DependenciesJsonParser()
-@ItemsJsonParser()
 @JsonSerializable(createToJson: false)
 class JsonSchema extends Equatable {
   /// {@macro json_schema}
@@ -55,7 +54,7 @@ class JsonSchema extends Equatable {
 
   /// [default] is the default value that this field takes. If there is data
   /// present on the corresponding formData property then [default] is ignored
-  final String? defaultValue;
+  final dynamic defaultValue;
 
   /// Defines the data type of a field or schema element.
   /// Possible types include "string", "number", "boolean", "array", and
@@ -97,6 +96,8 @@ class JsonSchema extends Equatable {
   /// Property dependencies: Where certain fields are only required if another
   /// field has a specific value.
   final Map<String, dynamic>? dependencies;
+
+  @JsonKey(fromJson: ItemsJsonParser.fromJson)
 
   /// Items is only present when [type] is equal to array
   /// The form generated will have fields that allow users to enter multiple

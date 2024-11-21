@@ -7,6 +7,7 @@ import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
+import 'package:jsonschema_form/src/utils/json_schema_extension.dart';
 import 'package:jsonschema_form/src/utils/map_extension.dart';
 
 part 'widgets/custom_checkbox_group.dart';
@@ -93,6 +94,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     dynamic formData, {
     JsonSchema? previousSchema,
     String? previousJsonKey,
+    int? arrayIndex,
   }) {
     final (newFormData, previousFormData) =
         _modifyFormData(jsonSchema, jsonKey, formData);
@@ -154,15 +156,24 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousJsonKey: previousJsonKey,
               buildJsonschemaForm: _buildJsonschemaForm,
             ),
-        ] else
+        ] else if (jsonSchema.type == JsonType.array)
+          _ArrayForm(
+            jsonSchema: jsonSchema,
+            jsonKey: jsonKey,
+            uiSchema: uiSchema,
+            formData: newFormData,
+            buildJsonschemaForm: _buildJsonschemaForm,
+          )
+        else
           _UiWidget(
             jsonSchema,
             jsonKey,
             uiSchema,
-            formData as Map<String, dynamic>,
+            formData,
             rebuildForm: _rebuildForm,
             previousSchema: previousSchema,
-            previousFormData: previousFormData as Map<String, dynamic>,
+            previousFormData: previousFormData,
+            arrayIndex: arrayIndex,
           ),
       ],
     );
@@ -188,13 +199,17 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               if (jsonSchema.type == JsonType.object) {
                 return <String, dynamic>{};
               } else {
-                return <Map<String, dynamic>>[];
+                if (jsonSchema.areItemsNonObjects()) {
+                  return <dynamic>[];
+                } else {
+                  return <Map<String, dynamic>>[];
+                }
               }
             },
           ),
           previousFormData
         );
-      } else if (formData is List<Map<String, dynamic>>) {
+      } else if (formData is List) {
         return (formData, previousFormData);
       }
     } else {

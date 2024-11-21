@@ -11,6 +11,23 @@ extension MapExtension on Map<String, dynamic> {
         if (cleanedSubmap.isNotEmpty) {
           cleanedMap[key] = cleanedSubmap;
         }
+      } else if (value is List<Map<String, dynamic>>) {
+        if (value.isEmpty) {
+          cleanedMap[key] = value;
+        } else {
+          for (var i = 0; i < value.length; i++) {
+            final cleanedSubmap = removeEmptySubmaps(map: value[i]);
+
+            if (value[i].isNotEmpty) {
+              if (cleanedMap[key] == null) {
+                cleanedMap[key] = [cleanedSubmap];
+              } else {
+                (cleanedMap[key] as List<Map<String, dynamic>>)
+                    .add(cleanedSubmap);
+              }
+            }
+          }
+        }
       } else {
         cleanedMap[key] = value;
       }

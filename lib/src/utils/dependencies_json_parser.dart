@@ -18,7 +18,8 @@ class DependenciesJsonParser
             return MapEntry(key, JsonSchema.fromJson(value));
           } else {
             throw const FormatException(
-                'Unexpected value type in dependencies');
+              'Unexpected value type in dependencies',
+            );
           }
         },
       );

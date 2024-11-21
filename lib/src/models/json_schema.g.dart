@@ -9,7 +9,7 @@ part of 'json_schema.dart';
 JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       title: json['title'] as String?,
       description: json['description'] as String?,
-      defaultValue: json['default'] as String?,
+      defaultValue: json['default'],
       type: $enumDecodeNullable(_$JsonTypeEnumMap, json['type']),
       requiredFields: (json['required'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -22,11 +22,12 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       constValue: json['const'] as String?,
       dependencies:
           const DependenciesJsonParser().fromJson(json['dependencies']),
-      items: const ItemsJsonParser().fromJson(json['items']),
+      items: ItemsJsonParser.fromJson(json['items']),
       additionalItems: json['additionalItems'] == null
           ? null
           : JsonSchema.fromJson(
-              json['additionalItems'] as Map<String, dynamic>),
+              json['additionalItems'] as Map<String, dynamic>,
+            ),
       minItems: (json['minItems'] as num?)?.toInt(),
       maxItems: (json['maxItems'] as num?)?.toInt(),
       uniqueItems: json['uniqueItems'] as bool?,
