@@ -9,4 +9,20 @@ enum UiOptions {
   /// object, or the item is an additionalItems instance. You can turn this off
   /// with the removable option in uiSchema:
   removable,
+
+  /// Used for files when format is specified in jsonSchema. It can be used for
+  /// specifiying particular files extensions to accept
+  /// To specify more than one extension use ,
+  /// Fo rexzample '.pdf,.mp4'
+  accept,
+
+  /// Used for files when format is specified in jsonSchema. If it is true then
+  /// a camera button will apear to take a photo/video for file uploading.
+  /// If is not provided then it will be taken as false
+  camera,
+
+  /// Used for files when format is specified in jsonSchema. If it is true then
+  /// a choose fille button will apear to pick a file from explorer.
+  /// If is not provided then it will be taken as true
+  explorer;
 }

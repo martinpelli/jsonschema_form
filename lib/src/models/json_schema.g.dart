@@ -34,6 +34,7 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
       oneOf: (json['oneOf'] as List<dynamic>?)
           ?.map((e) => JsonSchema.fromJson(e as Map<String, dynamic>))
           .toList(),
+      format: $enumDecodeNullable(_$JsonSchemaFormatEnumMap, json['format']),
     );
 
 const _$JsonTypeEnumMap = {
@@ -43,4 +44,8 @@ const _$JsonTypeEnumMap = {
   JsonType.boolean: 'boolean',
   JsonType.array: 'array',
   JsonType.object: 'object',
+};
+
+const _$JsonSchemaFormatEnumMap = {
+  JsonSchemaFormat.dataUrl: 'data-url',
 };

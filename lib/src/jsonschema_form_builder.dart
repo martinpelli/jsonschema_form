@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:isolate';
+
+import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/json_schema.dart';
+import 'package:jsonschema_form/src/models/json_schema_format.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
@@ -15,6 +23,7 @@ part 'widgets/custom_dropdown_menu.dart';
 part 'widgets/custom_form_field_validator.dart';
 part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_text_form_field.dart';
+part 'widgets/custom_file_upload.dart';
 part 'widgets/one_of_form.dart';
 part 'widgets/array_form.dart';
 part 'widgets/ui_widget.dart';

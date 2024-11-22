@@ -139,6 +139,7 @@ class _ArrayFormState extends State<_ArrayForm> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ..._initialItems,
         ..._buildArrayItems(),

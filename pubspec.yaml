@@ -9,8 +9,10 @@ environment:
   flutter: ^3.24.0
 
 dependencies:
+  camera: ^0.11.0+2
   collection: ^1.18.0
   equatable: ^2.0.3
+  file_selector: ^1.0.3
   flutter:
     sdk: flutter
   json_annotation: ^4.6.0

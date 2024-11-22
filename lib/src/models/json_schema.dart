@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
+import 'package:jsonschema_form/src/models/json_schema_format.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/utils/dependencies_json_parser.dart';
 import 'package:jsonschema_form/src/utils/items_json_parser.dart';
@@ -39,6 +40,7 @@ class JsonSchema extends Equatable {
     required this.maxItems,
     required this.uniqueItems,
     required this.oneOf,
+    required this.format,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -128,6 +130,9 @@ class JsonSchema extends Equatable {
   /// on the fields in the JSON data, allowing the schema to adapt according to
   /// certain field value
   final List<JsonSchema>? oneOf;
+
+  /// Pass data-url in [format] property to enable file upload
+  final JsonSchemaFormat? format;
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);

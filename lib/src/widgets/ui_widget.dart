@@ -159,6 +159,29 @@ class _UiWidget extends StatelessWidget {
         helperText: uiSchema?.help,
         autofocus: uiSchema?.autofocus,
       );
+    }
+    if (jsonSchema.format == JsonSchemaFormat.dataUrl) {
+      final acceptedExtensions =
+          (uiSchema?.options?.containsKey(UiOptions.accept.name) ?? false)
+              ? (uiSchema?.options?[UiOptions.accept.name] as String?)
+                  ?.split(',')
+              : null;
+
+      final hasFilePicker =
+          !(uiSchema?.options?.containsKey(UiOptions.explorer.name) ?? true) ||
+              (uiSchema?.options?[UiOptions.explorer.name] as bool? ?? true);
+
+      final hasCameraButton =
+          (uiSchema?.options?.containsKey(UiOptions.camera.name) ?? false) &&
+              (uiSchema?.options?[UiOptions.camera.name] as bool);
+
+      return _CustomFileUpload(
+        acceptedExtensions: acceptedExtensions,
+        hasFilePicker: hasFilePicker,
+        hasCameraButton: hasCameraButton,
+        title: jsonSchema.title,
+        onFileChosen: _setValueInFormData,
+      );
     } else {
       return _CustomTextFormField(
         onChanged: onFieldChanged,
