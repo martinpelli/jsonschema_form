@@ -5,12 +5,14 @@ class _CustomRadioGroup<T> extends StatefulWidget {
     required this.jsonKey,
     required this.label,
     required this.items,
+    required this.initialItem,
     required this.itemLabel,
     required this.onRadioValueSelected,
   });
 
   final String? label;
   final List<T> items;
+  final T? initialItem;
   final String Function(int index, T item) itemLabel;
   final void Function(T) onRadioValueSelected;
   final String jsonKey;
@@ -21,6 +23,13 @@ class _CustomRadioGroup<T> extends StatefulWidget {
 
 class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
   T? _selectedItem;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedItem = widget.initialItem;
+  }
 
   @override
   Widget build(BuildContext context) {

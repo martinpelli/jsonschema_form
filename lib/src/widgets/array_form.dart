@@ -28,11 +28,11 @@ class _ArrayForm extends StatefulWidget {
 }
 
 class _ArrayFormState extends State<_ArrayForm> {
-  final List<JsonSchema> _arrayItems = [];
+  final _arrayItems = <JsonSchema>[];
 
   late final bool hasAdditionalItems;
 
-  final initialItems = <Widget>[];
+  final _initialItems = <Widget>[];
 
   late final int minItems;
 
@@ -43,49 +43,49 @@ class _ArrayFormState extends State<_ArrayForm> {
     hasAdditionalItems = widget.jsonSchema.additionalItems != null;
 
     if (widget.jsonSchema.title?.isNotEmpty ?? false) {
-      initialItems.add(
+      _initialItems.add(
         Text(widget.jsonSchema.title!),
       );
     }
 
+    var initialItemsLength = _initialItems.length;
+
     /// If [additionalItems] property from the corresponding [jsonSchema] is
     /// present then the user is allowed to add additional items for the given
     /// [jsonSchema]
-
-    int initialItemsLength = initialItems.length;
-
+    var additionalItemsLength = 0;
     if (hasAdditionalItems) {
       final additionalItems = widget.jsonSchema.items as List<JsonSchema>;
+      additionalItemsLength = additionalItems.length;
       for (var i = 0; i < additionalItems.length; i++) {
         final data = widget.formData as List;
         if (data.length < additionalItems.length) {
           data.add(null);
         }
 
-        initialItems.add(
+        _initialItems.add(
           widget.buildJsonschemaForm(
             additionalItems[i],
             widget.jsonKey,
             widget.uiSchema,
             widget.formData,
-            arrayIndex: i + initialItemsLength,
+            arrayIndex: i + initialItemsLength - 1,
           ),
         );
       }
     }
 
+    initialItemsLength = _initialItems.length;
+
     /// if the [jsonSchema] has the [uniqueItems] property then this form will
     /// be considered a multiple choice list and the [enum] value from items
     /// must not be null as they will be the possible choices
-
-    initialItemsLength = initialItems.length;
-
     if (widget.jsonSchema.uniqueItems ?? false) {
       final schemaFromItems = widget.jsonSchema.items as JsonSchema;
       if (schemaFromItems.enumValue != null) {
         (widget.formData as List).add(null);
 
-        initialItems.add(
+        _initialItems.add(
           widget.buildJsonschemaForm(
             schemaFromItems,
             widget.jsonKey,
@@ -99,18 +99,16 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     /// if the [jsonSchema] has the [minItems] property then [items] will be
     /// added at first and user can't remove them
-
     minItems = widget.jsonSchema.minItems ?? 0;
 
-    initialItemsLength = initialItems.length;
+    initialItemsLength = _initialItems.length;
 
     for (var i = 0; i < minItems; i++) {
       final data = widget.formData as List;
       if (data.length < minItems) {
         data.add(null);
       }
-
-      initialItems.add(
+      _initialItems.add(
         widget.buildJsonschemaForm(
           widget.jsonSchema.items as JsonSchema,
           widget.jsonKey,
@@ -120,6 +118,21 @@ class _ArrayFormState extends State<_ArrayForm> {
         ),
       );
     }
+
+    initialItemsLength = _initialItems.length;
+
+    /// If there is initial data in [formData] then each item is added to the
+    /// array and filled with corresponding values
+    if (widget.formData is List) {
+      final data = widget.formData as List;
+      for (var i = minItems + additionalItemsLength; i < data.length; i++) {
+        _arrayItems.add(
+          hasAdditionalItems
+              ? widget.jsonSchema.additionalItems!
+              : widget.jsonSchema.items as JsonSchema,
+        );
+      }
+    }
   }
 
   @override
@@ -127,7 +140,7 @@ class _ArrayFormState extends State<_ArrayForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...initialItems,
+        ..._initialItems,
         ..._buildArrayItems(),
       ],
     );
@@ -139,35 +152,29 @@ class _ArrayFormState extends State<_ArrayForm> {
     /// Builds items that user has added using (+) button from the form
     /// They can be removed if [removable] is not present or is set to false
     /// in the corresponding [uiSchema] property
-
     for (var i = 0; i < _arrayItems.length; i++) {
-      final hasRemoveButton = widget.uiSchema?.options == null ||
-          (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
-              widget.uiSchema!.options![UiOptions.removable.name] is bool &&
-              (widget.uiSchema!.options![UiOptions.removable.name] as bool));
+      _addRemoveButtonIfNeeded(items, () {
+        if (widget.formData is List) {
+          (widget.formData as List).removeAt(i + (_initialItems.length - 1));
+        }
 
-      if (hasRemoveButton) {
-        final removeButton = Align(
-          alignment: Alignment.centerRight,
-          child: IconButton(
-            onPressed: () => _removeArrayItem(i),
-            icon: const Icon(Icons.remove),
-          ),
-        );
-        items.add(removeButton);
-      }
+        _arrayItems.removeAt(i);
+      });
 
-      final newFormData = widget.formData is List<Map<String, dynamic>>
-          ? (widget.formData as List)[i]
-          : widget.formData;
+      final castedListOfMaps = DynamicUtils.tryParseListOfMaps(widget.formData);
+
+      final newFormData =
+          castedListOfMaps != null ? castedListOfMaps[i] : widget.formData;
 
       items.add(
         widget.buildJsonschemaForm(
           _arrayItems[i],
-          widget.jsonSchema.areItemsNonObjects() ? widget.jsonKey : null,
+          DynamicUtils.isLitOfMaps(widget.jsonSchema.items)
+              ? null
+              : widget.jsonKey,
           widget.uiSchema,
           newFormData,
-          arrayIndex: i + (initialItems.length - 1),
+          arrayIndex: i + (_initialItems.length - 1),
         ),
       );
     }
@@ -176,7 +183,6 @@ class _ArrayFormState extends State<_ArrayForm> {
     /// provided to the corresponding [uiSchema] property and set to false
     /// If [maxItems] property specified in [jsonSchema] and the array
     /// has reached [maxItems] then (+) is not added
-
     final isMaxReached = widget.jsonSchema.maxItems != null &&
         _arrayItems.length + minItems >= widget.jsonSchema.maxItems!;
 
@@ -190,16 +196,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         alignment: Alignment.centerRight,
         child: IconButton(
           onPressed: () {
-            if (widget.formData is List<Map<String, dynamic>>) {
-              (widget.formData as List<Map<String, dynamic>>)
-                  .add(<String, dynamic>{});
-            } else if (widget.formData is List) {
-              (widget.formData as List).add(
-                widget.jsonSchema.areItemsNonObjects()
-                    ? null
-                    : <String, dynamic>{},
-              );
-            }
+            _modifyFormData();
 
             if (hasAdditionalItems) {
               _addArrayItem(widget.jsonSchema.additionalItems!);
@@ -217,18 +214,46 @@ class _ArrayFormState extends State<_ArrayForm> {
     return items;
   }
 
-  void _addArrayItem(JsonSchema jsonSchema) {
-    _arrayItems.add(jsonSchema);
-    setState(() {});
+  void _modifyFormData() {
+    final castedListOfMaps = DynamicUtils.tryParseListOfMaps(widget.formData);
+    if (castedListOfMaps != null) {
+      castedListOfMaps.add(<String, dynamic>{});
+    } else if (widget.formData is List) {
+      (widget.formData as List).add(
+        DynamicUtils.isLitOfMaps(widget.jsonSchema.items)
+            ? <String, dynamic>{}
+            : null,
+      );
+    }
   }
 
-  void _removeArrayItem(int index) {
-    if (widget.formData is List) {
-      (widget.formData as List).removeAt(index + (initialItems.length - 1));
+  void _addRemoveButtonIfNeeded(
+    List<Widget> items,
+    VoidCallback onRemovePressed,
+  ) {
+    final hasRemoveButton = widget.uiSchema?.options == null ||
+        (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
+            widget.uiSchema!.options![UiOptions.removable.name] is bool &&
+            (widget.uiSchema!.options![UiOptions.removable.name] as bool));
+
+    if (hasRemoveButton) {
+      final removeButton = Align(
+        alignment: Alignment.centerRight,
+        child: IconButton(
+          onPressed: () {
+            onRemovePressed();
+
+            setState(() {});
+          },
+          icon: const Icon(Icons.remove),
+        ),
+      );
+      items.add(removeButton);
     }
+  }
 
-    _arrayItems.removeAt(index);
-
+  void _addArrayItem(JsonSchema jsonSchema) {
+    _arrayItems.add(jsonSchema);
     setState(() {});
   }
 }

@@ -42,14 +42,18 @@ class _UiWidget extends StatelessWidget {
 
     if (uiSchema?.widget == UiType.select ||
         (uiSchema?.widget == null && jsonSchema.enumValue != null)) {
+      final initialValue = defaultValue is String ? defaultValue : null;
+
       return _CustomFormFieldValidator<String>(
         isEnabled: hasValidator,
+        initialValue: initialValue,
         isEmpty: (value) => value.isEmpty,
         childFormBuilder: (field) {
           return _CustomDropdownMenu<String>(
             label: title,
             itemLabel: (_, item) => item,
             items: jsonSchema.enumValue!,
+            selectedItem: initialValue,
             onDropdownValueSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
@@ -61,8 +65,11 @@ class _UiWidget extends StatelessWidget {
         },
       );
     } else if (uiSchema?.widget == UiType.radio) {
+      final initialValue = defaultValue is String ? defaultValue : null;
+
       return _CustomFormFieldValidator<String>(
         isEnabled: hasValidator,
+        initialValue: initialValue,
         isEmpty: (value) => value.isEmpty,
         childFormBuilder: (field) {
           return _CustomRadioGroup<String>(
@@ -70,6 +77,7 @@ class _UiWidget extends StatelessWidget {
             label: title,
             itemLabel: (_, item) => item,
             items: jsonSchema.enumValue!,
+            initialItem: initialValue,
             onRadioValueSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
@@ -81,14 +89,18 @@ class _UiWidget extends StatelessWidget {
         },
       );
     } else if (jsonSchema.type == JsonType.boolean) {
+      final initialValue = defaultValue is bool ? defaultValue : null;
+
       return _CustomFormFieldValidator<bool>(
         isEnabled: hasValidator,
+        initialValue: initialValue,
         childFormBuilder: (field) {
           return _CustomRadioGroup<bool>(
             jsonKey: jsonKey!,
             label: title,
             itemLabel: (_, item) => item ? 'Yes' : 'No',
             items: const [false, true],
+            initialItem: initialValue,
             onRadioValueSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
@@ -100,8 +112,11 @@ class _UiWidget extends StatelessWidget {
         },
       );
     } else if (uiSchema?.widget == UiType.checkboxes) {
+      final initialValue = defaultValue is List<String> ? defaultValue : null;
+
       return _CustomFormFieldValidator<List<String>>(
         isEnabled: hasValidator,
+        initialValue: initialValue,
         isEmpty: (value) => value.isEmpty,
         childFormBuilder: (field) {
           return _CustomCheckboxGroup(
@@ -169,7 +184,12 @@ class _UiWidget extends StatelessWidget {
     } else if (formData is List) {
       final data = formData as List;
       if (arrayIndex! <= data.length - 1) {
-        return data[arrayIndex!]?.toString() ?? jsonSchema.defaultValue;
+        final fieldData = data[arrayIndex!];
+        if (fieldData is Map) {
+          return fieldData[jsonKey] ?? jsonSchema.defaultValue;
+        } else {
+          return fieldData ?? jsonSchema.defaultValue;
+        }
       } else {
         return jsonSchema.defaultValue;
       }

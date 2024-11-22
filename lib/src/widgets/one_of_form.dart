@@ -7,6 +7,7 @@ class _OneOfForm extends StatefulWidget {
     this.uiSchema,
     this.formData, {
     required this.buildJsonschemaForm,
+    required this.rebuildForm,
     this.previousSchema,
     this.previousJsonKey,
   });
@@ -25,6 +26,7 @@ class _OneOfForm extends StatefulWidget {
     JsonSchema? previousSchema,
     String? previousJsonKey,
   }) buildJsonschemaForm;
+  final void Function() rebuildForm;
 
   @override
   State<_OneOfForm> createState() => _OneOfFormState();
@@ -37,9 +39,19 @@ class _OneOfFormState extends State<_OneOfForm> {
   void initState() {
     super.initState();
 
-    /// If there is no selected value, then the default selected value is the
-    /// first element of the oneOf list
-    selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.first;
+    if (widget.formData.isEmpty) {
+      /// If there is no selected value, then the default selected value is the
+      /// first element of the oneOf list
+      selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.first;
+    } else {
+      /// If there is data in formData then it will select the oneOf item if the
+      /// first key from oneOf items matches the first key from the formData
+      selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.firstWhere(
+        (element) =>
+            element.properties!.entries.first.key ==
+            widget.formData.entries.first.key,
+      );
+    }
   }
 
   @override
@@ -77,6 +89,7 @@ class _OneOfFormState extends State<_OneOfForm> {
           widget.jsonKey,
           widget.uiSchema,
           widget.formData,
+          previousSchema: widget.jsonSchema,
         ),
       ],
     );
@@ -87,9 +100,6 @@ class _OneOfFormState extends State<_OneOfForm> {
 
     void onValueSelected(JsonSchema value) {
       selectedOneOfJsonSchema = value;
-
-      //TODO when changing oneOf option, the formData is cleared but
-      //TODO TextEditingControllers are not, cuasing issues with form validator
 
       /// Clear all oneOf filled fields
       bool removeWhere(String key, dynamic _) {
@@ -107,7 +117,9 @@ class _OneOfFormState extends State<_OneOfForm> {
             .removeWhere(removeWhere);
       }
 
-      setState(() {});
+      /// When oneOf has changed, it will rebuild the whole form so that all
+      /// controllers get cleared
+      widget.rebuildForm();
     }
 
     String itemLabel(int index, JsonSchema item) =>
@@ -128,6 +140,7 @@ class _OneOfFormState extends State<_OneOfForm> {
         itemLabel: itemLabel,
         jsonKey: widget.jsonKey!,
         items: widget.jsonSchema.oneOf!,
+        initialItem: selectedOneOfJsonSchema,
         onRadioValueSelected: onValueSelected,
       );
     }

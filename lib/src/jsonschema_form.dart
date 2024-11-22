@@ -39,7 +39,12 @@ class JsonschemaForm {
   }
 
   void _init(Map<String, dynamic> decodedJson) {
-    //TODO validate fields are not null
+    if (decodedJson['jsonSchema'] == null ||
+        decodedJson['uiSchema'] == null ||
+        decodedJson['formData'] == null) {
+      return;
+    }
+
     jsonSchema = JsonSchema.fromJson(
       decodedJson['jsonSchema'] as Map<String, dynamic>,
     );

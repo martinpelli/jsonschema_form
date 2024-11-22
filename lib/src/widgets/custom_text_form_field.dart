@@ -48,6 +48,17 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
   }
 
   @override
+  void didUpdateWidget(covariant _CustomTextFormField oldWidget) {
+    if (widget.defaultValue == null) {
+      /// When oneOf has changed, it will rebuild the whole form so that all
+      /// controllers get cleared
+      WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: widget.autofocus ?? false,

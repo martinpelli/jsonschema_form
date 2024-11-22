@@ -43,8 +43,13 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
         initialSelection: _selectedItem,
         onSelected: (T? item) {
           if (item != null) {
+            if (item == _selectedItem) {
+              return;
+            }
+
             widget.onDropdownValueSelected(item);
           }
+
           setState(() {
             _selectedItem = item;
           });

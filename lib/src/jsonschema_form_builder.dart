@@ -7,7 +7,7 @@ import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
-import 'package:jsonschema_form/src/utils/json_schema_extension.dart';
+import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/map_extension.dart';
 
 part 'widgets/custom_checkbox_group.dart';
@@ -128,11 +128,13 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               newFormData,
               previousSchema: jsonSchema,
               previousJsonKey: jsonKey,
+              arrayIndex: arrayIndex,
             ),
 
             /// Build Schema dependencies, widgets that will be added
             /// dynamically depending on other field values
             if (jsonSchema.dependencies != null &&
+                jsonSchema.dependencies![entry.key] is JsonSchema &&
                 jsonSchema.dependencies!.keys.contains(entry.key) &&
                 ((newFormData as Map<String, dynamic>?)
                         ?.containsKey(entry.key) ??
@@ -144,6 +146,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
                 newFormData,
                 previousSchema: jsonSchema,
                 previousJsonKey: jsonKey,
+                arrayIndex: arrayIndex,
               ),
           ],
           if (jsonSchema.oneOf != null)
@@ -155,6 +158,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousSchema: previousSchema,
               previousJsonKey: previousJsonKey,
               buildJsonschemaForm: _buildJsonschemaForm,
+              rebuildForm: _rebuildForm,
             ),
         ] else if (jsonSchema.type == JsonType.array)
           _ArrayForm(
@@ -192,23 +196,21 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         (jsonSchema.type == JsonType.object ||
             jsonSchema.type == JsonType.array)) {
       if (formData is Map<String, dynamic>) {
-        return (
-          formData.putIfAbsent(
-            jsonKey,
-            () {
-              if (jsonSchema.type == JsonType.object) {
-                return <String, dynamic>{};
+        final newFormData = formData.putIfAbsent(
+          jsonKey,
+          () {
+            if (jsonSchema.type == JsonType.object) {
+              return <String, dynamic>{};
+            } else {
+              if (DynamicUtils.isLitOfMaps(jsonSchema.items)) {
+                return <Map<String, dynamic>>[];
               } else {
-                if (jsonSchema.areItemsNonObjects()) {
-                  return <dynamic>[];
-                } else {
-                  return <Map<String, dynamic>>[];
-                }
+                return <dynamic>[];
               }
-            },
-          ),
-          previousFormData
+            }
+          },
         );
+        return (newFormData, previousFormData);
       } else if (formData is List) {
         return (formData, previousFormData);
       }
