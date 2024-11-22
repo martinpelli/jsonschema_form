@@ -1,5 +1,9 @@
 part of '../jsonschema_form_builder.dart';
 
+//TODO add possibility to select video or photo
+//TODO add possibility to change to front camera
+//TODO add possibility to change to use flash light
+//TODO fix issue some time buildPreview() is showing actual live camera
 class _CustomFileUpload extends StatefulWidget {
   const _CustomFileUpload({
     required this.hasFilePicker,
