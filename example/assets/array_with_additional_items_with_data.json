@@ -1,0 +1,36 @@
+{
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "itemsWithAdditional": {
+          "type": "array",
+          "title": "Items with Additional",
+          "items": [
+            {
+              "type": "string",
+              "title": "Required Item 1"
+            },
+            {
+              "type": "number",
+              "title": "Required Item 2"
+            }
+          ],
+          "additionalItems": {
+            "type": "boolean",
+            "title": "Additional Item"
+          }
+        }
+      }
+    },
+        "uiSchema": {
+           
+        },
+        "formData": {
+          "itemsWithAdditional": [
+            null,
+            1,
+            true
+          ]
+        }
+      
+}

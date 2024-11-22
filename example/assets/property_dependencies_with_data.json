@@ -75,7 +75,15 @@
     }
   },
   "formData":{
-    
+    "unidirectional": {
+      "name": "Tim",
+      "credit_card": "12",
+      "billing_address": "address"
+    },
+    "bidirectional": {
+      "name": "Jill",
+      "billing_address": "bi address"
+    }
   }
 
 }
