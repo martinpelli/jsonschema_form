@@ -32,36 +32,39 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child: DropdownMenu<T>(
-        enableSearch: false,
-        width: double.infinity,
-        requestFocusOnTap: true,
-        label: widget.label == null ? null : Text(widget.label!),
-        initialSelection: _selectedItem,
-        onSelected: (T? item) {
-          if (item != null) {
-            if (item == _selectedItem) {
-              return;
-            }
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: LayoutBuilder(
+        builder: (context, contraints) {
+          return DropdownMenu<T>(
+            width: contraints.maxWidth,
+            enableSearch: false,
+            requestFocusOnTap: true,
+            label: widget.label == null ? null : Text(widget.label!),
+            initialSelection: _selectedItem,
+            onSelected: (T? item) {
+              if (item != null) {
+                if (item == _selectedItem) {
+                  return;
+                }
 
-            widget.onDropdownValueSelected(item);
-          }
+                widget.onDropdownValueSelected(item);
+              }
 
-          setState(() {
-            _selectedItem = item;
-          });
-        },
-        dropdownMenuEntries:
-            widget.items.mapIndexed<DropdownMenuEntry<T>>((int index, T item) {
-          return DropdownMenuEntry<T>(
-            value: item,
-            label: widget.itemLabel(index, item),
-            style: MenuItemButton.styleFrom(),
+              setState(() {
+                _selectedItem = item;
+              });
+            },
+            dropdownMenuEntries: widget.items
+                .mapIndexed<DropdownMenuEntry<T>>((int index, T item) {
+              return DropdownMenuEntry<T>(
+                value: item,
+                label: widget.itemLabel(index, item),
+                style: MenuItemButton.styleFrom(alignment: Alignment.center),
+              );
+            }).toList(),
           );
-        }).toList(),
+        },
       ),
     );
   }

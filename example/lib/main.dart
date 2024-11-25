@@ -16,10 +16,13 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const Scaffold(
+        home: Scaffold(
           body: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 100),
-            child: _Form(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Center(
+                child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 600),
+                    child: const _Form())),
           ),
         ));
   }

@@ -35,7 +35,11 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.title != null) Text(widget.title!),
+        if (widget.title != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(widget.title!),
+          ),
         Row(
           children: [
             if (widget.hasFilePicker) ...[
@@ -55,13 +59,16 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
             if (_isLoading)
               const CircularProgressIndicator()
             else
-              Text(_file?.name == null
-                  ? 'No file chosen'
-                  : _file!.name.isEmpty
-                      ? 'No file name'
-                      : _file!.name),
+              Text(
+                _file?.name == null
+                    ? 'No file chosen'
+                    : _file!.name.isEmpty
+                        ? 'No file name'
+                        : _file!.name,
+              ),
           ],
         ),
+        const SizedBox(height: 10),
       ],
     );
   }

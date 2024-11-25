@@ -80,11 +80,12 @@ class _ArrayFormState extends State<_ArrayForm> {
     /// if the [jsonSchema] has the [uniqueItems] property then this form will
     /// be considered a multiple choice list and the [enum] value from items
     /// must not be null as they will be the possible choices
-    if (widget.jsonSchema.uniqueItems ?? false) {
+
+    final hasUniqueItems = widget.jsonSchema.uniqueItems ?? false;
+
+    if (hasUniqueItems) {
       final schemaFromItems = widget.jsonSchema.items as JsonSchema;
       if (schemaFromItems.enumValue != null) {
-        (widget.formData as List).add(null);
-
         _initialItems.add(
           widget.buildJsonschemaForm(
             schemaFromItems,
@@ -92,6 +93,7 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.uiSchema,
             widget.formData,
             arrayIndex: initialItemsLength - 1,
+            previousSchema: widget.jsonSchema,
           ),
         );
       }
@@ -123,7 +125,7 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     /// If there is initial data in [formData] then each item is added to the
     /// array and filled with corresponding values
-    if (widget.formData is List) {
+    if (widget.formData is List && !hasUniqueItems) {
       final data = widget.formData as List;
       for (var i = minItems + additionalItemsLength; i < data.length; i++) {
         _arrayItems.add(

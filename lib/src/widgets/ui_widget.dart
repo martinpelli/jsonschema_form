@@ -25,7 +25,11 @@ class _UiWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = jsonSchema.title ?? jsonKey;
 
-    final defaultValue = _getDefaultValue();
+    final hasUniqueItems = previousSchema?.uniqueItems ?? false;
+
+    /// If the previous jsonSchema has uniqueItems it means that this is a
+    /// multiple choice list, so it cannot have default values
+    final defaultValue = hasUniqueItems ? null : _getDefaultValue();
 
     if (defaultValue != null) {
       _setValueInFormData(defaultValue);
@@ -112,17 +116,18 @@ class _UiWidget extends StatelessWidget {
         },
       );
     } else if (uiSchema?.widget == UiType.checkboxes) {
-      final initialValue = defaultValue is List<String> ? defaultValue : null;
+      final initialValues = (formData as List).cast<String>();
 
       return _CustomFormFieldValidator<List<String>>(
         isEnabled: hasValidator,
-        initialValue: initialValue,
+        initialValue: initialValues,
         isEmpty: (value) => value.isEmpty,
         childFormBuilder: (field) {
           return _CustomCheckboxGroup(
             jsonKey: jsonKey!,
             label: "$title${hasValidator ? '*' : ''}",
             items: jsonSchema.enumValue!,
+            initialItems: initialValues,
             onCheckboxValuesSelected: (value) {
               field?.didChange(value);
               if (field?.isValid ?? true) {
@@ -179,7 +184,7 @@ class _UiWidget extends StatelessWidget {
         acceptedExtensions: acceptedExtensions,
         hasFilePicker: hasFilePicker,
         hasCameraButton: hasCameraButton,
-        title: jsonSchema.title,
+        title: "$title${hasValidator ? '*' : ''}",
         onFileChosen: _setValueInFormData,
       );
     } else {
@@ -226,6 +231,7 @@ class _UiWidget extends StatelessWidget {
       }
     } else if (formData is List) {
       final data = formData as List;
+
       if (arrayIndex! <= data.length - 1) {
         final fieldData = data[arrayIndex!];
         if (fieldData is Map) {
@@ -246,6 +252,9 @@ class _UiWidget extends StatelessWidget {
       } else {
         (formData as List)[arrayIndex!] = null;
       }
+    } else if (value is List<String>) {
+      (formData as List).clear();
+      (formData as List).addAll(value);
     } else {
       if (formData is Map) {
         (formData as Map)[jsonKey!] = value;

@@ -35,24 +35,35 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.label != null) Text(widget.label!),
+        if (widget.label != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(widget.label!),
+          ),
         Wrap(
           children: widget.items
               .mapIndexed(
-                (index, item) => RadioListTile(
-                  value: _selectedItem == item,
-                  groupValue: true,
-                  title: Text(widget.itemLabel(index, item)),
-                  onChanged: (_) {
-                    _selectedItem = item;
-                    widget.onRadioValueSelected(item);
-                    setState(() {});
-                  },
+                (index, item) => Row(
+                  children: [
+                    Radio(
+                      splashRadius: 0,
+                      value: _selectedItem == item,
+                      groupValue: true,
+                      onChanged: (_) {
+                        _selectedItem = item;
+                        widget.onRadioValueSelected(item);
+                        setState(() {});
+                      },
+                    ),
+                    Text(widget.itemLabel(index, item)),
+                  ],
                 ),
               )
               .toList(),
         ),
+        const SizedBox(height: 5),
       ],
     );
   }

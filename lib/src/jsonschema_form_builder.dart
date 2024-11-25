@@ -118,15 +118,16 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           if (jsonSchema.title?.isNotEmpty ?? false) ...[
             Text(
               jsonSchema.title!,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const Divider(),
+            const SizedBox(height: 10),
           ],
           if (jsonSchema.description?.isNotEmpty ?? false)
-            Text(jsonSchema.description!),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(jsonSchema.description!),
+            ),
           for (final entry in jsonSchema.properties?.entries ??
               <MapEntry<String, JsonSchema>>[]) ...[
             /// Build one Widget for each property in the schema

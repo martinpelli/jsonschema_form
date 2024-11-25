@@ -5,11 +5,13 @@ class _CustomCheckboxGroup extends StatefulWidget {
     required this.jsonKey,
     required this.label,
     required this.items,
+    required this.initialItems,
     required this.onCheckboxValuesSelected,
   });
 
   final String? label;
   final List<String> items;
+  final List<String>? initialItems;
   final void Function(List<String>) onCheckboxValuesSelected;
   final String jsonKey;
 
@@ -18,38 +20,52 @@ class _CustomCheckboxGroup extends StatefulWidget {
 }
 
 class _CustomCheckboxGroupState extends State<_CustomCheckboxGroup> {
-  final List<String> _selectedItems = [];
+  late final List<String> _selectedItems;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.initialItems != null) {
+      _selectedItems = List<String>.from(widget.initialItems!);
+    } else {
+      _selectedItems = [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (widget.label != null) Text(widget.label!),
-        Wrap(
-          children: widget.items
-              .map(
-                (item) => CheckboxListTile(
-                  value: _selectedItems.contains(item),
-                  title: Text(item),
-                  onChanged: (value) {
-                    if (value ?? false) {
-                      _selectedItems.add(item);
-                    } else {
-                      _selectedItems.removeWhere((element) => element == item);
-                    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: Wrap(
+        children: widget.items
+            .map(
+              (item) => Row(
+                children: [
+                  Checkbox(
+                    splashRadius: 0,
+                    value: _selectedItems.contains(item),
+                    onChanged: (value) {
+                      if (value ?? false) {
+                        _selectedItems.add(item);
+                      } else {
+                        _selectedItems
+                            .removeWhere((element) => element == item);
+                      }
 
-                    widget.onCheckboxValuesSelected(
-                      _selectedItems,
-                    );
+                      widget.onCheckboxValuesSelected(
+                        _selectedItems,
+                      );
 
-                    setState(() {});
-                  },
-                ),
-              )
-              .toList(),
-        ),
-      ],
+                      setState(() {});
+                    },
+                  ),
+                  Text(item),
+                ],
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }
