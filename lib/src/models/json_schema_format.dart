@@ -4,5 +4,9 @@ import 'package:json_annotation/json_annotation.dart';
 enum JsonSchemaFormat {
   /// Enables file upload
   @JsonValue('data-url')
-  dataUrl;
+  dataUrl,
+
+  /// When is provided to an input it will have an email regex validator as long
+  /// as the corresponding keyboard
+  email,
 }

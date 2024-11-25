@@ -48,4 +48,5 @@ const _$JsonTypeEnumMap = {
 
 const _$JsonSchemaFormatEnumMap = {
   JsonSchemaFormat.dataUrl: 'data-url',
+  JsonSchemaFormat.email: 'email',
 };

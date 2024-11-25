@@ -13,7 +13,8 @@ class _CustomTextFormField extends StatefulWidget {
     this.emptyValue,
     this.placeholder,
     this.autofocus = false,
-    this.hasValidator = false,
+    this.hasRequiredValidator = false,
+    this.validator,
   });
 
   final void Function(String) onChanged;
@@ -27,7 +28,8 @@ class _CustomTextFormField extends StatefulWidget {
   final String? emptyValue;
   final String? placeholder;
   final bool? autofocus;
-  final bool hasValidator;
+  final bool hasRequiredValidator;
+  final String? Function(String?)? validator;
 
   @override
   State<_CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -78,15 +80,19 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
         }
         widget.onChanged(value);
       },
-      validator: widget.hasValidator
+      validator: widget.hasRequiredValidator
           ? (value) {
               if (value == null || value.isEmpty) {
                 return 'This field is required';
               }
 
+              if (widget.validator != null) {
+                return widget.validator!(value);
+              }
+
               return null;
             }
-          : null,
+          : widget.validator,
     );
   }
 

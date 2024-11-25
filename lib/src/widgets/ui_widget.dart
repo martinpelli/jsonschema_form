@@ -50,7 +50,7 @@ class _UiWidget extends StatelessWidget {
         isEmpty: (value) => value.isEmpty,
         childFormBuilder: (field) {
           return _CustomDropdownMenu<String>(
-            label: title,
+            label: "$title${hasValidator ? '*' : ''}",
             itemLabel: (_, item) => item,
             items: jsonSchema.enumValue!,
             selectedItem: initialValue,
@@ -74,7 +74,7 @@ class _UiWidget extends StatelessWidget {
         childFormBuilder: (field) {
           return _CustomRadioGroup<String>(
             jsonKey: jsonKey!,
-            label: title,
+            label: "$title${hasValidator ? '*' : ''}",
             itemLabel: (_, item) => item,
             items: jsonSchema.enumValue!,
             initialItem: initialValue,
@@ -97,7 +97,7 @@ class _UiWidget extends StatelessWidget {
         childFormBuilder: (field) {
           return _CustomRadioGroup<bool>(
             jsonKey: jsonKey!,
-            label: title,
+            label: "$title${hasValidator ? '*' : ''}",
             itemLabel: (_, item) => item ? 'Yes' : 'No',
             items: const [false, true],
             initialItem: initialValue,
@@ -121,7 +121,7 @@ class _UiWidget extends StatelessWidget {
         childFormBuilder: (field) {
           return _CustomCheckboxGroup(
             jsonKey: jsonKey!,
-            label: title,
+            label: "$title${hasValidator ? '*' : ''}",
             items: jsonSchema.enumValue!,
             onCheckboxValuesSelected: (value) {
               field?.didChange(value);
@@ -136,8 +136,8 @@ class _UiWidget extends StatelessWidget {
     } else if (uiSchema?.widget == UiType.textarea) {
       return _CustomTextFormField(
         onChanged: onFieldChanged,
-        hasValidator: hasValidator,
-        labelText: title,
+        hasRequiredValidator: hasValidator,
+        labelText: "$title${hasValidator ? '*' : ''}",
         minLines: 4,
         maxLines: null,
         defaultValue: defaultValue?.toString(),
@@ -149,8 +149,8 @@ class _UiWidget extends StatelessWidget {
     } else if (uiSchema?.widget == UiType.updown) {
       return _CustomTextFormField(
         onChanged: onFieldChanged,
-        hasValidator: hasValidator,
-        labelText: title,
+        hasRequiredValidator: hasValidator,
+        labelText: "$title${hasValidator ? '*' : ''}",
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         defaultValue: defaultValue?.toString(),
@@ -183,15 +183,35 @@ class _UiWidget extends StatelessWidget {
         onFileChosen: _setValueInFormData,
       );
     } else {
-      return _CustomTextFormField(
-        onChanged: onFieldChanged,
-        hasValidator: hasValidator,
-        labelText: title,
-        defaultValue: defaultValue?.toString(),
-        emptyValue: uiSchema?.emptyValue,
-        placeholder: uiSchema?.placeholder,
-        helperText: uiSchema?.help,
-        autofocus: uiSchema?.autofocus,
+      final isEmailTextFormField = jsonSchema.format == JsonSchemaFormat.email;
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: _CustomTextFormField(
+          onChanged: onFieldChanged,
+          labelText: "$title${hasValidator ? '*' : ''}",
+          defaultValue: defaultValue?.toString(),
+          emptyValue: uiSchema?.emptyValue,
+          placeholder: uiSchema?.placeholder,
+          helperText: uiSchema?.help,
+          autofocus: uiSchema?.autofocus,
+          keyboardType:
+              isEmailTextFormField ? TextInputType.emailAddress : null,
+          hasRequiredValidator: hasValidator,
+          validator: isEmailTextFormField
+              ? (value) {
+                  final emailRegex =
+                      RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                  if (value != null &&
+                      value.isNotEmpty &&
+                      !emailRegex.hasMatch(value.trim())) {
+                    return 'Invalid email';
+                  }
+
+                  return null;
+                }
+              : null,
+        ),
       );
     }
   }
