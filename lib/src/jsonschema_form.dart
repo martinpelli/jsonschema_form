@@ -4,8 +4,10 @@ import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 
 /// {@template jsonschema_form}
-/// A Flutter package capable of using JSON Schema to declaratively build and
-/// customize Flutter forms.
+/// [JsonSchema] is the class accepted by 'JsonschemaFormBuilder'. It holds the
+/// three neccessary properties in order to dynamically build a form.
+/// [JsonSchema] provides some methods to decode jsons in order to pass this to
+/// the 'JsonschemaFormBuilder' which builds the UI.
 /// {@endtemplate}
 class JsonschemaForm {
   /// Private constructor for internal initialization.
@@ -37,14 +39,13 @@ class JsonschemaForm {
     _init(decodedJson);
   }
 
-  /// Init [JsonschemaForm] from an already decoded json
+  /// Init [JsonschemaForm] from a json
   void initFromJsonString(String json) {
     final decodedJson = jsonDecode(json) as Map<String, dynamic>;
     _init(decodedJson);
   }
 
-  /// Init [JsonschemaForm] from an already decoded [jsonSchema],
-  /// [uiSchema] and [formData]
+  /// Init [JsonschemaForm] from [jsonSchema],[uiSchema] and [formData] jsons
   void initFromJsonsString(
     String jsonSchema,
     String uiSchema,
