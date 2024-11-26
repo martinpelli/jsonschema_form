@@ -29,6 +29,7 @@ class _CustomFileUpload extends StatefulWidget {
 class _CustomFileUploadState extends State<_CustomFileUpload>
     with WidgetsBindingObserver {
   XFile? _file;
+  late String? _fileName;
 
   bool _isLoading = false;
 
@@ -61,13 +62,22 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
             ],
             if (_isLoading)
               const CircularProgressIndicator()
+            else if (_file == null)
+              const Text('No file chosen')
             else
-              Text(
-                _file?.name == null
-                    ? 'No file chosen'
-                    : _file!.name.isEmpty
-                        ? 'No file name'
-                        : _file!.name,
+              Row(
+                children: [
+                  Text(_fileName!),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    onPressed: () {
+                      _file = null;
+                      widget.onFileChosen('');
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.delete),
+                  ),
+                ],
               ),
           ],
         ),
@@ -108,6 +118,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
 
         setState(() {
           _file = selectedFile;
+          _fileName = _file!.name;
         });
       } catch (e) {
         if (kDebugMode) {
@@ -116,6 +127,37 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
       } finally {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _openCamera() async {
+    final file = await Navigator.of(context).push<XFile?>(
+      MaterialPageRoute(
+        builder: (context) {
+          return _CameraScreen(
+            isPhotoAllowed: widget.isPhotoAllowed,
+            isVideoAllowed: widget.isVideoAllowed,
+          );
+        },
+      ),
+    );
+
+    if (file != null) {
+      final encodedFile = kIsWeb
+          ? await _encodeFileForWeb(file)
+          : await _encodeFileInIsolate(file.path);
+
+      widget.onFileChosen(
+        // ignore: lines_longer_than_80_chars
+        'data:${file.mimeType};name=${file.name};base64,$encodedFile',
+      );
+
+      setState(() {
+        _file = file;
+        _fileName = _file!.name.isEmpty
+            ? DateTime.now().toIso8601String()
+            : _file!.name;
+      });
     }
   }
 
@@ -160,25 +202,6 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
       sendPort.send(base64String);
     } catch (e) {
       sendPort.send('Error: $e');
-    }
-  }
-
-  Future<void> _openCamera() async {
-    final file = await Navigator.of(context).push<XFile?>(
-      MaterialPageRoute(
-        builder: (context) {
-          return _CameraScreen(
-            isPhotoAllowed: widget.isPhotoAllowed,
-            isVideoAllowed: widget.isVideoAllowed,
-          );
-        },
-      ),
-    );
-
-    if (file != null) {
-      setState(() {
-        _file = file;
-      });
     }
   }
 }
@@ -297,6 +320,11 @@ class _CameraScreenState extends State<_CameraScreen>
               _isLoading = true;
             });
             file = await _controller!.takePicture();
+
+            if (!kIsWeb) {
+              file = await file?.rename(DateTime.now().toIso8601String());
+            }
+
             await _buildPreviewAndAskIfDone();
           },
           child: const Text(
@@ -327,6 +355,10 @@ class _CameraScreenState extends State<_CameraScreen>
                 _isLoading = true;
               });
               file = await _controller!.stopVideoRecording();
+
+              if (!kIsWeb) {
+                file = await file?.rename(DateTime.now().toIso8601String());
+              }
 
               await _buildPreviewAndAskIfDone();
             } else {
