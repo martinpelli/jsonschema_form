@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -19,6 +20,7 @@ import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/map_extension.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
 
+part 'screens/camera_screen.dart';
 part 'widgets/custom_checkbox_group.dart';
 part 'widgets/custom_dropdown_menu.dart';
 part 'widgets/custom_form_field_validator.dart';
