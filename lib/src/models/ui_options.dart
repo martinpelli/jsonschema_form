@@ -22,7 +22,17 @@ enum UiOptions {
   camera,
 
   /// Used for files when format is specified in jsonSchema. If it is true then
-  /// a choose fille button will apear to pick a file from explorer.
+  /// a choose file button will apear to pick a file from explorer.
   /// If is not provided then it will be taken as true
-  explorer;
+  explorer,
+
+  /// Used for files when format is specified in jsonSchema. If it is true then
+  /// a [camera] option will allow photos
+  /// If is not provided then it will be taken as true
+  photo,
+
+  /// Used for files when format is specified in jsonSchema. If it is true then
+  /// a [camera] option will allow videos
+  /// If is not provided then it will be taken as false
+  video;
 }

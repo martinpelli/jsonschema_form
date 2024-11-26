@@ -1,6 +1,5 @@
 part of '../jsonschema_form_builder.dart';
 
-//TODO add possibility to select video or photo
 //TODO add possibility to change to front camera
 //TODO add possibility to change to use flash light
 //TODO fix issue some time buildPreview() is showing actual live camera
@@ -8,6 +7,8 @@ class _CustomFileUpload extends StatefulWidget {
   const _CustomFileUpload({
     required this.hasFilePicker,
     required this.hasCameraButton,
+    required this.isPhotoAllowed,
+    required this.isVideoAllowed,
     required this.acceptedExtensions,
     required this.title,
     required this.onFileChosen,
@@ -15,6 +16,8 @@ class _CustomFileUpload extends StatefulWidget {
 
   final bool hasFilePicker;
   final bool hasCameraButton;
+  final bool isPhotoAllowed;
+  final bool isVideoAllowed;
   final List<String>? acceptedExtensions;
   final String? title;
   final void Function(dynamic value) onFileChosen;
@@ -52,7 +55,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
             if (widget.hasCameraButton) ...[
               ElevatedButton(
                 onPressed: _openCamera,
-                child: const Text('Take Photo/Video'),
+                child: Text(_getCameraButtonText()),
               ),
               const SizedBox(width: 20),
             ],
@@ -71,6 +74,16 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
         const SizedBox(height: 10),
       ],
     );
+  }
+
+  String _getCameraButtonText() {
+    if (widget.isPhotoAllowed && widget.isVideoAllowed) {
+      return 'Take Photo/Video';
+    } else if (widget.isVideoAllowed) {
+      return 'Take Video';
+    } else {
+      return 'Take Photo';
+    }
   }
 
   Future<void> _openSingleFile() async {
@@ -154,7 +167,10 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
     final file = await Navigator.of(context).push<XFile?>(
       MaterialPageRoute(
         builder: (context) {
-          return const _CameraScreen();
+          return _CameraScreen(
+            isPhotoAllowed: widget.isPhotoAllowed,
+            isVideoAllowed: widget.isVideoAllowed,
+          );
         },
       ),
     );
@@ -168,7 +184,13 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
 }
 
 class _CameraScreen extends StatefulWidget {
-  const _CameraScreen();
+  const _CameraScreen({
+    required this.isPhotoAllowed,
+    required this.isVideoAllowed,
+  });
+
+  final bool isPhotoAllowed;
+  final bool isVideoAllowed;
 
   @override
   State<_CameraScreen> createState() => _CameraScreenState();
@@ -194,6 +216,8 @@ class _CameraScreenState extends State<_CameraScreen>
   }
 
   void _initializeCamera() {
+    if (!mounted) return;
+
     if (!_isLoading) {
       setState(() {
         _isLoading = true;
@@ -225,61 +249,6 @@ class _CameraScreenState extends State<_CameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    final photoButton = SizedBox(
-      width: 120,
-      height: 120,
-      child: ElevatedButton(
-        style: const ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
-        onPressed: () async {
-          setState(() {
-            _isLoading = true;
-          });
-          file = await _controller!.takePicture();
-          await _buildPreviewAndAskIfDone();
-        },
-        child: const Text(
-          'Take Picture',
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-
-    final videoButton = SizedBox(
-      width: 85,
-      height: 85,
-      child: ElevatedButton(
-        style: ButtonStyle(
-          padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          backgroundColor: const WidgetStatePropertyAll(Colors.red),
-          shape: WidgetStatePropertyAll(
-            isRecording
-                ? RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  )
-                : const CircleBorder(),
-          ),
-        ),
-        onPressed: () async {
-          if (isRecording) {
-            setState(() {
-              _isLoading = true;
-            });
-            file = await _controller!.stopVideoRecording();
-
-            await _buildPreviewAndAskIfDone();
-          } else {
-            await _controller!.startVideoRecording();
-          }
-          isRecording = !isRecording;
-          setState(() {});
-        },
-        child: Text(
-          isRecording ? 'Stop' : 'Record',
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-
     return Scaffold(
       body: _controller == null
           ? const Center(child: CircularProgressIndicator())
@@ -301,9 +270,14 @@ class _CameraScreenState extends State<_CameraScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      photoButton,
-                      const SizedBox(width: 10),
-                      videoButton,
+                      if (widget.isPhotoAllowed && widget.isVideoAllowed) ...[
+                        _buildPhotoButton(),
+                        const SizedBox(width: 10),
+                        _buildVideoButton(),
+                      ] else if (widget.isVideoAllowed)
+                        _buildVideoButton()
+                      else
+                        _buildPhotoButton(),
                     ],
                   ),
                 ),
@@ -311,6 +285,62 @@ class _CameraScreenState extends State<_CameraScreen>
             ),
     );
   }
+
+  Widget _buildPhotoButton() => SizedBox(
+        width: 120,
+        height: 120,
+        child: ElevatedButton(
+          style:
+              const ButtonStyle(shape: WidgetStatePropertyAll(CircleBorder())),
+          onPressed: () async {
+            setState(() {
+              _isLoading = true;
+            });
+            file = await _controller!.takePicture();
+            await _buildPreviewAndAskIfDone();
+          },
+          child: const Text(
+            'Take Picture',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+
+  Widget _buildVideoButton() => SizedBox(
+        width: 85,
+        height: 85,
+        child: ElevatedButton(
+          style: ButtonStyle(
+            padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+            backgroundColor: const WidgetStatePropertyAll(Colors.red),
+            shape: WidgetStatePropertyAll(
+              isRecording
+                  ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    )
+                  : const CircleBorder(),
+            ),
+          ),
+          onPressed: () async {
+            if (isRecording) {
+              setState(() {
+                _isLoading = true;
+              });
+              file = await _controller!.stopVideoRecording();
+
+              await _buildPreviewAndAskIfDone();
+            } else {
+              await _controller!.startVideoRecording();
+            }
+            isRecording = !isRecording;
+            setState(() {});
+          },
+          child: Text(
+            isRecording ? 'Stop' : 'Record',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
 
   Future<void> _buildPreviewAndAskIfDone() async {
     final navigator = Navigator.of(context);

@@ -180,12 +180,22 @@ class _UiWidget extends StatelessWidget {
           (uiSchema?.options?.containsKey(UiOptions.camera.name) ?? false) &&
               (uiSchema?.options?[UiOptions.camera.name] as bool);
 
+      final isPhotoAllowed =
+          !(uiSchema?.options?.containsKey(UiOptions.photo.name) ?? true) ||
+              (uiSchema?.options?[UiOptions.photo.name] as bool? ?? true);
+
+      final isVideoAllowed =
+          (uiSchema?.options?.containsKey(UiOptions.video.name) ?? false) &&
+              (uiSchema?.options?[UiOptions.video.name] as bool);
+
       return _CustomFileUpload(
         acceptedExtensions: acceptedExtensions,
         hasFilePicker: hasFilePicker,
         hasCameraButton: hasCameraButton,
         title: "$title${hasValidator ? '*' : ''}",
         onFileChosen: _setValueInFormData,
+        isPhotoAllowed: isPhotoAllowed,
+        isVideoAllowed: isVideoAllowed,
       );
     } else {
       final isEmailTextFormField = jsonSchema.format == JsonSchemaFormat.email;

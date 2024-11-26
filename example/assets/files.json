@@ -42,12 +42,16 @@
         "withCameraWithoutExplorer": {
           "ui:options": {
             "camera": true,
-            "explorer": false
+            "explorer": false,
+            "photo": true,
+            "video": true
           }
         },
         "withCameraAndExplorer": {
           "ui:options": {
-            "camera": true
+            "camera": true,
+            "photo": false,
+            "video": true
           }
         }
       },
