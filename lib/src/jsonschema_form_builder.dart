@@ -196,6 +196,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     );
   }
 
+  /// Access the corresponding jsonKey in the formData in order to put values
+  /// in the appropiated field value
   (dynamic, dynamic) _modifyFormData(
     JsonSchema jsonSchema,
     String? jsonKey,
@@ -212,6 +214,13 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         final newFormData = formData.putIfAbsent(
           jsonKey,
           () {
+            /// If the current jsonSchema is an object then it will add a new
+            /// empty map to the formData. If it is a list of objects then it
+            /// will add a list of maps otherwise will add a dynamic list.
+            /// This new data added will be passed to the UiWidget and that
+            /// widget will add entries to this new data so it will be possible
+            /// to the widget to modify the appropiate property and at same time
+            /// will be referencing the formData so it will be updated
             if (jsonSchema.type == JsonType.object) {
               return <String, dynamic>{};
             } else {
@@ -234,6 +243,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     return (formData, previousFormData);
   }
 
+  /// Rebulds the whole form when needed. For example: when a nested field
+  /// changes and depends on others from the tree this will rebuild everything
+  /// so te form is updated accordingly. This is an easy and fast solution but a
+  /// new more eperformant solution should be done in future.
   void _rebuildForm() {
     setState(() {});
   }
