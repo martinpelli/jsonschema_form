@@ -197,6 +197,38 @@ class _UiWidget extends StatelessWidget {
         isPhotoAllowed: isPhotoAllowed,
         isVideoAllowed: isVideoAllowed,
       );
+    } else if (uiSchema?.widget == UiType.date) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: _CustomTextFormField(
+          onChanged: onFieldChanged,
+          labelText: "$title${hasValidator ? '*' : ''}",
+          defaultValue: defaultValue?.toString(),
+          emptyValue: uiSchema?.emptyValue,
+          placeholder: uiSchema?.placeholder,
+          helperText: uiSchema?.help,
+          autofocus: uiSchema?.autofocus,
+          readOnly: true,
+          canRequestFocus: false,
+          mouseCursor: SystemMouseCursors.click,
+          hasRequiredValidator: hasValidator,
+          onTap: () async {
+            final minDate = DateTime(1900);
+            final maxDate = DateTime(9999, 12, 31);
+            final datePicked = await showDatePicker(
+              context: context,
+              firstDate: minDate,
+              lastDate: maxDate,
+            );
+
+            if (datePicked != null) {
+              return DateFormat('dd/MM/yyyy').format(datePicked);
+            }
+
+            return null;
+          },
+        ),
+      );
     } else {
       final isEmailTextFormField = jsonSchema.format == JsonSchemaFormat.email;
 

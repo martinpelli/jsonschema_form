@@ -15,6 +15,10 @@ class _CustomTextFormField extends StatefulWidget {
     this.autofocus = false,
     this.hasRequiredValidator = false,
     this.validator,
+    this.readOnly = false,
+    this.onTap,
+    this.canRequestFocus = true,
+    this.mouseCursor,
   });
 
   final void Function(String) onChanged;
@@ -30,6 +34,10 @@ class _CustomTextFormField extends StatefulWidget {
   final bool? autofocus;
   final bool hasRequiredValidator;
   final String? Function(String?)? validator;
+  final bool readOnly;
+  final FutureOr<String?> Function()? onTap;
+  final bool canRequestFocus;
+  final MouseCursor? mouseCursor;
 
   @override
   State<_CustomTextFormField> createState() => _CustomTextFormFieldState();
@@ -63,6 +71,9 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      canRequestFocus: widget.canRequestFocus,
+      mouseCursor: widget.mouseCursor,
+      readOnly: widget.readOnly,
       autofocus: widget.autofocus ?? false,
       controller: _controller,
       decoration: InputDecoration(
@@ -93,6 +104,12 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
               return null;
             }
           : widget.validator,
+      onTap: widget.onTap == null
+          ? null
+          : () async {
+              final result = await widget.onTap!();
+              _controller.text = result ?? '';
+            },
     );
   }
 

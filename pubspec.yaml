@@ -15,6 +15,7 @@ dependencies:
   file_selector: ^1.0.3
   flutter:
     sdk: flutter
+  intl: ^0.20.1
   json_annotation: ^4.6.0
   meta: ^1.7.0
   path: ^1.9.0

@@ -106,4 +106,5 @@ const _$UiTypeEnumMap = {
   UiType.checkboxes: 'checkboxes',
   UiType.updown: 'updown',
   UiType.textarea: 'textarea',
+  UiType.date: 'date',
 };

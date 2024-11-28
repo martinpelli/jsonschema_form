@@ -16,5 +16,8 @@ enum UiType {
   radio,
 
   /// Represents a CheckboxListTile in Flutter
-  checkboxes;
+  checkboxes,
+
+  /// Represents a TextFormField with selectable date in Flutter
+  date;
 }
