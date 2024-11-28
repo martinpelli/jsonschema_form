@@ -20,6 +20,7 @@ import 'package:jsonschema_form/src/models/ui_type.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/map_extension.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
+import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 part 'screens/camera_screen.dart';
 part 'widgets/custom_checkbox_group.dart';

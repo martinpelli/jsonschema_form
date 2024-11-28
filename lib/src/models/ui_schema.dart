@@ -107,4 +107,5 @@ const _$UiTypeEnumMap = {
   UiType.updown: 'updown',
   UiType.textarea: 'textarea',
   UiType.date: 'date',
+  UiType.dateTime: 'datetime',
 };

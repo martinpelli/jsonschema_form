@@ -1,0 +1,77 @@
+{
+    "jsonSchema": {
+        "title": "A registration form",
+        "description": "A simple form example. Demonstrating ui options",
+        "type": "object",
+        "required": [
+          "firstName",
+          "lastName"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "title": "First name",
+            "default": "Chuck"
+          },
+          "lastName": {
+            "type": "string",
+            "title": "Last name",
+            "minLength": 10
+          },
+          "date": {
+            "type": "string",
+            "title": "Date",
+            "minLength": 10
+          },
+          "datetime": {
+            "type": "string",
+            "title": "Datetime",
+            "minLength": 10
+          }
+        }
+      },
+    "uiSchema": {
+        "ui:submitButtonOptions": {
+          "submitText": "Confirm Details",
+          "norender": false,
+          "props": {
+            "disabled": false,
+            "className": "btn btn-info"
+          }
+        },
+        "firstName": {
+          "ui:autofocus": true,
+          "ui:emptyValue": "",
+          "ui:autocomplete": "family-name"
+        },
+        "lastName": {
+          "ui:title": "Surname",
+          "ui:emptyValue": "",
+          "ui:autocomplete": "given-name"
+        },
+        "age": {
+          "ui:widget": "updown",
+          "ui:title": "Age of person",
+          "ui:description": "(earthian year)"
+        },
+        "bio": {
+          "ui:widget": "textarea"
+        },
+        "date": {
+          "ui:widget": "date"
+        },
+        "datetime": {
+          "ui:widget": "datetime",
+          "ui:help": "Hint: Make it strong!"
+        },
+        "telephone": {
+          "ui:options": {
+            "inputType": "tel"
+          }
+        }
+      },
+
+    "formData": {
+
+    }
+}

@@ -18,6 +18,9 @@ enum UiType {
   /// Represents a CheckboxListTile in Flutter
   checkboxes,
 
+  /// Represents a TextFormField with selectable datetime in Flutter
+  dateTime,
+
   /// Represents a TextFormField with selectable date in Flutter
   date;
 }

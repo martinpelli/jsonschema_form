@@ -52,7 +52,8 @@ class _FormState extends State<_Form> {
 
     _jsonschemaForm = JsonschemaForm();
 
-    await _jsonschemaForm!.initFromJsonAsset('assets/simple.json');
+    await _jsonschemaForm!
+        .initFromJsonAsset('assets/without_data/ui_options.json');
 
     _isLoading = false;
 

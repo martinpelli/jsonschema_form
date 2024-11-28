@@ -229,8 +229,50 @@ class _UiWidget extends StatelessWidget {
           },
         ),
       );
+    } else if (uiSchema?.widget == UiType.dateTime) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: _CustomTextFormField(
+          onChanged: onFieldChanged,
+          labelText: "$title${hasValidator ? '*' : ''}",
+          defaultValue: defaultValue?.toString(),
+          emptyValue: uiSchema?.emptyValue,
+          placeholder: uiSchema?.placeholder,
+          helperText: uiSchema?.help,
+          autofocus: uiSchema?.autofocus,
+          readOnly: true,
+          canRequestFocus: false,
+          mouseCursor: SystemMouseCursors.click,
+          hasRequiredValidator: hasValidator,
+          onTap: () async {
+            final minDate = DateTime(1900);
+            final maxDate = DateTime(9999, 12, 31);
+            final datePicked = await showOmniDateTimePicker(
+              context: context,
+              firstDate: minDate,
+              lastDate: maxDate,
+            );
+
+            if (datePicked != null) {
+              return DateFormat('dd/MM/yyyy HH:mm').format(datePicked);
+            }
+
+            return null;
+          },
+        ),
+      );
     } else {
       final isEmailTextFormField = jsonSchema.format == JsonSchemaFormat.email;
+
+      final minLengthValidator = jsonSchema.minLength == null
+          ? null
+          : (String? value) {
+              if (value != null && value.length > jsonSchema.minLength!) {
+                return 'Must have at least ${jsonSchema.minLength} characters';
+              }
+
+              return null;
+            };
 
       return Padding(
         padding: const EdgeInsets.only(bottom: 20),
