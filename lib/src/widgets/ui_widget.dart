@@ -392,17 +392,42 @@ class _UiWidget extends StatelessWidget {
   }
 
   Widget _buildText(String? title, bool hasValidator, String? initialValue) {
+    final validators = <String? Function(String?)>[];
+
     final isEmailTextFormField = jsonSchema.format == JsonSchemaFormat.email;
 
-    final minLengthValidator = jsonSchema.minLength == null
-        ? null
-        : (String? value) {
-            if (value != null && value.length > jsonSchema.minLength!) {
-              return 'Must have at least ${jsonSchema.minLength} characters';
-            }
+    if (isEmailTextFormField) {
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      validators.add((value) {
+        if (value != null &&
+            value.isNotEmpty &&
+            !emailRegex.hasMatch(value.trim())) {
+          return 'Invalid email';
+        }
 
-            return null;
-          };
+        return null;
+      });
+    }
+
+    if (jsonSchema.minLength == null) {
+      validators.add((value) {
+        if (value != null && value.length < jsonSchema.minLength!) {
+          return 'Must have at least ${jsonSchema.minLength} characters';
+        }
+
+        return null;
+      });
+    }
+
+    if (jsonSchema.maxLength == null) {
+      validators.add((value) {
+        if (value != null && value.length > jsonSchema.maxLength!) {
+          return 'Must have ${jsonSchema.minLength} characters as much';
+        }
+
+        return null;
+      });
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -416,22 +441,17 @@ class _UiWidget extends StatelessWidget {
         autofocus: uiSchema?.autofocus,
         keyboardType: isEmailTextFormField ? TextInputType.emailAddress : null,
         hasRequiredValidator: hasValidator,
-        validator: isEmailTextFormField
-            ? (value) {
-                final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                if (value != null &&
-                    value.isNotEmpty &&
-                    !emailRegex.hasMatch(value.trim())) {
-                  return 'Invalid email';
+        validator: validators.isEmpty
+            ? null
+            : (value) {
+                for (final validator in validators) {
+                  final error = validator(value);
+                  if (error != null) {
+                    return error;
+                  }
                 }
-
-                if (minLengthValidator != null) {
-                  return minLengthValidator(value);
-                }
-
                 return null;
-              }
-            : minLengthValidator,
+              },
       ),
     );
   }
