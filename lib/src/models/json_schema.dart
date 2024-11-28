@@ -12,8 +12,7 @@ part 'json_schema.g.dart';
 /// {@template json_schema}
 /// A single `json_schema` item.
 ///
-/// Contains a [title], [type], [properties], [enumValue], [constValue] and
-/// [dependencies]
+/// Tells the form how should be built
 ///
 /// [JsonSchema]s are immutable, they can
 /// being deserialized using [fromJson]
@@ -41,6 +40,7 @@ class JsonSchema extends Equatable {
     required this.uniqueItems,
     required this.oneOf,
     required this.format,
+    required this.minLength,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -59,21 +59,22 @@ class JsonSchema extends Equatable {
   final dynamic defaultValue;
 
   /// Defines the data type of a field or schema element.
-  /// Possible types include "string", "number", "boolean", "array", and
-  /// "object"
+  /// Possible types include "string", "number", "integer", "boolean", "array",
+  /// and "object"
   /// It tells the UI what kind of input widget needs to be rendered
   final JsonType? type;
 
   @JsonKey(name: 'required')
 
-  /// A list of required fields, is composed by the key properties
-  /// that corresponds to the jsonSchema
+  /// A list of required fields, is composed by the key properties that
+  /// corresponds to the jsonSchema. If is a jsonKey is required then the form
+  /// cannot be submitted if there is no value in the corresponding field
   final List<String>? requiredFields;
 
   /// When type is "object", properties is used to define the schema for each of
   /// the fields within that object.
-  /// Each key in properties represents a field in the form, and the value is
-  /// the schema for that field.
+  /// Each key in properties is a jsonKey and the value is the schema for that
+  /// field.
   final Map<String, JsonSchema>? properties;
 
   @JsonKey(name: 'enum')
@@ -105,23 +106,24 @@ class JsonSchema extends Equatable {
   /// The form generated will have fields that allow users to enter multiple
   /// entries, essentially creating a dynamic list of inputs.
   /// If [additionalItems] is null then the type of [items] will be JsonSchema
-  /// If [additionalItems] is not null then the type if [items] will be Array
+  /// If [additionalItems] is not null then the type of [items] will be Array
   final dynamic items;
 
   /// When [additionalItems] is not null, then [items] will be an array of
   /// items. Form will show those items by default and pressing add button will
-  /// show [additionalItems]
+  /// build a new schema provided by [additionalItems]
   final JsonSchema? additionalItems;
 
-  /// If the array needs to be populated, you can specify the minimum number of
-  /// items using this property
+  /// If type is array and needs to be populated, [minItems] can specify the
+  /// minimum number of items that the array must have
   final int? minItems;
 
-  /// If the array needs to be populated, you can specify the maximum number of
-  /// items using this property
+  /// If type is array and needs to be populated, [maxItems] can specify the
+  /// maximum number of items that the array can have
   final int? maxItems;
 
-  /// When is set to true, all items from the array follows the same schema
+  /// If type is array and [uniqueItems] is set to true, all items from
+  /// the array follows the same schema
   final bool? uniqueItems;
 
   /// A way to define conditional schemas where only one of multiple schemas
@@ -131,8 +133,14 @@ class JsonSchema extends Equatable {
   /// certain field value
   final List<JsonSchema>? oneOf;
 
-  /// Pass data-url in [format] property to enable file upload
+  /// Allows to define specific format for some scenarios. If format is data-url
+  /// a file upload form is built. If format is email, the TextFormField is
+  /// adapted to an email input
   final JsonSchemaFormat? format;
+
+  /// When the type is string this will be used as the minimum length user can
+  /// enter in a TextFormField
+  final int? minLength;
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);
@@ -140,10 +148,21 @@ class JsonSchema extends Equatable {
   @override
   List<Object?> get props => [
         title,
+        description,
+        defaultValue,
         type,
+        requiredFields,
         properties,
         enumValue,
         constValue,
         dependencies,
+        items,
+        additionalItems,
+        minItems,
+        maxItems,
+        uniqueItems,
+        oneOf,
+        format,
+        minLength,
       ];
 }
