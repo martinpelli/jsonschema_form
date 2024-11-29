@@ -36,6 +36,7 @@ JsonSchema _$JsonSchemaFromJson(Map<String, dynamic> json) => JsonSchema(
           .toList(),
       format: $enumDecodeNullable(_$JsonSchemaFormatEnumMap, json['format']),
       minLength: (json['minLength'] as num?)?.toInt(),
+      maxLength: (json['maxLength'] as num?)?.toInt(),
     );
 
 const _$JsonTypeEnumMap = {
