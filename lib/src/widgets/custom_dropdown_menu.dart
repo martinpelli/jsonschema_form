@@ -35,7 +35,7 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10, bottom: 20),
       child: LayoutBuilder(
         builder: (context, contraints) {
           return DropdownMenu<T>(

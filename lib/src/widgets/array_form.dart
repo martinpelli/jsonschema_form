@@ -168,19 +168,22 @@ class _ArrayFormState extends State<_ArrayForm> {
       final newFormData =
           castedListOfMaps != null ? castedListOfMaps[i] : widget.formData;
 
+      final uiSchema = castedListOfMaps != null
+          ? (widget.uiSchema?.children != null &&
+                  widget.uiSchema!.children!.containsKey('items'))
+              ? widget.uiSchema!.children!['items']
+              : null
+          : widget.uiSchema;
+
       items.add(
         widget.buildJsonschemaForm(
           _arrayItems[i],
-          DynamicUtils.isLitOfMaps(widget.jsonSchema.items)
-              ? null
-              : widget.jsonKey,
-          widget.uiSchema,
+          castedListOfMaps != null ? null : widget.jsonKey,
+          uiSchema,
           newFormData,
           arrayIndex: i + _initialItems.length,
           previousSchema: widget.jsonSchema,
-          previousJsonKey: DynamicUtils.isLitOfMaps(widget.jsonSchema.items)
-              ? widget.jsonKey
-              : null,
+          previousJsonKey: castedListOfMaps != null ? widget.jsonKey : null,
         ),
       );
     }

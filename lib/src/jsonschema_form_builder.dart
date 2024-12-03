@@ -218,6 +218,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         (jsonSchema.type == JsonType.object ||
             jsonSchema.type == JsonType.array)) {
       if (formData is Map<String, dynamic>) {
+        /// If there is an empty list coming from formData (possible from an
+        /// external data source) it will be removed because dart cannot detect
+        /// the list type, so a new one with the correct type wil be created
+        /// using putIfAbsent
+        if (formData[jsonKey] is List && (formData[jsonKey] as List).isEmpty) {
+          formData.remove(jsonKey);
+        }
+
         final newFormData = formData.putIfAbsent(
           jsonKey,
           () {
@@ -231,7 +239,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             if (jsonSchema.type == JsonType.object) {
               return <String, dynamic>{};
             } else {
-              if (DynamicUtils.isLitOfMaps(jsonSchema.items)) {
+              if (DynamicUtils.isLitOfMaps(jsonSchema.items) ||
+                  jsonSchema.items is JsonSchema) {
                 return <Map<String, dynamic>>[];
               } else {
                 return <dynamic>[];
