@@ -39,6 +39,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
     required this.onFormSubmitted,
+    this.submitButtonStyle,
+    this.submitButtonChild,
     super.key,
   });
 
@@ -49,6 +51,12 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// error on the form, this will not trigger. The method receives the final
   /// formData filled by the user
   final void Function(Map<String, dynamic> formData) onFormSubmitted;
+
+  /// Change the style of submit button.
+  final ButtonStyle? submitButtonStyle;
+
+  /// Change the child of submit button.
+  final Widget? submitButtonChild;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -83,6 +91,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
+              style: widget.submitButtonStyle,
               onPressed: () {
                 FocusScope.of(context).unfocus();
 
@@ -92,7 +101,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
                   widget.onFormSubmitted(_formData.removeEmptySubmaps());
                 }
               },
-              child: const Text('Submit'),
+              child: widget.submitButtonChild ?? const Text('Submit'),
             ),
           ],
         ),
