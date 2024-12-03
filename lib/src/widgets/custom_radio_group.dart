@@ -46,6 +46,7 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
           children: widget.items
               .mapIndexed(
                 (index, item) => Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Radio(
                       splashRadius: 0,
@@ -58,12 +59,13 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                       },
                     ),
                     Text(widget.itemLabel(index, item)),
+                    const SizedBox(width: 5)
                   ],
                 ),
               )
               .toList(),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 10),
       ],
     );
   }

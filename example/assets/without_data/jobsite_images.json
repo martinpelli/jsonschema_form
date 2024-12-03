@@ -1,0 +1,61 @@
+{
+    "jsonSchema": {
+        "type": "object",
+        "title": "Jobsite Assessment Form",
+        "required": [
+          "jobsiteImages"
+        ],
+        "properties": {
+          "jobsiteImages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "file"
+              ],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "title": "File",
+                  "format": "data-url"
+                },
+                "type": {
+                  "enum": [
+                    "photo",
+                    "video"
+                  ],
+                  "type": "string",
+                  "title": "Type"
+                }
+              }
+            },
+            "title": "Jobsite Images",
+            "description": "Please provide photos or videos of the jobsite conditions before starting work. Use the buttons below to add additional photos or videos. Take at least three photos and one video."
+          }
+        },
+        "description": "Please fill out the details related to the jobsite conditions."
+      },
+    "uiSchema":{
+        "jobsiteImages": {
+          "items": {
+            "file": {
+              "ui:title": "Upload file",
+              "ui:widget": "file"
+            },
+            "type": {
+              "ui:title": "Select media type",
+              "ui:widget": "radio",
+              "ui:enumDisabled": []
+            }
+          },
+          "ui:options": {
+            "addable": true,
+            "removable": true
+          }
+        }
+      },
+    "formData":{
+        "jobsiteImages": []
+    }
+}
