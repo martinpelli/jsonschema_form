@@ -243,34 +243,42 @@ class _UiWidget extends StatelessWidget {
     bool hasRequiredValidator,
     String? initialValue,
   ) {
-    return _CustomTextFormField(
-      onChanged: _onFieldChanged,
-      hasRequiredValidator: hasRequiredValidator,
-      labelText: "$title${hasRequiredValidator ? '*' : ''}",
-      minLines: 4,
-      maxLines: null,
-      defaultValue: initialValue,
-      emptyValue: uiSchema?.emptyValue,
-      placeholder: uiSchema?.placeholder,
-      helperText: uiSchema?.help,
-      autofocus: uiSchema?.autofocus,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: _CustomTextFormField(
+        readOnly: uiSchema?.readonly ?? false,
+        onChanged: _onFieldChanged,
+        hasRequiredValidator: hasRequiredValidator,
+        labelText: "$title${hasRequiredValidator ? '*' : ''}",
+        minLines: 4,
+        maxLines: null,
+        defaultValue: initialValue,
+        emptyValue: uiSchema?.emptyValue,
+        placeholder: uiSchema?.placeholder,
+        helperText: uiSchema?.help,
+        autofocus: uiSchema?.autofocus,
+      ),
     );
   }
 
   bool _isUpDown() => uiSchema?.widget == UiType.updown;
 
   Widget _buildUpDown(bool hasRequiredValidator, String? initialValue) {
-    return _CustomTextFormField(
-      onChanged: _onFieldChanged,
-      hasRequiredValidator: hasRequiredValidator,
-      labelText: "$title${hasRequiredValidator ? '*' : ''}",
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      defaultValue: initialValue,
-      emptyValue: uiSchema?.emptyValue,
-      placeholder: uiSchema?.placeholder,
-      helperText: uiSchema?.help,
-      autofocus: uiSchema?.autofocus,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: _CustomTextFormField(
+        readOnly: uiSchema?.readonly ?? false,
+        onChanged: _onFieldChanged,
+        hasRequiredValidator: hasRequiredValidator,
+        labelText: "$title${hasRequiredValidator ? '*' : ''}",
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        defaultValue: initialValue,
+        emptyValue: uiSchema?.emptyValue,
+        placeholder: uiSchema?.placeholder,
+        helperText: uiSchema?.help,
+        autofocus: uiSchema?.autofocus,
+      ),
     );
   }
 
@@ -443,6 +451,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
+        readOnly: uiSchema?.readonly ?? false,
         onChanged: _onFieldChanged,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
         defaultValue: initialValue,

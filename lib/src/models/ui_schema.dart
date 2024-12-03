@@ -26,6 +26,7 @@ class UiSchema extends Equatable {
     this.description,
     this.help,
     this.options,
+    this.readonly,
   });
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
@@ -62,6 +63,7 @@ class UiSchema extends Equatable {
       description: json['ui:description'] as String?,
       help: json['ui:help'] as String?,
       options: options,
+      readonly: json['ui:readonly'] as bool?,
       children: parsedChildren,
     );
   }
@@ -91,6 +93,10 @@ class UiSchema extends Equatable {
 
   /// Provides a brief description for helping de user
   final String? help;
+
+  /// If the filed is an input and [readonly] is true then the input can't
+  /// be modified
+  final bool? readonly;
 
   /// Defines options to be used for the given key, for instance: if options
   /// is {
