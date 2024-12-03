@@ -90,6 +90,7 @@ class _OneOfFormState extends State<_OneOfForm> {
           widget.uiSchema,
           widget.formData,
           previousSchema: widget.jsonSchema,
+          previousJsonKey: widget.jsonKey,
         ),
       ],
     );

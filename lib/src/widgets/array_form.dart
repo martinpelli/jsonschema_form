@@ -42,12 +42,6 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     hasAdditionalItems = widget.jsonSchema.additionalItems != null;
 
-    if (widget.jsonSchema.title?.isNotEmpty ?? false) {
-      _initialItems.add(
-        Text(widget.jsonSchema.title!),
-      );
-    }
-
     var initialItemsLength = _initialItems.length;
 
     /// If [additionalItems] property from the corresponding [jsonSchema] is
@@ -69,7 +63,9 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.jsonKey,
             widget.uiSchema,
             widget.formData,
-            arrayIndex: i + initialItemsLength - 1,
+            arrayIndex: i + initialItemsLength,
+            previousSchema: widget.jsonSchema,
+            previousJsonKey: widget.jsonKey,
           ),
         );
       }
@@ -92,8 +88,9 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.jsonKey,
             widget.uiSchema,
             widget.formData,
-            arrayIndex: initialItemsLength - 1,
+            arrayIndex: initialItemsLength,
             previousSchema: widget.jsonSchema,
+            previousJsonKey: widget.jsonKey,
           ),
         );
       }
@@ -116,7 +113,9 @@ class _ArrayFormState extends State<_ArrayForm> {
           widget.jsonKey,
           widget.uiSchema,
           widget.formData,
-          arrayIndex: i + (initialItemsLength - 1),
+          arrayIndex: i + initialItemsLength,
+          previousSchema: widget.jsonSchema,
+          previousJsonKey: widget.jsonKey,
         ),
       );
     }
@@ -158,7 +157,7 @@ class _ArrayFormState extends State<_ArrayForm> {
     for (var i = 0; i < _arrayItems.length; i++) {
       _addRemoveButtonIfNeeded(items, () {
         if (widget.formData is List) {
-          (widget.formData as List).removeAt(i + (_initialItems.length - 1));
+          (widget.formData as List).removeAt(i + _initialItems.length);
         }
 
         _arrayItems.removeAt(i);
@@ -177,7 +176,11 @@ class _ArrayFormState extends State<_ArrayForm> {
               : widget.jsonKey,
           widget.uiSchema,
           newFormData,
-          arrayIndex: i + (_initialItems.length - 1),
+          arrayIndex: i + _initialItems.length,
+          previousSchema: widget.jsonSchema,
+          previousJsonKey: DynamicUtils.isLitOfMaps(widget.jsonSchema.items)
+              ? widget.jsonKey
+              : null,
         ),
       );
     }

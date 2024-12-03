@@ -17,7 +17,7 @@ class _CustomFileUpload extends StatefulWidget {
   final bool isVideoAllowed;
   final List<String>? acceptedExtensions;
   final String? title;
-  final void Function(dynamic value) onFileChosen;
+  final void Function(String value) onFileChosen;
 
   @override
   State<_CustomFileUpload> createState() => _CustomFileUploadState();

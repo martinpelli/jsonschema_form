@@ -72,7 +72,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
-        autovalidateMode: AutovalidateMode.disabled,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -113,26 +112,31 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     final (newFormData, previousFormData) =
         _modifyFormData(jsonSchema, jsonKey, formData);
 
+    final title = _getTitle(jsonSchema, uiSchema, previousSchema, arrayIndex);
+
+    final description = _getDescription(jsonSchema, uiSchema);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty)
-          Text(uiSchema.description!),
-        if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
-          if (jsonSchema.title?.isNotEmpty ?? false) ...[
+        if (jsonSchema.type == JsonType.object ||
+            jsonSchema.type == JsonType.array) ...[
+          if (title != null) ...[
             Text(
-              jsonSchema.title!,
+              title,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const Divider(),
             const SizedBox(height: 10),
           ],
-          if (jsonSchema.description?.isNotEmpty ?? false)
+          if (description != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Text(jsonSchema.description!),
+              child: Text(description),
             ),
+        ],
+        if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
           for (final entry in jsonSchema.properties?.entries ??
               <MapEntry<String, JsonSchema>>[]) ...[
             /// Build one Widget for each property in the schema
@@ -193,6 +197,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             previousSchema: previousSchema,
             previousFormData: previousFormData,
             arrayIndex: arrayIndex,
+            title: title ?? jsonKey,
           ),
       ],
     );
@@ -243,6 +248,37 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     }
 
     return (formData, previousFormData);
+  }
+
+  String? _getTitle(
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    JsonSchema? previousSchema,
+    int? arrayIndex,
+  ) {
+    if (uiSchema?.title != null && uiSchema!.title!.isNotEmpty) {
+      return uiSchema.title;
+    }
+    if (jsonSchema.title != null && jsonSchema.title!.isNotEmpty) {
+      return jsonSchema.title;
+    }
+
+    if (arrayIndex != null && previousSchema?.title != null) {
+      return '${previousSchema?.title}-${arrayIndex + 1}';
+    }
+
+    return null;
+  }
+
+  String? _getDescription(JsonSchema jsonSchema, UiSchema? uiSchema) {
+    if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty) {
+      return uiSchema.description;
+    }
+    if (jsonSchema.description != null && jsonSchema.description!.isNotEmpty) {
+      return jsonSchema.description;
+    }
+
+    return null;
   }
 
   /// Rebulds the whole form when needed. For example: when a nested field

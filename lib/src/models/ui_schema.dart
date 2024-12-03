@@ -22,6 +22,7 @@ class UiSchema extends Equatable {
     this.autofocus,
     this.emptyValue,
     this.placeholder,
+    this.title,
     this.description,
     this.help,
     this.options,
@@ -57,6 +58,7 @@ class UiSchema extends Equatable {
       autofocus: json['ui:autofocus'] as bool?,
       emptyValue: json['ui:emptyValue'] as String?,
       placeholder: json['ui:placeholder'] as String?,
+      title: json['ui:title'] as String?,
       description: json['ui:description'] as String?,
       help: json['ui:help'] as String?,
       options: options,
@@ -78,6 +80,10 @@ class UiSchema extends Equatable {
 
   /// Add placeholder text to an input
   final String? placeholder;
+
+  /// The title of a field. If this is null, jsonSchema.title will be used and
+  /// if jsonSchema.title is null the jsonKey will be used as title.
+  final String? title;
 
   /// Sometimes it's convenient to change the description of a field. This will
   /// be shown as a Text widget above the field
@@ -108,4 +114,5 @@ const _$UiTypeEnumMap = {
   UiType.textarea: 'textarea',
   UiType.date: 'date',
   UiType.dateTime: 'datetime',
+  UiType.file: 'file',
 };

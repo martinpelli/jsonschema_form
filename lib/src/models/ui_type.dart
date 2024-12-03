@@ -22,5 +22,8 @@ enum UiType {
   dateTime,
 
   /// Represents a TextFormField with selectable date in Flutter
-  date;
+  date,
+
+  /// Represents a Mix of Widget that lets the user select a file in Flutter
+  file;
 }
