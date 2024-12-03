@@ -1,0 +1,174 @@
+{
+    "jsonSchema": {
+        "type": "object",
+        "title": "Temporary Steps & Solution",
+        "required": [
+          "temporaryRepair",
+          "laborSupport"
+        ],
+        "properties": {
+          "helpers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "technicianType",
+                "helperCount",
+                "hoursPerHelper",
+                "sourcing"
+              ],
+              "properties": {
+                "sourcing": {
+                  "enum": [
+                    "I have a contact",
+                    "I need you to source them"
+                  ],
+                  "type": "string",
+                  "title": "How will you source them?"
+                },
+                "helperCount": {
+                  "type": "integer",
+                  "title": "How many Technicians/Helpers do you need?",
+                  "default": 0,
+                  "minimum": 0
+                },
+                "contactDetails": {
+                  "type": "string",
+                  "title": "Enter their name and phone number",
+                  "default": "",
+                  "minLength": 0
+                },
+                "hoursPerHelper": {
+                  "type": "integer",
+                  "title": "Number of hours per Technician/Helper",
+                  "default": 0,
+                  "minimum": 0
+                },
+                "technicianType": {
+                  "enum": [
+                    "Helper",
+                    "Technician"
+                  ],
+                  "type": "string",
+                  "title": "Technician Type"
+                },
+                "technicianTrade": {
+                  "enum": [
+                    "Electrician",
+                    "Plumber",
+                    "Carpenter",
+                    "Other"
+                  ],
+                  "type": "string",
+                  "title": "Technician's Trade"
+                }
+              }
+            },
+            "title": "Labor Support Details",
+            "default": []
+          },
+          "repairSteps": {
+            "type": "string",
+            "title": "What are the steps needed to do the temporary repair?",
+            "default": "",
+            "minLength": 0
+          },
+          "laborSupport": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "type": "string",
+            "title": "Will you need labor support?"
+          },
+          "timeEstimate": {
+            "type": "integer",
+            "title": "How many hours is the temporary repair going to take?",
+            "default": 1,
+            "minimum": 1
+          },
+          "temporaryRepair": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "type": "string",
+            "title": "Can a temporary repair be made?"
+          }
+        },
+        "description": "If a temporary solution is possible, please outline your intended steps, time estimate, and labor requirements."
+      },
+      "uiSchema": {
+        "helpers": {
+          "items": {
+            "sourcing": {
+              "ui:widget": "radio",
+              "ui:options": {
+                "inline": true
+              }
+            },
+            "helperCount": {
+              "ui:widget": "updown",
+              "ui:placeholder": "Enter number of technicians/helpers needed"
+            },
+            "contactDetails": {
+              "ui:widget": "textarea",
+              "ui:options": {
+                "rows": 2
+              },
+              "ui:placeholder": "Enter name and phone number"
+            },
+            "hoursPerHelper": {
+              "ui:widget": "updown",
+              "ui:placeholder": "Enter hours per technician/helper"
+            },
+            "technicianType": {
+              "ui:widget": "radio",
+              "ui:options": {
+                "inline": true
+              }
+            },
+            "technicianTrade": {
+              "ui:widget": "select",
+              "ui:placeholder": "Select trade"
+            }
+          },
+          "ui:options": {
+            "addable": true,
+            "removable": true
+          }
+        },
+        "repairSteps": {
+          "ui:widget": "textarea",
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter the steps for the temporary repair"
+        },
+        "laborSupport": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "timeEstimate": {
+          "ui:widget": "updown",
+          "ui:options": {
+            "placeholder": "Enter time estimate in hours"
+          }
+        },
+        "temporaryRepair": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        }
+      },
+      "formData": {
+        "helpers": [],
+        "repairSteps": "Apply sealant and use clamps to stop leakage temporarily.",
+        "laborSupport": "Yes",
+        "timeEstimate": 3,
+        "temporaryRepair": "Yes"
+      }
+}

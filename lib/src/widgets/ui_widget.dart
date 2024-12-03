@@ -54,8 +54,13 @@ class _UiWidget extends StatelessWidget {
     } else if (_isRadioGroup()) {
       return _buildRadioGroup(hasRequiredValidator, initialStringValue);
     } else if (_isRadio()) {
-      final initialValue = defaultValue is bool ? defaultValue : null;
+      final initialValue =
+          defaultValue is String ? bool.tryParse(defaultValue) : null;
       return _buildRadio(hasRequiredValidator, initialValue);
+    } else if (_isCheckbox()) {
+      final initialValue =
+          defaultValue is String ? [bool.tryParse(defaultValue)!] : null;
+      return _buildCheckbox(hasRequiredValidator, initialValue);
     } else if (_isCheckboxGroup()) {
       final initialValues = (formData as List).cast<String>();
       return _buildCheckboxGroup(hasRequiredValidator, initialValues);
@@ -195,7 +200,9 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isRadio() => jsonSchema.type == JsonType.boolean;
+  bool _isRadio() =>
+      uiSchema?.widget != UiType.checkbox &&
+      jsonSchema.type == JsonType.boolean;
 
   Widget _buildRadio(
     bool hasRequiredValidator,
@@ -222,6 +229,37 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
+  bool _isCheckbox() =>
+      uiSchema?.widget != UiType.radio && jsonSchema.type == JsonType.boolean;
+
+  Widget _buildCheckbox(
+    bool hasRequiredValidator,
+    List<bool>? initialValue,
+  ) {
+    return _CustomFormFieldValidator<bool>(
+      isEnabled: hasRequiredValidator,
+      initialValue: initialValue?.first,
+      childFormBuilder: (field) {
+        return _CustomCheckboxGroup<bool>(
+          jsonKey: jsonKey!,
+          label: "$title${hasRequiredValidator ? '*' : ''}",
+          labelStyle: hasRequiredValidator
+              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              : null,
+          itemLabel: (_, item) => item ? 'Yes' : 'No',
+          items: const [true],
+          initialItems: initialValue,
+          onCheckboxValuesSelected: (value) {
+            _onFieldChangedWithValidator<bool>(
+              field,
+              value.isNotEmpty && value.first,
+            );
+          },
+        );
+      },
+    );
+  }
+
   bool _isCheckboxGroup() => uiSchema?.widget == UiType.checkboxes;
 
   Widget _buildCheckboxGroup(
@@ -233,10 +271,14 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValues,
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
-        return _CustomCheckboxGroup(
+        return _CustomCheckboxGroup<String>(
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
+          labelStyle: hasRequiredValidator
+              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              : null,
           items: jsonSchema.enumValue!,
+          itemLabel: (_, item) => item,
           initialItems: initialValues,
           onCheckboxValuesSelected: (value) {
             _onFieldChangedWithValidator<List<String>>(field, value);
