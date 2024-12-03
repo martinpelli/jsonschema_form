@@ -130,6 +130,7 @@ class _OneOfFormState extends State<_OneOfForm> {
         widget.uiSchema?.widget == UiType.select) {
       return _CustomDropdownMenu<JsonSchema>(
         label: title,
+        labelStyle: null,
         itemLabel: itemLabel,
         items: widget.jsonSchema.oneOf!,
         selectedItem: selectedOneOfJsonSchema,
@@ -138,6 +139,7 @@ class _OneOfFormState extends State<_OneOfForm> {
     } else {
       return _CustomRadioGroup<JsonSchema>(
         label: title,
+        labelStyle: null,
         itemLabel: itemLabel,
         jsonKey: widget.jsonKey!,
         items: widget.jsonSchema.oneOf!,

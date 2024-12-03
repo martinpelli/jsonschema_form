@@ -4,6 +4,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   const _CustomRadioGroup({
     required this.jsonKey,
     required this.label,
+    required this.labelStyle,
     required this.items,
     required this.initialItem,
     required this.itemLabel,
@@ -11,6 +12,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   });
 
   final String? label;
+  final TextStyle? labelStyle;
   final List<T> items;
   final T? initialItem;
   final String Function(int index, T item) itemLabel;
@@ -40,7 +42,7 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
         if (widget.label != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: Text(widget.label!),
+            child: Text(widget.label!, style: widget.labelStyle),
           ),
         Wrap(
           children: widget.items

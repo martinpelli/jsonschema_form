@@ -41,6 +41,7 @@ class _CustomCheckboxGroupState extends State<_CustomCheckboxGroup> {
         children: widget.items
             .map(
               (item) => Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Checkbox(
                     splashRadius: 0,

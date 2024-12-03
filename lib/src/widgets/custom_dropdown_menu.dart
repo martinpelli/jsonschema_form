@@ -3,6 +3,7 @@ part of '../jsonschema_form_builder.dart';
 class _CustomDropdownMenu<T> extends StatefulWidget {
   const _CustomDropdownMenu({
     required this.label,
+    required this.labelStyle,
     required this.itemLabel,
     required this.items,
     required this.onDropdownValueSelected,
@@ -10,6 +11,7 @@ class _CustomDropdownMenu<T> extends StatefulWidget {
   });
 
   final String? label;
+  final TextStyle? labelStyle;
   final String Function(int index, T item) itemLabel;
   final List<T> items;
   final void Function(T) onDropdownValueSelected;
@@ -60,6 +62,10 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
               return DropdownMenuEntry<T>(
                 value: item,
                 label: widget.itemLabel(index, item),
+                labelWidget: Text(
+                  widget.itemLabel(index, item),
+                  style: widget.labelStyle,
+                ),
                 style: MenuItemButton.styleFrom(alignment: Alignment.center),
               );
             }).toList(),

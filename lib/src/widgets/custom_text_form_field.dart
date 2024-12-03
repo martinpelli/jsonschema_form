@@ -82,6 +82,9 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
         labelText: widget.labelText,
         hintText: widget.placeholder,
         helperText: widget.helperText,
+        labelStyle: widget.hasRequiredValidator
+            ? const TextStyle(fontWeight: FontWeight.bold)
+            : null,
       ),
       keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,

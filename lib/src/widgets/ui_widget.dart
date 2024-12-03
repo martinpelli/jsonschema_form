@@ -153,6 +153,9 @@ class _UiWidget extends StatelessWidget {
       childFormBuilder: (field) {
         return _CustomDropdownMenu<String>(
           label: "$title${hasRequiredValidator ? '*' : ''}",
+          labelStyle: hasRequiredValidator
+              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              : null,
           itemLabel: (_, item) => item,
           items: jsonSchema.enumValue!,
           selectedItem: initialValue,
@@ -178,6 +181,9 @@ class _UiWidget extends StatelessWidget {
         return _CustomRadioGroup<String>(
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
+          labelStyle: hasRequiredValidator
+              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              : null,
           itemLabel: (_, item) => item,
           items: jsonSchema.enumValue!,
           initialItem: initialValue,
@@ -202,6 +208,9 @@ class _UiWidget extends StatelessWidget {
         return _CustomRadioGroup<bool>(
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
+          labelStyle: hasRequiredValidator
+              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              : null,
           itemLabel: (_, item) => item ? 'Yes' : 'No',
           items: const [false, true],
           initialItem: initialValue,
