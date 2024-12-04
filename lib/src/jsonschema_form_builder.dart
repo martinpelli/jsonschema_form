@@ -41,6 +41,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
     required this.onFormSubmitted,
     this.submitButtonStyle,
     this.submitButtonChild,
+    this.formPadding = EdgeInsets.zero,
     super.key,
   });
 
@@ -57,6 +58,9 @@ class JsonschemaFormBuilder extends StatefulWidget {
 
   /// Change the child of submit button.
   final Widget? submitButtonChild;
+
+  /// If you need to add padding inside the scroll view, use formPadding
+  final EdgeInsets formPadding;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -78,32 +82,36 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildJsonschemaForm(
-              widget.jsonSchemaForm.jsonSchema!,
-              null,
-              widget.jsonSchemaForm.uiSchema,
-              _formData,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              style: widget.submitButtonStyle,
-              onPressed: () {
-                FocusScope.of(context).unfocus();
+      child: Padding(
+        padding: widget.formPadding,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildJsonschemaForm(
+                widget.jsonSchemaForm.jsonSchema!,
+                null,
+                widget.jsonSchemaForm.uiSchema,
+                _formData,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: widget.submitButtonStyle,
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
 
-                final isFormValid = _formKey.currentState?.validate() ?? false;
+                  final isFormValid =
+                      _formKey.currentState?.validate() ?? false;
 
-                if (isFormValid) {
-                  widget.onFormSubmitted(_formData.removeEmptySubmaps());
-                }
-              },
-              child: widget.submitButtonChild ?? const Text('Submit'),
-            ),
-          ],
+                  if (isFormValid) {
+                    widget.onFormSubmitted(_formData.removeEmptySubmaps());
+                  }
+                },
+                child: widget.submitButtonChild ?? const Text('Submit'),
+              ),
+            ],
+          ),
         ),
       ),
     );
