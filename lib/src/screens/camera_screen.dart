@@ -84,8 +84,9 @@ class _CameraScreenState extends State<_CameraScreen>
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(10)),
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Text(
                         _formatSecondsToHHMMSS(_timer!.tick),
                         style: Theme.of(context).textTheme.bodyMedium,

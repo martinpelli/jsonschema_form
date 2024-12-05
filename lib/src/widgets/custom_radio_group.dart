@@ -61,7 +61,7 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                       },
                     ),
                     Text(widget.itemLabel(index, item)),
-                    const SizedBox(width: 5)
+                    const SizedBox(width: 5),
                   ],
                 ),
               )

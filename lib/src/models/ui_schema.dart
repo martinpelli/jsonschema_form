@@ -62,8 +62,8 @@ class UiSchema extends Equatable {
       title: json['ui:title'] as String?,
       description: json['ui:description'] as String?,
       help: json['ui:help'] as String?,
-      options: options,
       readonly: json['ui:readonly'] as bool?,
+      options: options,
       children: parsedChildren,
     );
   }
@@ -91,10 +91,10 @@ class UiSchema extends Equatable {
   /// be shown as a Text widget above the field
   final String? description;
 
-  /// Provides a brief description for helping de user
+  /// Provides a brief description under the field for helping de user
   final String? help;
 
-  /// If the filed is an input and [readonly] is true then the input can't
+  /// If the field is an input and [readonly] is true then the input can't
   /// be modified
   final bool? readonly;
 

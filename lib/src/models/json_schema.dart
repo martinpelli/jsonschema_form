@@ -68,7 +68,7 @@ class JsonSchema extends Equatable {
   @JsonKey(name: 'required')
 
   /// A list of required fields, is composed by the key properties that
-  /// corresponds to the jsonSchema. If is a jsonKey is required then the form
+  /// corresponds to the jsonSchema. If a jsonKey is required then the form
   /// cannot be submitted if there is no value in the corresponding field
   final List<String>? requiredFields;
 
@@ -169,5 +169,6 @@ class JsonSchema extends Equatable {
         oneOf,
         format,
         minLength,
+        maxLength,
       ];
 }
