@@ -28,26 +28,35 @@ class _ArrayForm extends StatefulWidget {
 }
 
 class _ArrayFormState extends State<_ArrayForm> {
-  final _arrayItems = <JsonSchema>[];
+  final List<JsonSchema> _arrayItems = [];
 
-  late final bool hasAdditionalItems;
-
-  final _initialItems = <Widget>[];
-
-  late final int minItems;
+  final List<Widget> _initialItems = [];
 
   @override
   void initState() {
     super.initState();
 
-    hasAdditionalItems = widget.jsonSchema.additionalItems != null;
+    _initItems();
+  }
 
+  @override
+  void didUpdateWidget(covariant _ArrayForm oldWidget) {
+    _arrayItems.clear();
+    _initialItems.clear();
+    _initItems();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _initItems() {
     var initialItemsLength = _initialItems.length;
 
     /// If [additionalItems] property from the corresponding [jsonSchema] is
     /// present then the user is allowed to add additional items for the given
     /// [jsonSchema]
     var additionalItemsLength = 0;
+
+    final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
+
     if (hasAdditionalItems) {
       final additionalItems = widget.jsonSchema.items as List<JsonSchema>;
       additionalItemsLength = additionalItems.length;
@@ -98,7 +107,7 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     /// if the [jsonSchema] has the [minItems] property then [items] will be
     /// added at first and user can't remove them
-    minItems = widget.jsonSchema.minItems ?? 0;
+    final minItems = widget.jsonSchema.minItems ?? 0;
 
     initialItemsLength = _initialItems.length;
 
@@ -192,6 +201,9 @@ class _ArrayFormState extends State<_ArrayForm> {
     /// provided to the corresponding [uiSchema] property and set to false
     /// If [maxItems] property specified in [jsonSchema] and the array
     /// has reached [maxItems] then (+) is not added
+    /// final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
+    final minItems = widget.jsonSchema.minItems ?? 0;
+
     final isMaxReached = widget.jsonSchema.maxItems != null &&
         _arrayItems.length + minItems >= widget.jsonSchema.maxItems!;
 
@@ -206,6 +218,9 @@ class _ArrayFormState extends State<_ArrayForm> {
         child: IconButton(
           onPressed: () {
             _modifyFormData();
+
+            final hasAdditionalItems =
+                widget.jsonSchema.additionalItems != null;
 
             if (hasAdditionalItems) {
               _addArrayItem(widget.jsonSchema.additionalItems!);

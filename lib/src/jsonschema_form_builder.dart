@@ -69,14 +69,22 @@ class JsonschemaFormBuilder extends StatefulWidget {
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   final _formKey = GlobalKey<FormState>();
 
-  late final Map<String, dynamic> _formData;
+  late Map<String, dynamic> _formData;
 
   @override
   void initState() {
     super.initState();
     if (widget.jsonSchemaForm.formData != null) {
       _formData = Map.from(widget.jsonSchemaForm.formData!);
+    } else {
+      _formData = {};
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant JsonschemaFormBuilder oldWidget) {
+    _formData = Map.from(widget.jsonSchemaForm.formData!);
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
