@@ -2,7 +2,6 @@ part of '../jsonschema_form_builder.dart';
 
 class _CustomRadioGroup<T> extends StatefulWidget {
   const _CustomRadioGroup({
-    required this.jsonKey,
     required this.label,
     required this.labelStyle,
     required this.items,
@@ -17,7 +16,6 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   final T? initialItem;
   final String Function(int index, T item) itemLabel;
   final void Function(T) onRadioValueSelected;
-  final String jsonKey;
 
   @override
   State<_CustomRadioGroup<T>> createState() => _CustomRadioGroupState<T>();

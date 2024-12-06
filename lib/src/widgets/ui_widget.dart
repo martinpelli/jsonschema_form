@@ -184,7 +184,6 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomRadioGroup<String>(
-          jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -213,7 +212,6 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue,
       childFormBuilder: (field) {
         return _CustomRadioGroup<bool>(
-          jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)

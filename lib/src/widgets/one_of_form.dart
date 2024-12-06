@@ -10,6 +10,7 @@ class _OneOfForm extends StatefulWidget {
     required this.rebuildForm,
     this.previousSchema,
     this.previousJsonKey,
+    this.title,
   });
 
   final JsonSchema jsonSchema;
@@ -27,6 +28,7 @@ class _OneOfForm extends StatefulWidget {
     String? previousJsonKey,
   }) buildJsonschemaForm;
   final void Function() rebuildForm;
+  final String? title;
 
   @override
   State<_OneOfForm> createState() => _OneOfFormState();
@@ -55,13 +57,8 @@ class _OneOfFormState extends State<_OneOfForm> {
   }
 
   @override
-  void didUpdateWidget(covariant _OneOfForm oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    /// If oneOf list is part of dependencies, then it means iw will conditional
+    /// If oneOf list is part of dependencies, then it means it will conditional
     /// select one element of the list depending on other selected value
     if (widget.previousSchema?.dependencies != null &&
         (widget.previousSchema!.properties?.containsKey(widget.jsonKey) ??
@@ -81,7 +78,7 @@ class _OneOfFormState extends State<_OneOfForm> {
       mainAxisSize: MainAxisSize.min,
       children: [
         /// With this widget the user can select one value from the oneOf list
-        _buildWidgetFromUiSchema(),
+        _buildOneOfSelectionWidget(),
 
         /// This widgets will be built based on oneOf selected value
         widget.buildJsonschemaForm(
@@ -96,9 +93,7 @@ class _OneOfFormState extends State<_OneOfForm> {
     );
   }
 
-  Widget _buildWidgetFromUiSchema() {
-    final title = widget.jsonSchema.title ?? widget.jsonKey;
-
+  Widget _buildOneOfSelectionWidget() {
     void onValueSelected(JsonSchema value) {
       selectedOneOfJsonSchema = value;
 
@@ -129,7 +124,7 @@ class _OneOfFormState extends State<_OneOfForm> {
     if (widget.uiSchema?.widget == null ||
         widget.uiSchema?.widget == UiType.select) {
       return _CustomDropdownMenu<JsonSchema>(
-        label: title,
+        label: widget.title,
         labelStyle: null,
         itemLabel: itemLabel,
         items: widget.jsonSchema.oneOf!,
@@ -138,10 +133,9 @@ class _OneOfFormState extends State<_OneOfForm> {
       );
     } else {
       return _CustomRadioGroup<JsonSchema>(
-        label: title,
+        label: widget.title,
         labelStyle: null,
         itemLabel: itemLabel,
-        jsonKey: widget.jsonKey!,
         items: widget.jsonSchema.oneOf!,
         initialItem: selectedOneOfJsonSchema,
         onRadioValueSelected: onValueSelected,

@@ -107,8 +107,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               ElevatedButton(
                 style: widget.submitButtonStyle,
                 onPressed: () {
-                  FocusScope.of(context).unfocus();
-
                   final isFormValid =
                       _formKey.currentState?.validate() ?? false;
 
@@ -203,6 +201,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousJsonKey: previousJsonKey,
               buildJsonschemaForm: _buildJsonschemaForm,
               rebuildForm: _rebuildForm,
+              title: title ?? jsonKey,
             ),
         ] else if (jsonSchema.type == JsonType.array)
           _ArrayForm(
