@@ -66,6 +66,8 @@ class _FormState extends State<_Form> {
 
   String? selectedFileName;
 
+  late Map<String, dynamic>? Function()? submitFormCallback;
+
   @override
   void initState() {
     super.initState();
@@ -131,14 +133,31 @@ class _FormState extends State<_Form> {
               Container(
                 constraints: const BoxConstraints(minWidth: 200, maxWidth: 600),
                 width: MediaQuery.sizeOf(context).width * 0.4,
-                child: JsonschemaFormBuilder(
-                  jsonSchemaForm: _jsonschemaForm,
-                  onFormSubmitted: (formData) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(formData.toString()),
-                      backgroundColor: Colors.green,
-                    ));
-                  },
+                child: Column(
+                  children: [
+                    JsonschemaFormBuilder(
+                      jsonSchemaForm: _jsonschemaForm,
+                      registerSubmitCallback: (callback) {
+                        // Register the callback
+                        submitFormCallback = callback;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (submitFormCallback != null) {
+                          final formData = submitFormCallback!();
+                          if (formData != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(formData.toString()),
+                              backgroundColor: Colors.green,
+                            ));
+                          }
+                        }
+                      },
+                      child: const Text('Submit'),
+                    ),
+                  ],
                 ),
               ),
             ],

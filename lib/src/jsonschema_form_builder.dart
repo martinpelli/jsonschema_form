@@ -38,29 +38,17 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
-    required this.onFormSubmitted,
-    this.submitButtonStyle,
-    this.submitButtonChild,
-    this.formPadding = EdgeInsets.zero,
+    required this.registerSubmitCallback,
     super.key,
   });
 
   /// The json schema for the form.
   final JsonschemaForm jsonSchemaForm;
 
-  /// Method triggered when the field is succesfully submitted, if there is any
-  /// error on the form, this will not trigger. The method receives the final
+  /// Expose onFormSubmitted to parent. If there is any error on the form, this
+  /// will return null. Otherwise the method returns the final
   /// formData filled by the user
-  final void Function(Map<String, dynamic> formData) onFormSubmitted;
-
-  /// Change the style of submit button.
-  final ButtonStyle? submitButtonStyle;
-
-  /// Change the child of submit button.
-  final Widget? submitButtonChild;
-
-  /// If you need to add padding inside the scroll view, use formPadding
-  final EdgeInsets formPadding;
+  final void Function(Map<String, dynamic>? Function())? registerSubmitCallback;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -79,6 +67,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     } else {
       _formData = {};
     }
+
+    // Expose the submit method to the parent
+    widget.registerSubmitCallback?.call(onFormSubmitted);
   }
 
   @override
@@ -89,38 +80,25 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: widget.formPadding,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildJsonschemaForm(
-                widget.jsonSchemaForm.jsonSchema!,
-                null,
-                widget.jsonSchemaForm.uiSchema,
-                _formData,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: widget.submitButtonStyle,
-                onPressed: () {
-                  final isFormValid =
-                      _formKey.currentState?.validate() ?? false;
-
-                  if (isFormValid) {
-                    widget.onFormSubmitted(_formData.removeEmptySubmaps());
-                  }
-                },
-                child: widget.submitButtonChild ?? const Text('Submit'),
-              ),
-            ],
-          ),
-        ),
+    return Form(
+      key: _formKey,
+      child: _buildJsonschemaForm(
+        widget.jsonSchemaForm.jsonSchema!,
+        null,
+        widget.jsonSchemaForm.uiSchema,
+        _formData,
       ),
     );
+  }
+
+  Map<String, dynamic>? onFormSubmitted() {
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+
+    if (isFormValid) {
+      return _formData.removeEmptySubmaps();
+    }
+
+    return null;
   }
 
   Widget _buildJsonschemaForm(
