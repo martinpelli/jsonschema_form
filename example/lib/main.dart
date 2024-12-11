@@ -133,31 +133,34 @@ class _FormState extends State<_Form> {
               Container(
                 constraints: const BoxConstraints(minWidth: 200, maxWidth: 600),
                 width: MediaQuery.sizeOf(context).width * 0.4,
-                child: Column(
-                  children: [
-                    JsonschemaFormBuilder(
-                      jsonSchemaForm: _jsonschemaForm,
-                      registerSubmitCallback: (callback) {
-                        // Register the callback
-                        submitFormCallback = callback;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (submitFormCallback != null) {
-                          final formData = submitFormCallback!();
-                          if (formData != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(formData.toString()),
-                              backgroundColor: Colors.green,
-                            ));
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      JsonschemaFormBuilder(
+                        jsonSchemaForm: _jsonschemaForm,
+                        registerSubmitCallback: (callback) {
+                          // Register the callback
+                          submitFormCallback = callback;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (submitFormCallback != null) {
+                            final formData = submitFormCallback!();
+                            if (formData != null) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(formData.toString()),
+                                backgroundColor: Colors.green,
+                              ));
+                            }
                           }
-                        }
-                      },
-                      child: const Text('Submit'),
-                    ),
-                  ],
+                        },
+                        child: const Text('Submit'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
