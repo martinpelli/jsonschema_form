@@ -244,7 +244,7 @@ class _ArrayFormState extends State<_ArrayForm> {
       castedListOfMaps.add(<String, dynamic>{});
     } else if (widget.formData is List) {
       (widget.formData as List).add(
-        DynamicUtils.isLitOfMaps(widget.jsonSchema.items)
+        DynamicUtils.isListOfMaps(widget.jsonSchema.items)
             ? <String, dynamic>{}
             : null,
       );

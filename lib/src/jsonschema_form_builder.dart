@@ -162,7 +162,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               _buildJsonschemaForm(
                 jsonSchema.dependencies![entry.key] as JsonSchema,
                 entry.key,
-                uiSchema,
+                uiSchema?.children?[entry.key],
                 newFormData,
                 previousSchema: jsonSchema,
                 previousJsonKey: jsonKey,
@@ -241,7 +241,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             if (jsonSchema.type == JsonType.object) {
               return <String, dynamic>{};
             } else {
-              if (DynamicUtils.isLitOfMaps(jsonSchema.items) ||
+              if (DynamicUtils.isListOfMaps(jsonSchema.items) ||
                   jsonSchema.items is JsonSchema) {
                 return <Map<String, dynamic>>[];
               } else {

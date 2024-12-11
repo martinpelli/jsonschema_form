@@ -40,7 +40,7 @@ class DynamicUtils {
   /// - This method does not deeply inspect nested structures within the
   ///   `Map<String, dynamic>` objects.
   static List<Map<String, dynamic>>? tryParseListOfMaps(dynamic value) {
-    if (isLitOfMaps(value)) {
+    if (isListOfMaps(value)) {
       return (value as List).cast<Map<String, dynamic>>();
     }
 
@@ -48,17 +48,15 @@ class DynamicUtils {
   }
 
   /// Checks if a dynamic value is a list of maps of type <String, dynamic>
-  static bool isLitOfMaps(dynamic value) {
-    if (value is List<Map<String, dynamic>>) {
-      return true;
+  static bool isListOfMaps(dynamic value) {
+    if (value is List) {
+      for (final item in value) {
+        if (item is! Map<String, dynamic>) {
+          return false;
+        }
+      }
+      return value.isNotEmpty;
     }
-
-    if (value is List &&
-        value.isNotEmpty &&
-        value.first is Map<String, dynamic>) {
-      return false;
-    }
-
     return false;
   }
 }
