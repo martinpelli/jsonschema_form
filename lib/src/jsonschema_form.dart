@@ -61,15 +61,23 @@ class JsonschemaForm {
   }
 
   void _init(Map<String, dynamic> decodedJson) {
-    if (decodedJson['jsonSchema'] == null ||
-        decodedJson['uiSchema'] == null ||
-        decodedJson['formData'] == null) {
+    if (decodedJson['jsonSchema'] == null) {
       return;
+    } else {
+      _setJsonSchema(decodedJson['jsonSchema'] as Map<String, dynamic>);
     }
 
-    _setJsonSchema(decodedJson['jsonSchema'] as Map<String, dynamic>);
-    _setUiSchema(decodedJson['uiSchema'] as Map<String, dynamic>);
-    formData = decodedJson['formData'] as Map<String, dynamic>;
+    if (decodedJson['uiSchema'] == null) {
+      uiSchema = const UiSchema();
+    } else {
+      _setUiSchema(decodedJson['uiSchema'] as Map<String, dynamic>);
+    }
+
+    if (decodedJson['formData'] == null) {
+      formData = {};
+    } else {
+      formData = decodedJson['formData'] as Map<String, dynamic>;
+    }
   }
 
   void _setJsonSchema(Map<String, dynamic> decodedJsonSchema) {
