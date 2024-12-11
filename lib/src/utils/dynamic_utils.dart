@@ -55,7 +55,7 @@ class DynamicUtils {
           return false;
         }
       }
-      return value.isNotEmpty;
+      return true;
     }
     return false;
   }
