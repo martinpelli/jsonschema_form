@@ -62,7 +62,8 @@ class _FormState extends State<_Form> {
     "array_with_min_and_max_items_with_data",
     "array_with_multiple_choice_with_data",
     "array_of_files",
-    "materials_request"
+    "materials_request",
+    "problem_and_root_cause"
   ];
 
   String? selectedFileName;

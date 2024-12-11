@@ -292,6 +292,12 @@ class _UiWidget extends StatelessWidget {
     bool hasRequiredValidator,
     String? initialValue,
   ) {
+    final validators = <String? Function(String?)>[];
+
+    _addMinLengthValidator(validators);
+
+    _addMaxLengthValidator(validators);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -306,6 +312,17 @@ class _UiWidget extends StatelessWidget {
         placeholder: uiSchema?.placeholder,
         helperText: uiSchema?.help,
         autofocus: uiSchema?.autofocus,
+        validator: validators.isEmpty
+            ? null
+            : (value) {
+                for (final validator in validators) {
+                  final error = validator(value);
+                  if (error != null) {
+                    return error;
+                  }
+                }
+                return null;
+              },
       ),
     );
   }
@@ -477,25 +494,9 @@ class _UiWidget extends StatelessWidget {
       });
     }
 
-    if (jsonSchema.minLength != null) {
-      validators.add((value) {
-        if (value != null && value.length < jsonSchema.minLength!) {
-          return 'Must have at least ${jsonSchema.minLength} characters';
-        }
+    _addMinLengthValidator(validators);
 
-        return null;
-      });
-    }
-
-    if (jsonSchema.maxLength != null) {
-      validators.add((value) {
-        if (value != null && value.length > jsonSchema.maxLength!) {
-          return 'Must have ${jsonSchema.minLength} characters as much';
-        }
-
-        return null;
-      });
-    }
+    _addMaxLengthValidator(validators);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -543,6 +544,30 @@ class _UiWidget extends StatelessWidget {
       _onFieldChanged(value);
     }
     _rebuildFormIfHasDependants();
+  }
+
+  void _addMinLengthValidator(List<String? Function(String?)> validators) {
+    if (jsonSchema.minLength != null) {
+      validators.add((value) {
+        if (value != null && value.length < jsonSchema.minLength!) {
+          return 'Must have at least ${jsonSchema.minLength} characters';
+        }
+
+        return null;
+      });
+    }
+  }
+
+  void _addMaxLengthValidator(List<String? Function(String? p1)> validators) {
+    if (jsonSchema.maxLength != null) {
+      validators.add((value) {
+        if (value != null && value.length > jsonSchema.maxLength!) {
+          return 'Must have ${jsonSchema.minLength} characters as much';
+        }
+
+        return null;
+      });
+    }
   }
 
   /// Property dependencies: unidirectional and bidirectional
