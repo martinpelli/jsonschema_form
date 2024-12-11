@@ -62,6 +62,7 @@ class _FormState extends State<_Form> {
     "array_with_min_and_max_items_with_data",
     "array_with_multiple_choice_with_data",
     "array_of_files",
+    "materials_request"
   ];
 
   String? selectedFileName;
@@ -95,9 +96,9 @@ class _FormState extends State<_Form> {
 
     _jsonschemaForm.initFromDecodedJson(decodedJson);
 
-    _decodedJsonSchema = decodedJson["jsonSchema"] as Map<String, dynamic>;
-    _decodedUiSchema = decodedJson["uiSchema"] as Map<String, dynamic>;
-    _decodedFormData = decodedJson["formData"] as Map<String, dynamic>;
+    _decodedJsonSchema = decodedJson["jsonSchema"] as Map<String, dynamic>?;
+    _decodedUiSchema = decodedJson["uiSchema"] as Map<String, dynamic>?;
+    _decodedFormData = decodedJson["formData"] as Map<String, dynamic>?;
 
     setState(() {
       _isLoading = false;
@@ -110,12 +111,6 @@ class _FormState extends State<_Form> {
       return const CircularProgressIndicator();
     }
 
-    if (_decodedJsonSchema == null ||
-        _decodedUiSchema == null ||
-        _decodedFormData == null) {
-      return const Text("Error while parsing json");
-    }
-
     return Column(
       children: [
         _buildButtons(context),
@@ -125,9 +120,9 @@ class _FormState extends State<_Form> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _JsonsTexts(
-                jsonSchema: _decodedJsonSchema!,
-                uiSchema: _decodedUiSchema!,
-                formData: _decodedFormData!,
+                jsonSchema: _decodedJsonSchema,
+                uiSchema: _decodedUiSchema,
+                formData: _decodedFormData,
               ),
               const SizedBox(width: 50),
               Container(
@@ -207,9 +202,9 @@ class _JsonsTexts extends StatelessWidget {
     required this.formData,
   });
 
-  final Map<String, dynamic> jsonSchema;
-  final Map<String, dynamic> uiSchema;
-  final Map<String, dynamic> formData;
+  final Map<String, dynamic>? jsonSchema;
+  final Map<String, dynamic>? uiSchema;
+  final Map<String, dynamic>? formData;
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +222,7 @@ class _JsonsTexts extends StatelessWidget {
     );
   }
 
-  Widget _buildJsonSection(String title, Map<String, dynamic> jsonData) {
+  Widget _buildJsonSection(String title, Map<String, dynamic>? jsonData) {
     return Flexible(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

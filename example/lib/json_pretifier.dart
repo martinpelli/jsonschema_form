@@ -16,7 +16,7 @@ class JsonPrettifier extends StatelessWidget {
   }
 
   TextSpan _formatJson(dynamic jsonInput) {
-    if (jsonInput is! Map<String, dynamic>) {
+    if (jsonInput is! Map<String, dynamic>?) {
       throw ArgumentError('Input must be a decoded JSON object.');
     }
     const encoder = JsonEncoder.withIndent('    ');

@@ -74,7 +74,7 @@ class JsonschemaForm {
     }
 
     if (decodedJson['formData'] == null) {
-      formData = {};
+      formData = <String, dynamic>{};
     } else {
       formData = decodedJson['formData'] as Map<String, dynamic>;
     }
