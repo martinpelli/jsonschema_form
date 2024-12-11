@@ -69,7 +69,7 @@ class _UiWidget extends StatelessWidget {
     } else if (_isUpDown()) {
       return _buildUpDown(hasRequiredValidator, initialStringValue);
     } else if (_isFile()) {
-      return _buildFile(hasRequiredValidator);
+      return _buildFile(hasRequiredValidator, initialStringValue);
     } else if (_isDate()) {
       return _buildDate(context, hasRequiredValidator, initialStringValue);
     } else if (_isDateTime()) {
@@ -335,7 +335,7 @@ class _UiWidget extends StatelessWidget {
       uiSchema?.widget == UiType.file ||
       jsonSchema.format == JsonSchemaFormat.dataUrl;
 
-  Widget _buildFile(bool hasRequiredValidator) {
+  Widget _buildFile(bool hasRequiredValidator, String? initialValue) {
     final acceptedExtensions =
         (uiSchema?.options?.containsKey(UiOptions.accept.name) ?? false)
             ? (uiSchema?.options?[UiOptions.accept.name] as String?)?.split(',')
@@ -359,7 +359,7 @@ class _UiWidget extends StatelessWidget {
 
     return _CustomFormFieldValidator<String>(
       isEnabled: hasRequiredValidator,
-      initialValue: null,
+      initialValue: initialValue,
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomFileUpload(
