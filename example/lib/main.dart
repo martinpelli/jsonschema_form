@@ -133,6 +133,7 @@ class _FormState extends State<_Form> {
                   child: Column(
                     children: [
                       JsonschemaFormBuilder(
+                        readOnly: true,
                         jsonSchemaForm: _jsonschemaForm,
                         registerSubmitCallback: (callback) {
                           // Register the callback

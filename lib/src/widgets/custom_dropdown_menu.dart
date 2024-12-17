@@ -7,6 +7,7 @@ class _CustomDropdownMenu<T> extends StatefulWidget {
     required this.itemLabel,
     required this.items,
     required this.onDropdownValueSelected,
+    required this.readOnly,
     this.selectedItem,
   });
 
@@ -15,6 +16,7 @@ class _CustomDropdownMenu<T> extends StatefulWidget {
   final String Function(int index, T item) itemLabel;
   final List<T> items;
   final void Function(T) onDropdownValueSelected;
+  final bool readOnly;
   final T? selectedItem;
 
   @override
@@ -39,6 +41,7 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
       child: LayoutBuilder(
         builder: (context, contraints) {
           return DropdownMenu<T>(
+            enabled: !widget.readOnly,
             width: contraints.maxWidth,
             enableSearch: false,
             requestFocusOnTap: true,
@@ -60,6 +63,7 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
             dropdownMenuEntries: widget.items
                 .mapIndexed<DropdownMenuEntry<T>>((int index, T item) {
               return DropdownMenuEntry<T>(
+                enabled: !widget.readOnly,
                 value: item,
                 label: widget.itemLabel(index, item),
                 labelWidget: Text(

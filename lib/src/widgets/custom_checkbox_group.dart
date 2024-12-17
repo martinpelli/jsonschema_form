@@ -9,6 +9,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
     required this.itemLabel,
     required this.initialItems,
     required this.onCheckboxValuesSelected,
+    required this.readOnly,
   });
 
   final String? label;
@@ -18,6 +19,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   final List<T>? initialItems;
   final void Function(List<T>) onCheckboxValuesSelected;
   final String jsonKey;
+  final bool readOnly;
 
   @override
   State<_CustomCheckboxGroup<T>> createState() => _CustomCheckboxGroupState();
@@ -56,20 +58,22 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                     Checkbox(
                       splashRadius: 0,
                       value: _selectedItems.contains(item),
-                      onChanged: (value) {
-                        if (value ?? false) {
-                          _selectedItems.add(item);
-                        } else {
-                          _selectedItems
-                              .removeWhere((element) => element == item);
-                        }
+                      onChanged: widget.readOnly
+                          ? null
+                          : (value) {
+                              if (value ?? false) {
+                                _selectedItems.add(item);
+                              } else {
+                                _selectedItems
+                                    .removeWhere((element) => element == item);
+                              }
 
-                        widget.onCheckboxValuesSelected(
-                          _selectedItems,
-                        );
+                              widget.onCheckboxValuesSelected(
+                                _selectedItems,
+                              );
 
-                        setState(() {});
-                      },
+                              setState(() {});
+                            },
                     ),
                     Text(widget.itemLabel(index, item)),
                   ],

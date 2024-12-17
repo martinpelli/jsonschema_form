@@ -9,6 +9,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.acceptedExtensions,
     required this.title,
     required this.onFileChosen,
+    required this.readOnly,
   });
 
   final bool hasFilePicker;
@@ -18,6 +19,7 @@ class _CustomFileUpload extends StatefulWidget {
   final List<String>? acceptedExtensions;
   final String? title;
   final void Function(String value) onFileChosen;
+  final bool readOnly;
 
   @override
   State<_CustomFileUpload> createState() => _CustomFileUploadState();
@@ -45,14 +47,14 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
           children: [
             if (widget.hasFilePicker) ...[
               ElevatedButton(
-                onPressed: _openSingleFile,
+                onPressed: widget.readOnly ? null : _openSingleFile,
                 child: const Text('Choose File'),
               ),
               const SizedBox(width: 20),
             ],
             if (widget.hasCameraButton) ...[
               ElevatedButton(
-                onPressed: _openCamera,
+                onPressed: widget.readOnly ? null : _openCamera,
                 child: Text(_getCameraButtonText()),
               ),
               const SizedBox(width: 20),
@@ -67,11 +69,13 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                   Text(_fileName!),
                   const SizedBox(width: 10),
                   IconButton(
-                    onPressed: () {
-                      _file = null;
-                      widget.onFileChosen('');
-                      setState(() {});
-                    },
+                    onPressed: widget.readOnly
+                        ? null
+                        : () {
+                            _file = null;
+                            widget.onFileChosen('');
+                            setState(() {});
+                          },
                     icon: const Icon(Icons.delete),
                   ),
                 ],

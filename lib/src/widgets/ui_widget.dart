@@ -11,6 +11,7 @@ class _UiWidget extends StatelessWidget {
     required this.previousFormData,
     required this.arrayIndex,
     required this.title,
+    this.readOnly = false,
   });
 
   final JsonSchema jsonSchema;
@@ -22,6 +23,7 @@ class _UiWidget extends StatelessWidget {
   final dynamic previousFormData;
   final int? arrayIndex;
   final String? title;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +159,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomDropdownMenu<String>(
+          readOnly: uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -184,6 +187,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomRadioGroup<String>(
+          readOnly: uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -212,6 +216,7 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue,
       childFormBuilder: (field) {
         return _CustomRadioGroup<bool>(
+          readOnly: uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -239,6 +244,7 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue?.first,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<bool>(
+          readOnly: uiSchema?.readonly ?? readOnly,
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
@@ -270,6 +276,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<String>(
+          readOnly: uiSchema?.readonly ?? readOnly,
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
@@ -301,7 +308,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: uiSchema?.readonly ?? false,
+        readOnly: uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
@@ -333,7 +340,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: uiSchema?.readonly ?? false,
+        readOnly: uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
@@ -380,6 +387,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomFileUpload(
+          readOnly: uiSchema?.readonly ?? readOnly,
           acceptedExtensions: acceptedExtensions,
           hasFilePicker: hasFilePicker,
           hasCameraButton: hasCameraButton,
@@ -415,21 +423,23 @@ class _UiWidget extends StatelessWidget {
         canRequestFocus: false,
         mouseCursor: SystemMouseCursors.click,
         hasRequiredValidator: hasRequiredValidator,
-        onTap: () async {
-          final minDate = DateTime(1900);
-          final maxDate = DateTime(9999, 12, 31);
-          final datePicked = await showDatePicker(
-            context: context,
-            firstDate: minDate,
-            lastDate: maxDate,
-          );
+        onTap: readOnly
+            ? null
+            : () async {
+                final minDate = DateTime(1900);
+                final maxDate = DateTime(9999, 12, 31);
+                final datePicked = await showDatePicker(
+                  context: context,
+                  firstDate: minDate,
+                  lastDate: maxDate,
+                );
 
-          if (datePicked != null) {
-            return DateFormat('dd/MM/yyyy').format(datePicked);
-          }
+                if (datePicked != null) {
+                  return DateFormat('dd/MM/yyyy').format(datePicked);
+                }
 
-          return null;
-        },
+                return null;
+              },
       ),
     );
   }
@@ -455,21 +465,23 @@ class _UiWidget extends StatelessWidget {
         canRequestFocus: false,
         mouseCursor: SystemMouseCursors.click,
         hasRequiredValidator: hasRequiredValidator,
-        onTap: () async {
-          final minDate = DateTime(1900);
-          final maxDate = DateTime(9999, 12, 31);
-          final datePicked = await showOmniDateTimePicker(
-            context: context,
-            firstDate: minDate,
-            lastDate: maxDate,
-          );
+        onTap: readOnly
+            ? null
+            : () async {
+                final minDate = DateTime(1900);
+                final maxDate = DateTime(9999, 12, 31);
+                final datePicked = await showOmniDateTimePicker(
+                  context: context,
+                  firstDate: minDate,
+                  lastDate: maxDate,
+                );
 
-          if (datePicked != null) {
-            return DateFormat('dd/MM/yyyy HH:mm').format(datePicked);
-          }
+                if (datePicked != null) {
+                  return DateFormat('dd/MM/yyyy HH:mm').format(datePicked);
+                }
 
-          return null;
-        },
+                return null;
+              },
       ),
     );
   }
@@ -501,7 +513,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: uiSchema?.readonly ?? false,
+        readOnly: uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
         defaultValue: initialValue,

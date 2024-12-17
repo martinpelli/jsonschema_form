@@ -39,6 +39,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
     required this.registerSubmitCallback,
+    this.readOnly = false,
     super.key,
   });
 
@@ -49,6 +50,11 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// will return null. Otherwise the method returns the final
   /// formData filled by the user
   final void Function(Map<String, dynamic>? Function())? registerSubmitCallback;
+
+  /// Useful if the user needs to see the whole form in read only, so none field
+  /// will be editable. This can be usefule if you don't want to provide a
+  /// ui:readonly key to each field.
+  final bool readOnly;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -180,6 +186,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               buildJsonschemaForm: _buildJsonschemaForm,
               rebuildForm: _rebuildForm,
               title: title ?? jsonKey,
+              readOnly: widget.readOnly,
             ),
         ] else if (jsonSchema.type == JsonType.array)
           _ArrayForm(
@@ -200,6 +207,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             previousFormData: previousFormData,
             arrayIndex: arrayIndex,
             title: title ?? jsonKey,
+            readOnly: widget.readOnly,
           ),
       ],
     );

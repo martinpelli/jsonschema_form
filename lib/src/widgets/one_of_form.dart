@@ -8,6 +8,7 @@ class _OneOfForm extends StatefulWidget {
     this.formData, {
     required this.buildJsonschemaForm,
     required this.rebuildForm,
+    required this.readOnly,
     this.previousSchema,
     this.previousJsonKey,
     this.title,
@@ -28,6 +29,7 @@ class _OneOfForm extends StatefulWidget {
     String? previousJsonKey,
   }) buildJsonschemaForm;
   final void Function() rebuildForm;
+  final bool readOnly;
   final String? title;
 
   @override
@@ -124,6 +126,7 @@ class _OneOfFormState extends State<_OneOfForm> {
     if (widget.uiSchema?.widget == null ||
         widget.uiSchema?.widget == UiType.select) {
       return _CustomDropdownMenu<JsonSchema>(
+        readOnly: widget.uiSchema?.readonly ?? widget.readOnly,
         label: widget.title,
         labelStyle: null,
         itemLabel: itemLabel,
@@ -133,6 +136,7 @@ class _OneOfFormState extends State<_OneOfForm> {
       );
     } else {
       return _CustomRadioGroup<JsonSchema>(
+        readOnly: widget.uiSchema?.readonly ?? widget.readOnly,
         label: widget.title,
         labelStyle: null,
         itemLabel: itemLabel,
