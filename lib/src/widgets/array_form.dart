@@ -7,6 +7,7 @@ class _ArrayForm extends StatefulWidget {
     required this.uiSchema,
     required this.formData,
     required this.buildJsonschemaForm,
+    required this.readOnly,
   });
 
   final JsonSchema jsonSchema;
@@ -22,6 +23,7 @@ class _ArrayForm extends StatefulWidget {
     String? previousJsonKey,
     int? arrayIndex,
   }) buildJsonschemaForm;
+  final bool readOnly;
 
   @override
   State<_ArrayForm> createState() => _ArrayFormState();
@@ -216,18 +218,20 @@ class _ArrayFormState extends State<_ArrayForm> {
       final addButton = Align(
         alignment: Alignment.centerRight,
         child: IconButton(
-          onPressed: () {
-            _modifyFormData();
+          onPressed: widget.readOnly
+              ? null
+              : () {
+                  _modifyFormData();
 
-            final hasAdditionalItems =
-                widget.jsonSchema.additionalItems != null;
+                  final hasAdditionalItems =
+                      widget.jsonSchema.additionalItems != null;
 
-            if (hasAdditionalItems) {
-              _addArrayItem(widget.jsonSchema.additionalItems!);
-            } else {
-              _addArrayItem(widget.jsonSchema.items as JsonSchema);
-            }
-          },
+                  if (hasAdditionalItems) {
+                    _addArrayItem(widget.jsonSchema.additionalItems!);
+                  } else {
+                    _addArrayItem(widget.jsonSchema.items as JsonSchema);
+                  }
+                },
           icon: const Icon(Icons.add),
         ),
       );
@@ -263,14 +267,16 @@ class _ArrayFormState extends State<_ArrayForm> {
     if (hasRemoveButton) {
       final removeButton = Align(
         alignment: Alignment.centerRight,
-        child: IconButton(
-          onPressed: () {
-            onRemovePressed();
+        child: widget.readOnly
+            ? null
+            : IconButton(
+                onPressed: () {
+                  onRemovePressed();
 
-            setState(() {});
-          },
-          icon: const Icon(Icons.remove),
-        ),
+                  setState(() {});
+                },
+                icon: const Icon(Icons.remove),
+              ),
       );
       items.add(removeButton);
     }
