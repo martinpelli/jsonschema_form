@@ -195,6 +195,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             uiSchema: uiSchema,
             formData: newFormData,
             buildJsonschemaForm: _buildJsonschemaForm,
+            readOnly: widget.readOnly,
           )
         else
           _UiWidget(
