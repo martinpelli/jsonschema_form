@@ -50,11 +50,23 @@ class _OneOfFormState extends State<_OneOfForm> {
     } else {
       /// If there is data in formData then it will select the oneOf item if the
       /// first key from oneOf items matches the first key from the formData
-      selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.firstWhere(
-        (element) =>
-            element.properties!.entries.first.key ==
-            widget.formData.entries.first.key,
-      );
+      selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.firstWhere((element) {
+        /// First it tries to look for a const value, becuase if there is one,
+        /// it should be different in each oneOf object, so it can be selected
+        /// base ond const value.
+        final firstConstValue = element.properties!.entries.firstWhereOrNull(
+          (element) => element.value.constValue != null,
+        );
+        if (firstConstValue != null) {
+          return widget.formData[firstConstValue.key] ==
+              firstConstValue.value.constValue!;
+        }
+
+        /// If const value is not present then it will try to look at the first
+        /// key and the formData should have only that key
+        return element.properties!.entries.first.key ==
+            widget.formData.entries.first.key;
+      });
     }
   }
 
