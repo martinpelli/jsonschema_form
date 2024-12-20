@@ -18,7 +18,6 @@ import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
-import 'package:jsonschema_form/src/utils/map_extension.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
@@ -38,7 +37,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
-    required this.registerSubmitCallback,
+    required this.formKey,
     this.readOnly = false,
     super.key,
   });
@@ -46,10 +45,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// The json schema for the form.
   final JsonschemaForm jsonSchemaForm;
 
-  /// Expose onFormSubmitted to parent. If there is any error on the form, this
-  /// will return null. Otherwise the method returns the final
-  /// formData filled by the user
-  final void Function(Map<String, dynamic>? Function())? registerSubmitCallback;
+  /// Form key to validate fields
+  final GlobalKey<FormState> formKey;
 
   /// Useful if the user needs to see the whole form in read only, so none field
   /// will be editable. This can be usefule if you don't want to provide a
@@ -61,8 +58,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
 }
 
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
-  final _formKey = GlobalKey<FormState>();
-
   late Map<String, dynamic> _formData;
 
   @override
@@ -73,9 +68,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     } else {
       _formData = {};
     }
-
-    // Expose the submit method to the parent
-    widget.registerSubmitCallback?.call(onFormSubmitted);
   }
 
   @override
@@ -87,7 +79,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: widget.formKey,
       child: _buildJsonschemaForm(
         widget.jsonSchemaForm.jsonSchema!,
         null,
@@ -95,16 +87,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         _formData,
       ),
     );
-  }
-
-  Map<String, dynamic>? onFormSubmitted() {
-    final isFormValid = _formKey.currentState?.validate() ?? false;
-
-    if (isFormValid) {
-      return _formData.removeEmptySubmaps();
-    }
-
-    return null;
   }
 
   Widget _buildJsonschemaForm(
