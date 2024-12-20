@@ -68,7 +68,7 @@ class _FormState extends State<_Form> {
 
   String? selectedFileName;
 
-  late Map<String, dynamic>? Function()? submitFormCallback;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -133,25 +133,25 @@ class _FormState extends State<_Form> {
                   child: Column(
                     children: [
                       JsonschemaFormBuilder(
-                        readOnly: true,
                         jsonSchemaForm: _jsonschemaForm,
-                        registerSubmitCallback: (callback) {
-                          // Register the callback
-                          submitFormCallback = callback;
-                        },
+                        formKey: _formKey,
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
-                          if (submitFormCallback != null) {
-                            final formData = submitFormCallback!();
-                            if (formData != null) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: Text(formData.toString()),
-                                backgroundColor: Colors.green,
-                              ));
-                            }
+                          final isFormValid =
+                              _formKey.currentState?.validate() ?? false;
+
+                          if (isFormValid && _jsonschemaForm.formData != null) {
+                            final newFormData = Map<String, dynamic>.from(
+                                _jsonschemaForm.formData!);
+
+                            newFormData.removeEmptySubmaps();
+
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(newFormData.toString()),
+                              backgroundColor: Colors.green,
+                            ));
                           }
                         },
                         child: const Text('Submit'),
