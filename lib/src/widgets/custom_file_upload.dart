@@ -105,7 +105,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
     );
 
     if (selectedFile != null) {
-      setState(() => _isLoading = true);
+      if (mounted) setState(() => _isLoading = true);
 
       try {
         final encodedFile = kIsWeb
@@ -117,16 +117,18 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
           'data:${selectedFile.mimeType};name=${selectedFile.name};base64,$encodedFile',
         );
 
-        setState(() {
-          _file = selectedFile;
-          _fileName = _file!.name;
-        });
+        if (mounted) {
+          setState(() {
+            _file = selectedFile;
+            _fileName = _file!.name;
+          });
+        }
       } catch (e) {
         if (kDebugMode) {
           print('Error during file encoding: $e');
         }
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
