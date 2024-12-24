@@ -42,6 +42,7 @@ class JsonSchema extends Equatable {
     required this.format,
     required this.minLength,
     required this.maxLength,
+    required this.readOnly,
   });
 
   /// A human-readable name or label for a particular schema or field.
@@ -147,6 +148,10 @@ class JsonSchema extends Equatable {
   /// enter in a TextFormField
   final int? maxLength;
 
+  /// If it is true then this field can't be modified. This is an alternative to
+  /// readonly from uiSchema
+  final bool? readOnly;
+
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);
 
@@ -170,5 +175,6 @@ class JsonSchema extends Equatable {
         format,
         minLength,
         maxLength,
+        readOnly,
       ];
 }

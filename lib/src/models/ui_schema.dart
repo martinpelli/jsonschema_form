@@ -94,8 +94,8 @@ class UiSchema extends Equatable {
   /// Provides a brief description under the field for helping de user
   final String? help;
 
-  /// If the field is an input and [readonly] is true then the input can't
-  /// be modified
+  /// If readonly is true then the field can't be modified. This is an
+  /// alternative to readOnly from jsonSchema
   final bool? readonly;
 
   /// Defines options to be used for the given key, for instance: if options

@@ -159,7 +159,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomDropdownMenu<String>(
-          readOnly: uiSchema?.readonly ?? readOnly,
+          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -187,7 +187,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomRadioGroup<String>(
-          readOnly: uiSchema?.readonly ?? readOnly,
+          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -216,7 +216,7 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue,
       childFormBuilder: (field) {
         return _CustomRadioGroup<bool>(
-          readOnly: uiSchema?.readonly ?? readOnly,
+          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
@@ -244,7 +244,7 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue?.first,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<bool>(
-          readOnly: uiSchema?.readonly ?? readOnly,
+          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
@@ -276,7 +276,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<String>(
-          readOnly: uiSchema?.readonly ?? readOnly,
+          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
@@ -308,7 +308,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: uiSchema?.readonly ?? readOnly,
+        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
@@ -340,7 +340,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: uiSchema?.readonly ?? readOnly,
+        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
@@ -387,7 +387,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomFileUpload(
-          readOnly: uiSchema?.readonly ?? readOnly,
+          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           acceptedExtensions: acceptedExtensions,
           hasFilePicker: hasFilePicker,
           hasCameraButton: hasCameraButton,
@@ -513,7 +513,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: uiSchema?.readonly ?? readOnly,
+        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
         defaultValue: initialValue,
