@@ -37,7 +37,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
-    required this.formKey,
+    this.formKey,
     this.readOnly = false,
     super.key,
   });
@@ -46,7 +46,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
   final JsonschemaForm jsonSchemaForm;
 
   /// Form key to validate fields
-  final GlobalKey<FormState> formKey;
+  final GlobalKey<FormState>? formKey;
 
   /// Useful if the user needs to see the whole form in read only, so none field
   /// will be editable. This can be usefule if you don't want to provide a
