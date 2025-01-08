@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'dart:io' as fi;
 
 import 'package:file_selector/file_selector.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 /// Extension on [String] to provide a method to check if the string
 /// is a valid base64 encoded string.
