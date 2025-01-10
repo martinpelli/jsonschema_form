@@ -181,4 +181,11 @@ class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindin
       });
     }
   }
+
+  @protected
+  @mustCallSuper
+  void dispose() {
+    print('dispose $runtimeType');
+    super.dispose();
+  }
 }

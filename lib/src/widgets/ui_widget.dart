@@ -149,7 +149,9 @@ class _UiWidget extends StatelessWidget {
         if (dependency.value is List<String>) {
           final dependencies = dependency.value as List<String>;
 
-          if (dependencies.contains(jsonKey) &&
+          if (dependencies.contains(
+                jsonKey,
+              ) &&
               ((previousFormData as Map<String, dynamic>?)?.containsKey(
                     dependency.key,
                   ) ??
@@ -331,11 +333,11 @@ class _UiWidget extends StatelessWidget {
     _addMinLengthValidator(validators);
 
     _addMaxLengthValidator(validators);
-
+    final readOnlyValue = jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+        readOnly: false, //jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
