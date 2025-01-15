@@ -16,18 +16,18 @@ import 'package:meta/meta.dart';
 @immutable
 class UiSchema extends Equatable {
   /// {@macro json_schema}
-  const UiSchema({
-    this.children,
-    this.widget,
-    this.autofocus,
-    this.emptyValue,
-    this.placeholder,
-    this.title,
-    this.description,
-    this.help,
-    this.options,
-    this.readonly,
-  });
+  const UiSchema(
+      {this.children,
+      this.widget,
+      this.autofocus,
+      this.emptyValue,
+      this.placeholder,
+      this.title,
+      this.description,
+      this.help,
+      this.options,
+      this.readonly,
+      this.order});
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
   factory UiSchema.fromJson(Map<String, dynamic> json) {
@@ -63,6 +63,9 @@ class UiSchema extends Equatable {
       description: json['ui:description'] as String?,
       help: json['ui:help'] as String?,
       readonly: json['ui:readonly'] as bool?,
+      order: json['ui:order'] == null
+          ? null
+          : List<String>.from(json['ui:order']! as List<dynamic>),
       options: options,
       children: parsedChildren,
     );
@@ -104,6 +107,9 @@ class UiSchema extends Equatable {
   /// }
   /// then this indicates user can't delete items from array
   final Map<String, dynamic>? options;
+
+  /// Defines the order in which fields should be displayed
+  final List<String>? order;
 
   @override
   List<Object?> get props => [

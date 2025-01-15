@@ -114,37 +114,25 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
         ],
         if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
-          for (final entry in jsonSchema.properties?.entries ??
-              <MapEntry<String, JsonSchema>>[]) ...[
-            /// Build one Widget for each property in the schema
-            _buildJsonschemaForm(
-              entry.value,
-              entry.key,
-              uiSchema?.children?[entry.key],
-              newFormData,
-              previousSchema: jsonSchema,
-              previousJsonKey: jsonKey,
-              arrayIndex: arrayIndex,
-            ),
-
-            /// Build Schema dependencies, widgets that will be added
-            /// dynamically depending on other field values
-            if (jsonSchema.dependencies != null &&
-                jsonSchema.dependencies![entry.key] is JsonSchema &&
-                jsonSchema.dependencies!.keys.contains(entry.key) &&
-                ((newFormData as Map<String, dynamic>?)
-                        ?.containsKey(entry.key) ??
-                    false))
-              _buildJsonschemaForm(
-                jsonSchema.dependencies![entry.key] as JsonSchema,
-                entry.key,
-                uiSchema?.children?[entry.key],
+          if (uiSchema?.order == null)
+            for (final entry in jsonSchema.properties?.entries ??
+                <MapEntry<String, JsonSchema>>[])
+              ..._buildObjectEntries(
+                entry,
+                jsonKey,
+                jsonSchema,
+                uiSchema,
+                arrayIndex,
                 newFormData,
-                previousSchema: jsonSchema,
-                previousJsonKey: jsonKey,
-                arrayIndex: arrayIndex,
-              ),
-          ],
+              )
+          else
+            ..._buildOrderedObjectEntries(
+              jsonKey,
+              jsonSchema,
+              uiSchema,
+              arrayIndex,
+              newFormData,
+            ),
           if (jsonSchema.oneOf != null)
             _OneOfForm(
               jsonSchema,
@@ -280,5 +268,83 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// new more eperformant solution should be done in future.
   void _rebuildForm() {
     setState(() {});
+  }
+
+  List<Widget> _buildObjectEntries(
+    MapEntry<String, JsonSchema> entry,
+    String? jsonKey,
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    int? arrayIndex,
+    dynamic newFormData,
+  ) {
+    return [
+      /// Build one Widget for each property in the schema
+      _buildJsonschemaForm(
+        entry.value,
+        entry.key,
+        uiSchema?.children?[entry.key],
+        newFormData,
+        previousSchema: jsonSchema,
+        previousJsonKey: jsonKey,
+        arrayIndex: arrayIndex,
+      ),
+
+      /// Build Schema dependencies, widgets that will be added
+      /// dynamically depending on other field values
+      if (jsonSchema.dependencies != null &&
+          jsonSchema.dependencies![entry.key] is JsonSchema &&
+          jsonSchema.dependencies!.keys.contains(entry.key) &&
+          ((newFormData as Map<String, dynamic>?)?.containsKey(entry.key) ??
+              false))
+        _buildJsonschemaForm(
+          jsonSchema.dependencies![entry.key] as JsonSchema,
+          entry.key,
+          uiSchema?.children?[entry.key],
+          newFormData,
+          previousSchema: jsonSchema,
+          previousJsonKey: jsonKey,
+          arrayIndex: arrayIndex,
+        ),
+    ];
+  }
+
+  List<Widget> _buildOrderedObjectEntries(
+    String? jsonKey,
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    int? arrayIndex,
+    dynamic newFormData,
+  ) {
+    final widgets = <Widget>[];
+    const wildcard = '*';
+
+    final orderSet = Set<String>.from(uiSchema!.order!);
+    final properties = jsonSchema.properties?.entries ?? [];
+
+    void addWidgetsForEntry(String entryKey) {
+      final entry = properties.firstWhereOrNull((e) => e.key == entryKey);
+      if (entry != null) {
+        widgets.addAll(
+          _buildObjectEntries(
+              entry, jsonKey, jsonSchema, uiSchema, arrayIndex, newFormData),
+        );
+      }
+    }
+
+    for (final orderKey in uiSchema.order!) {
+      if (orderKey == wildcard) {
+        final itemsNotInOrder =
+            properties.map((e) => e.key).toSet().difference(orderSet);
+
+        for (final wildcardItemKey in itemsNotInOrder) {
+          addWidgetsForEntry(wildcardItemKey);
+        }
+      } else {
+        addWidgetsForEntry(orderKey);
+      }
+    }
+
+    return widgets;
   }
 }
