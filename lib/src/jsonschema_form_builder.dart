@@ -87,6 +87,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
     final description = _getDescription(jsonSchema, uiSchema);
 
+    final isRequired = (previousSchema?.requiredFields?.isNotEmpty ?? false) &&
+        (jsonKey != null &&
+            (previousSchema?.requiredFields?.contains(jsonKey) ?? false));
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +99,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             jsonSchema.type == JsonType.array) ...[
           if (title != null) ...[
             Text(
-              title,
+              title + (isRequired ? '*' : ''),
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const Divider(),
@@ -160,10 +164,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             formData: newFormData,
             buildJsonschemaForm: _buildJsonschemaForm,
             readOnly: widget.readOnly,
-            isRequired: (previousSchema?.requiredFields?.isNotEmpty ?? false) &&
-                (jsonKey != null &&
-                    (previousSchema?.requiredFields?.contains(jsonKey) ??
-                        false)),
+            isRequired: isRequired,
           )
         else
           _UiWidget(
