@@ -97,7 +97,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (jsonSchema.type == JsonType.object || jsonSchema.type == JsonType.array) ...[
+        if (jsonSchema.type == JsonType.object ||
+            jsonSchema.type == JsonType.array) ...[
           if (title != null) ...[
             Text(
               title + (isRequired ? '*' : ''),
@@ -113,7 +114,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
         ],
         if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
-          for (final entry in jsonSchema.properties?.entries ?? <MapEntry<String, JsonSchema>>[]) ...[
+          for (final entry in jsonSchema.properties?.entries ??
+              <MapEntry<String, JsonSchema>>[]) ...[
             /// Build one Widget for each property in the schema
             _buildJsonschemaForm(
               entry.value,
@@ -130,7 +132,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             if (jsonSchema.dependencies != null &&
                 jsonSchema.dependencies![entry.key] is JsonSchema &&
                 jsonSchema.dependencies!.keys.contains(entry.key) &&
-                ((newFormData as Map<String, dynamic>?)?.containsKey(entry.key) ?? false))
+                ((newFormData as Map<String, dynamic>?)
+                        ?.containsKey(entry.key) ??
+                    false))
               _buildJsonschemaForm(
                 jsonSchema.dependencies![entry.key] as JsonSchema,
                 entry.key,
@@ -194,7 +198,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             formData as Map<String, dynamic>,
           );
 
-    if (jsonKey != null && (jsonSchema.type == JsonType.object || jsonSchema.type == JsonType.array)) {
+    if (jsonKey != null &&
+        (jsonSchema.type == JsonType.object ||
+            jsonSchema.type == JsonType.array)) {
       if (formData is Map<String, dynamic>) {
         /// If there is an empty list coming from formData (possible from an
         /// external data source) it will be removed because dart cannot detect
@@ -217,7 +223,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             if (jsonSchema.type == JsonType.object) {
               return <String, dynamic>{};
             } else {
-              if (DynamicUtils.isListOfMaps(jsonSchema.items) || jsonSchema.items is JsonSchema) {
+              if (DynamicUtils.isListOfMaps(jsonSchema.items) ||
+                  jsonSchema.items is JsonSchema) {
                 return <Map<String, dynamic>>[];
               } else {
                 return <dynamic>[];

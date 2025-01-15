@@ -27,7 +27,8 @@ class _CustomFileUpload extends StatefulWidget {
   State<_CustomFileUpload> createState() => _CustomFileUploadState();
 }
 
-class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindingObserver {
+class _CustomFileUploadState extends State<_CustomFileUpload>
+    with WidgetsBindingObserver {
   XFile? _file;
   late String? _fileName;
 
@@ -177,15 +178,10 @@ class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindin
 
       setState(() {
         _file = file;
-        _fileName = _file!.name.isEmpty ? DateTime.now().toIso8601String() : _file!.name;
+        _fileName = _file!.name.isEmpty
+            ? DateTime.now().toIso8601String()
+            : _file!.name;
       });
     }
-  }
-
-  @protected
-  @mustCallSuper
-  void dispose() {
-    print('dispose $runtimeType');
-    super.dispose();
   }
 }

@@ -47,7 +47,8 @@ class _UiWidget extends StatelessWidget {
             ) ??
             false) ||
         previousSchema?.items is List<dynamic> ||
-        (previousSchema?.minItems != null && arrayIndex! < previousSchema!.minItems!) ||
+        (previousSchema?.minItems != null &&
+            arrayIndex! < previousSchema!.minItems!) ||
         _isPropertyDependantAndDependencyHasValue();
 
     final initialStringValue = defaultValue?.toString();
@@ -164,7 +165,9 @@ class _UiWidget extends StatelessWidget {
     return false;
   }
 
-  bool _isDropdown() => uiSchema?.widget == UiType.select || (uiSchema?.widget == null && jsonSchema.enumValue != null);
+  bool _isDropdown() =>
+      uiSchema?.widget == UiType.select ||
+      (uiSchema?.widget == null && jsonSchema.enumValue != null);
 
   Widget _buildDropdown(
     bool hasRequiredValidator,
@@ -226,7 +229,9 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isRadio() => uiSchema?.widget != UiType.checkbox && jsonSchema.type == JsonType.boolean;
+  bool _isRadio() =>
+      uiSchema?.widget != UiType.checkbox &&
+      jsonSchema.type == JsonType.boolean;
 
   Widget _buildRadio(
     bool hasRequiredValidator,
@@ -256,7 +261,8 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isCheckbox() => uiSchema?.widget != UiType.radio && jsonSchema.type == JsonType.boolean;
+  bool _isCheckbox() =>
+      uiSchema?.widget != UiType.radio && jsonSchema.type == JsonType.boolean;
 
   Widget _buildCheckbox(
     bool hasRequiredValidator,
@@ -383,7 +389,9 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isFile() => uiSchema?.widget == UiType.file || jsonSchema.format == JsonSchemaFormat.dataUrl;
+  bool _isFile() =>
+      uiSchema?.widget == UiType.file ||
+      jsonSchema.format == JsonSchemaFormat.dataUrl;
 
   Widget _buildFile(bool hasRequiredValidator, String? initialValue) {
     final acceptedExtensions = (uiSchema?.options?.containsKey(
@@ -535,7 +543,9 @@ class _UiWidget extends StatelessWidget {
     if (isEmailTextFormField) {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
       validators.add((value) {
-        if (value != null && value.isNotEmpty && !emailRegex.hasMatch(value.trim())) {
+        if (value != null &&
+            value.isNotEmpty &&
+            !emailRegex.hasMatch(value.trim())) {
           return 'Invalid email';
         }
 
@@ -558,7 +568,9 @@ class _UiWidget extends StatelessWidget {
         placeholder: uiSchema?.placeholder,
         helperText: uiSchema?.help,
         autofocus: uiSchema?.autofocus,
-        inputFormatters: isNumberTextFormFiled ? [FilteringTextInputFormatter.digitsOnly] : null,
+        inputFormatters: isNumberTextFormFiled
+            ? [FilteringTextInputFormatter.digitsOnly]
+            : null,
         keyboardType: isEmailTextFormField
             ? TextInputType.emailAddress
             : isNumberTextFormFiled
@@ -633,7 +645,8 @@ class _UiWidget extends StatelessWidget {
   /// whole form will be rebuilt so that the dependants fields are required or
   /// not, depending if the value is valid or not
   bool _hasDependants() {
-    if (previousSchema?.dependencies != null && previousSchema!.dependencies!.keys.contains(jsonKey)) {
+    if (previousSchema?.dependencies != null &&
+        previousSchema!.dependencies!.keys.contains(jsonKey)) {
       return true;
     }
     return false;
