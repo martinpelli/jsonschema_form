@@ -42,12 +42,13 @@ class _UiWidget extends StatelessWidget {
     /// if it a required item from an array with additional items
     /// if is an item index less than minItems from an array
     /// is required by a dependency
-    final hasRequiredValidator =
-        (previousSchema?.requiredFields?.contains(jsonKey) ?? false) ||
-            previousSchema?.items is List<dynamic> ||
-            (previousSchema?.minItems != null &&
-                arrayIndex! < previousSchema!.minItems!) ||
-            _isPropertyDependantAndDependencyHasValue();
+    final hasRequiredValidator = (previousSchema?.requiredFields?.contains(
+              jsonKey,
+            ) ??
+            false) ||
+        previousSchema?.items is List<dynamic> ||
+        (previousSchema?.minItems != null && arrayIndex! < previousSchema!.minItems!) ||
+        _isPropertyDependantAndDependencyHasValue();
 
     final initialStringValue = defaultValue?.toString();
 
@@ -56,12 +57,20 @@ class _UiWidget extends StatelessWidget {
     } else if (_isRadioGroup()) {
       return _buildRadioGroup(hasRequiredValidator, initialStringValue);
     } else if (_isRadio()) {
-      final initialValue =
-          defaultValue is String ? bool.tryParse(defaultValue) : null;
+      final initialValue = defaultValue is String
+          ? bool.tryParse(
+              defaultValue,
+            )
+          : null;
       return _buildRadio(hasRequiredValidator, initialValue);
     } else if (_isCheckbox()) {
-      final initialValue =
-          defaultValue is String ? [bool.tryParse(defaultValue)!] : null;
+      final initialValue = defaultValue is String
+          ? [
+              bool.tryParse(
+                defaultValue,
+              )!,
+            ]
+          : null;
       return _buildCheckbox(hasRequiredValidator, initialValue);
     } else if (_isCheckboxGroup()) {
       final initialValues = (formData as List).cast<String>();
@@ -105,7 +114,7 @@ class _UiWidget extends StatelessWidget {
     }
   }
 
-  void _setValueInFormData(dynamic value) {
+  Future<void> _setValueInFormData(dynamic value) async {
     if (value is String && value.isEmpty) {
       if (formData is Map) {
         (formData as Map).remove(jsonKey);
@@ -115,6 +124,13 @@ class _UiWidget extends StatelessWidget {
     } else if (value is List<String>) {
       (formData as List).clear();
       (formData as List).addAll(value);
+    } else if (value is XFile) {
+      final base64File = await value.getBase64();
+      if (formData is Map) {
+        (formData as Map)[jsonKey!] = base64File;
+      } else {
+        (formData as List)[arrayIndex!] = base64File;
+      }
     } else {
       if (formData is Map) {
         (formData as Map)[jsonKey!] = value;
@@ -133,9 +149,12 @@ class _UiWidget extends StatelessWidget {
         if (dependency.value is List<String>) {
           final dependencies = dependency.value as List<String>;
 
-          if (dependencies.contains(jsonKey) &&
-              ((previousFormData as Map<String, dynamic>?)
-                      ?.containsKey(dependency.key) ??
+          if (dependencies.contains(
+                jsonKey,
+              ) &&
+              ((previousFormData as Map<String, dynamic>?)?.containsKey(
+                    dependency.key,
+                  ) ??
                   false)) {
             return true;
           }
@@ -145,9 +164,7 @@ class _UiWidget extends StatelessWidget {
     return false;
   }
 
-  bool _isDropdown() =>
-      uiSchema?.widget == UiType.select ||
-      (uiSchema?.widget == null && jsonSchema.enumValue != null);
+  bool _isDropdown() => uiSchema?.widget == UiType.select || (uiSchema?.widget == null && jsonSchema.enumValue != null);
 
   Widget _buildDropdown(
     bool hasRequiredValidator,
@@ -162,7 +179,10 @@ class _UiWidget extends StatelessWidget {
           readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
-              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              ? const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                )
               : null,
           itemLabel: (_, item) => item,
           items: jsonSchema.enumValue!,
@@ -190,7 +210,10 @@ class _UiWidget extends StatelessWidget {
           readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
-              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              ? const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                )
               : null,
           itemLabel: (_, item) => item,
           items: jsonSchema.enumValue!,
@@ -203,9 +226,7 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isRadio() =>
-      uiSchema?.widget != UiType.checkbox &&
-      jsonSchema.type == JsonType.boolean;
+  bool _isRadio() => uiSchema?.widget != UiType.checkbox && jsonSchema.type == JsonType.boolean;
 
   Widget _buildRadio(
     bool hasRequiredValidator,
@@ -219,7 +240,10 @@ class _UiWidget extends StatelessWidget {
           readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
-              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              ? const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                )
               : null,
           itemLabel: (_, item) => item ? 'Yes' : 'No',
           items: const [false, true],
@@ -232,8 +256,7 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isCheckbox() =>
-      uiSchema?.widget != UiType.radio && jsonSchema.type == JsonType.boolean;
+  bool _isCheckbox() => uiSchema?.widget != UiType.radio && jsonSchema.type == JsonType.boolean;
 
   Widget _buildCheckbox(
     bool hasRequiredValidator,
@@ -248,7 +271,10 @@ class _UiWidget extends StatelessWidget {
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
-              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              ? const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                )
               : null,
           itemLabel: (_, item) => item ? 'Yes' : 'No',
           items: const [true],
@@ -280,7 +306,10 @@ class _UiWidget extends StatelessWidget {
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
-              ? const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)
+              ? const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                )
               : null,
           items: jsonSchema.enumValue!,
           itemLabel: (_, item) => item,
@@ -304,7 +333,6 @@ class _UiWidget extends StatelessWidget {
     _addMinLengthValidator(validators);
 
     _addMaxLengthValidator(validators);
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -355,36 +383,46 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  bool _isFile() =>
-      uiSchema?.widget == UiType.file ||
-      jsonSchema.format == JsonSchemaFormat.dataUrl;
+  bool _isFile() => uiSchema?.widget == UiType.file || jsonSchema.format == JsonSchemaFormat.dataUrl;
 
   Widget _buildFile(bool hasRequiredValidator, String? initialValue) {
-    final acceptedExtensions =
-        (uiSchema?.options?.containsKey(UiOptions.accept.name) ?? false)
-            ? (uiSchema?.options?[UiOptions.accept.name] as String?)?.split(',')
-            : null;
+    final acceptedExtensions = (uiSchema?.options?.containsKey(
+              UiOptions.accept.name,
+            ) ??
+            false)
+        ? (uiSchema?.options?[UiOptions.accept.name] as String?)?.split(',')
+        : null;
 
-    final hasFilePicker =
-        !(uiSchema?.options?.containsKey(UiOptions.explorer.name) ?? true) ||
-            (uiSchema?.options?[UiOptions.explorer.name] as bool? ?? true);
+    final hasFilePicker = !(uiSchema?.options?.containsKey(
+              UiOptions.explorer.name,
+            ) ??
+            true) ||
+        (uiSchema?.options?[UiOptions.explorer.name] as bool? ?? true);
 
-    final hasCameraButton =
-        (uiSchema?.options?.containsKey(UiOptions.camera.name) ?? false) &&
-            (uiSchema?.options?[UiOptions.camera.name] as bool);
+    final hasCameraButton = (uiSchema?.options?.containsKey(
+              UiOptions.camera.name,
+            ) ??
+            false) &&
+        (uiSchema?.options?[UiOptions.camera.name] as bool);
 
-    final isPhotoAllowed =
-        !(uiSchema?.options?.containsKey(UiOptions.photo.name) ?? true) ||
-            (uiSchema?.options?[UiOptions.photo.name] as bool? ?? true);
+    final isPhotoAllowed = !(uiSchema?.options?.containsKey(
+              UiOptions.photo.name,
+            ) ??
+            true) ||
+        (uiSchema?.options?[UiOptions.photo.name] as bool? ?? true);
 
-    final isVideoAllowed =
-        (uiSchema?.options?.containsKey(UiOptions.video.name) ?? false) &&
-            (uiSchema?.options?[UiOptions.video.name] as bool);
+    final isVideoAllowed = (uiSchema?.options?.containsKey(
+              UiOptions.video.name,
+            ) ??
+            false) &&
+        (uiSchema?.options?[UiOptions.video.name] as bool);
 
-    return _CustomFormFieldValidator<String>(
+    return _CustomFormFieldValidator<XFile?>(
       isEnabled: hasRequiredValidator,
-      initialValue: initialValue,
-      isEmpty: (value) => value.isEmpty,
+      initialValue: initialValue?.base64ToXFile(),
+      isEmpty: (value) {
+        return value == null;
+      },
       childFormBuilder: (field) {
         return _CustomFileUpload(
           readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
@@ -392,11 +430,12 @@ class _UiWidget extends StatelessWidget {
           hasFilePicker: hasFilePicker,
           hasCameraButton: hasCameraButton,
           title: "$title${hasRequiredValidator ? '*' : ''}",
-          onFileChosen: (value) {
-            _onFieldChangedWithValidator<String>(field, value);
+          onFileChosen: (value) async {
+            await _onFieldChangedWithValidator<XFile?>(field, value);
           },
           isPhotoAllowed: isPhotoAllowed,
           isVideoAllowed: isVideoAllowed,
+          fileData: initialValue?.base64ToXFile(),
         );
       },
     );
@@ -496,9 +535,7 @@ class _UiWidget extends StatelessWidget {
     if (isEmailTextFormField) {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
       validators.add((value) {
-        if (value != null &&
-            value.isNotEmpty &&
-            !emailRegex.hasMatch(value.trim())) {
+        if (value != null && value.isNotEmpty && !emailRegex.hasMatch(value.trim())) {
           return 'Invalid email';
         }
 
@@ -521,9 +558,7 @@ class _UiWidget extends StatelessWidget {
         placeholder: uiSchema?.placeholder,
         helperText: uiSchema?.help,
         autofocus: uiSchema?.autofocus,
-        inputFormatters: isNumberTextFormFiled
-            ? [FilteringTextInputFormatter.digitsOnly]
-            : null,
+        inputFormatters: isNumberTextFormFiled ? [FilteringTextInputFormatter.digitsOnly] : null,
         keyboardType: isEmailTextFormField
             ? TextInputType.emailAddress
             : isNumberTextFormFiled
@@ -545,15 +580,19 @@ class _UiWidget extends StatelessWidget {
     );
   }
 
-  void _onFieldChanged<T>(T value) {
-    _setValueInFormData(value);
+  Future<void> _onFieldChanged<T>(T value) async {
+    await _setValueInFormData(value);
     _rebuildFormIfHasDependants();
   }
 
-  void _onFieldChangedWithValidator<T>(FormFieldState<T>? field, T value) {
+  FutureOr<void> _onFieldChangedWithValidator<T>(
+    FormFieldState<T>? field,
+    T value,
+  ) async {
     field?.didChange(value);
-    if (field?.isValid ?? true) {
-      _onFieldChanged(value);
+    final isValid = field?.isValid ?? true;
+    if (isValid) {
+      await _onFieldChanged(value);
     }
     _rebuildFormIfHasDependants();
   }
@@ -594,8 +633,7 @@ class _UiWidget extends StatelessWidget {
   /// whole form will be rebuilt so that the dependants fields are required or
   /// not, depending if the value is valid or not
   bool _hasDependants() {
-    if (previousSchema?.dependencies != null &&
-        previousSchema!.dependencies!.keys.contains(jsonKey)) {
+    if (previousSchema?.dependencies != null && previousSchema!.dependencies!.keys.contains(jsonKey)) {
       return true;
     }
     return false;
