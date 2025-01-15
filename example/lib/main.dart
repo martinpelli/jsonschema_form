@@ -53,7 +53,6 @@ class _FormState extends State<_Form> {
     "property_dependencies_with_data",
     "schema_dependencies_with_data",
     "files",
-    "jobsite_images",
     "problem_identification_with_data",
     "site_safety_with_data",
     "temporary_steps_and_solution_with_data",
@@ -63,7 +62,9 @@ class _FormState extends State<_Form> {
     "array_with_multiple_choice_with_data",
     "array_of_files",
     "materials_request",
-    "problem_and_root_cause"
+    "problem_and_root_cause",
+    "jobsite_images",
+    "permanent_materials_request",
   ];
 
   String? selectedFileName;
