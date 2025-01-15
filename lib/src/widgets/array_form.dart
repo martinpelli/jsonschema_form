@@ -8,6 +8,7 @@ class _ArrayForm extends StatefulWidget {
     required this.formData,
     required this.buildJsonschemaForm,
     required this.readOnly,
+    required this.isRequired,
   });
 
   final JsonSchema jsonSchema;
@@ -24,6 +25,7 @@ class _ArrayForm extends StatefulWidget {
     int? arrayIndex,
   }) buildJsonschemaForm;
   final bool readOnly;
+  final bool isRequired;
 
   @override
   State<_ArrayForm> createState() => _ArrayFormState();
@@ -149,17 +151,23 @@ class _ArrayFormState extends State<_ArrayForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ..._initialItems,
-        ..._buildArrayItems(),
-      ],
+    return _CustomFormFieldValidator<bool>(
+      isEnabled: widget.isRequired,
+      initialValue: null,
+      childFormBuilder: (field) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ..._initialItems,
+            ..._buildArrayItems(field),
+          ],
+        );
+      },
     );
   }
 
-  List<Widget> _buildArrayItems() {
+  List<Widget> _buildArrayItems(FormFieldState<bool>? field) {
     final items = <Widget>[];
 
     /// Builds items that user has added using (+) button from the form
@@ -172,6 +180,13 @@ class _ArrayFormState extends State<_ArrayForm> {
         }
 
         _arrayItems.removeAt(i);
+
+        /// If the array has a required validator, then when there is a removed
+        /// item by the user, we let the validator knows that is invalid if
+        /// there are no more items added by the user
+        if (_arrayItems.length == _initialItems.length) {
+          field?.didChange(null);
+        }
       });
 
       final castedListOfMaps = DynamicUtils.tryParseListOfMaps(widget.formData);
@@ -230,6 +245,13 @@ class _ArrayFormState extends State<_ArrayForm> {
                     _addArrayItem(widget.jsonSchema.additionalItems!);
                   } else {
                     _addArrayItem(widget.jsonSchema.items as JsonSchema);
+                  }
+
+                  /// If the array has a required validator, then when there is
+                  /// an item added by the user, we will let the validator known
+                  /// that is valid because user added an item
+                  if (_arrayItems.length > _initialItems.length) {
+                    field?.didChange(true);
                   }
                 },
           icon: const Icon(Icons.add),

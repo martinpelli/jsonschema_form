@@ -160,6 +160,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             formData: newFormData,
             buildJsonschemaForm: _buildJsonschemaForm,
             readOnly: widget.readOnly,
+            isRequired: (previousSchema?.requiredFields?.isNotEmpty ?? false) &&
+                (jsonKey != null &&
+                    (previousSchema?.requiredFields?.contains(jsonKey) ??
+                        false)),
           )
         else
           _UiWidget(
