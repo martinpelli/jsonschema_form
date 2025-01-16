@@ -153,7 +153,7 @@ class _ArrayFormState extends State<_ArrayForm> {
   Widget build(BuildContext context) {
     return _CustomFormFieldValidator<bool>(
       isEnabled: widget.isRequired,
-      initialValue: null,
+      initialValue: _arrayItems.length == _initialItems.length ? null : true,
       childFormBuilder: (field) {
         return Column(
           mainAxisSize: MainAxisSize.min,
