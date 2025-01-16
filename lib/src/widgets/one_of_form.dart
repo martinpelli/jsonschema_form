@@ -86,8 +86,7 @@ class _OneOfFormState extends State<_OneOfForm> {
     /// select one element of the list depending on other selected value
     if (widget.previousSchema?.dependencies != null &&
         (widget.previousSchema!.properties?.containsKey(widget.jsonKey) ??
-            false) &&
-        widget.formData.containsKey(widget.jsonKey)) {
+            false)) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: _buildOneOfDependencies(),
@@ -173,12 +172,15 @@ class _OneOfFormState extends State<_OneOfForm> {
     /// This is neccessary in order to match the dependency from the current
     /// schema
     final dependencySchema = widget.jsonSchema.oneOf!
-        .firstWhere((element) {
-          final firstOneOfValue =
-              element.properties![widget.jsonKey]!.enumValue?.first ??
-                  element.properties![widget.jsonKey]!.constValue;
-          return firstOneOfValue == widget.formData[widget.jsonKey];
-        })
+        .firstWhere(
+          (element) {
+            final firstOneOfValue =
+                element.properties![widget.jsonKey]!.enumValue?.first ??
+                    element.properties![widget.jsonKey]!.constValue;
+            return firstOneOfValue == widget.formData[widget.jsonKey];
+          },
+          orElse: () => widget.jsonSchema.oneOf!.first,
+        )
         .properties!
         .entries
         .where((element) => element.key != widget.jsonKey);

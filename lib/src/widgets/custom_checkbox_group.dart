@@ -4,6 +4,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   const _CustomCheckboxGroup({
     required this.jsonKey,
     required this.label,
+    required this.sublabel,
     required this.labelStyle,
     required this.items,
     required this.itemLabel,
@@ -13,6 +14,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   });
 
   final String? label;
+  final String? sublabel;
   final TextStyle? labelStyle;
   final List<T> items;
   final String Function(int index, T item) itemLabel;
@@ -48,6 +50,14 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(widget.label!, style: widget.labelStyle),
+          ),
+        if (widget.sublabel != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              widget.sublabel!,
+              style: const TextStyle(fontSize: 12),
+            ),
           ),
         Wrap(
           children: widget.items

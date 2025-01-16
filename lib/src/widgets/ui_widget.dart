@@ -11,6 +11,7 @@ class _UiWidget extends StatelessWidget {
     required this.previousFormData,
     required this.arrayIndex,
     required this.title,
+    required this.description,
     required this.dependenciesToMerge,
     this.readOnly = false,
   });
@@ -24,6 +25,7 @@ class _UiWidget extends StatelessWidget {
   final dynamic previousFormData;
   final int? arrayIndex;
   final String? title;
+  final String? description;
   final Map<String, JsonSchema> dependenciesToMerge;
   final bool readOnly;
 
@@ -220,6 +222,7 @@ class _UiWidget extends StatelessWidget {
                   fontSize: 12,
                 )
               : null,
+          sublabel: description,
           itemLabel: (_, item) => item,
           items: jsonSchema.enumValue!,
           initialItem: initialValue,
@@ -252,6 +255,7 @@ class _UiWidget extends StatelessWidget {
                   fontSize: 12,
                 )
               : null,
+          sublabel: description,
           itemLabel: (_, item) => item ? 'Yes' : 'No',
           items: const [false, true],
           initialItem: initialValue,
@@ -284,6 +288,7 @@ class _UiWidget extends StatelessWidget {
                   fontSize: 12,
                 )
               : null,
+          sublabel: description,
           itemLabel: (_, item) => item ? 'Yes' : 'No',
           items: const [true],
           initialItems: initialValue,
@@ -319,6 +324,7 @@ class _UiWidget extends StatelessWidget {
                   fontSize: 12,
                 )
               : null,
+          sublabel: description,
           items: jsonSchema.enumValue!,
           itemLabel: (_, item) => item,
           initialItems: initialValues,
