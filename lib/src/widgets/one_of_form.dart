@@ -9,6 +9,7 @@ class _OneOfForm extends StatefulWidget {
     required this.buildJsonschemaForm,
     required this.rebuildForm,
     required this.readOnly,
+    required this.dependenciesToMerge,
     this.previousSchema,
     this.previousJsonKey,
     this.title,
@@ -31,6 +32,7 @@ class _OneOfForm extends StatefulWidget {
   final void Function() rebuildForm;
   final bool readOnly;
   final String? title;
+  final Map<String, JsonSchema> dependenciesToMerge;
 
   @override
   State<_OneOfForm> createState() => _OneOfFormState();
@@ -170,8 +172,6 @@ class _OneOfFormState extends State<_OneOfForm> {
   List<Widget> _buildOneOfDependencies() {
     /// This is neccessary in order to match the dependency from the current
     /// schema
-    /// The first element of the property [oneOf] is the selected value, so it
-    /// is skipped
     final dependencySchema = widget.jsonSchema.oneOf!
         .firstWhere((element) {
           final firstOneOfValue =
@@ -181,21 +181,29 @@ class _OneOfFormState extends State<_OneOfForm> {
         })
         .properties!
         .entries
-        .skip(1);
+        .where((element) => element.key != widget.jsonKey);
 
     final widgets = <Widget>[];
 
     for (final entry in dependencySchema) {
-      widgets.add(
-        widget.buildJsonschemaForm(
-          entry.value,
-          entry.key,
-          widget.uiSchema?.children?[entry.key],
-          widget.formData,
-          previousSchema: widget.jsonSchema,
-          previousJsonKey: widget.jsonKey,
-        ),
-      );
+      /// There are some schemas defined inside a oneOf that are not fully
+      /// defined, for example there can be only a readOnly key, in such case
+      /// we don't want to build a widget because there is not enough info to
+      /// do it, so it will be merged in UiWidget
+      if (entry.value.type != null) {
+        widgets.add(
+          widget.buildJsonschemaForm(
+            entry.value,
+            entry.key,
+            widget.uiSchema?.children?[entry.key],
+            widget.formData,
+            previousSchema: widget.jsonSchema,
+            previousJsonKey: widget.jsonKey,
+          ),
+        );
+      } else {
+        widget.dependenciesToMerge[entry.key] = entry.value;
+      }
     }
 
     return widgets;

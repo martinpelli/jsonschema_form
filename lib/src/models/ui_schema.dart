@@ -16,18 +16,19 @@ import 'package:meta/meta.dart';
 @immutable
 class UiSchema extends Equatable {
   /// {@macro json_schema}
-  const UiSchema(
-      {this.children,
-      this.widget,
-      this.autofocus,
-      this.emptyValue,
-      this.placeholder,
-      this.title,
-      this.description,
-      this.help,
-      this.options,
-      this.readonly,
-      this.order});
+  const UiSchema({
+    this.children,
+    this.widget,
+    this.autofocus,
+    this.emptyValue,
+    this.placeholder,
+    this.title,
+    this.description,
+    this.help,
+    this.options,
+    this.readonly,
+    this.order,
+  });
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
   factory UiSchema.fromJson(Map<String, dynamic> json) {

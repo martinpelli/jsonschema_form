@@ -57,6 +57,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
 }
 
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
+  Map<String, JsonSchema> dependenciesToMerge = {};
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -145,6 +147,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               rebuildForm: _rebuildForm,
               title: title ?? jsonKey,
               readOnly: widget.readOnly,
+              dependenciesToMerge: dependenciesToMerge,
             ),
         ] else if (jsonSchema.type == JsonType.array)
           _ArrayForm(
@@ -168,6 +171,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             arrayIndex: arrayIndex,
             title: title ?? jsonKey,
             readOnly: widget.readOnly,
+            dependenciesToMerge: dependenciesToMerge,
           ),
       ],
     );
@@ -309,6 +313,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     ];
   }
 
+  /// This will be used to order widgets when ui:order is specified
   List<Widget> _buildOrderedObjectEntries(
     String? jsonKey,
     JsonSchema jsonSchema,
@@ -327,7 +332,13 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       if (entry != null) {
         widgets.addAll(
           _buildObjectEntries(
-              entry, jsonKey, jsonSchema, uiSchema, arrayIndex, newFormData),
+            entry,
+            jsonKey,
+            jsonSchema,
+            uiSchema,
+            arrayIndex,
+            newFormData,
+          ),
         );
       }
     }

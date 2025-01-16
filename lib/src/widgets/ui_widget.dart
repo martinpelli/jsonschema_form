@@ -11,6 +11,7 @@ class _UiWidget extends StatelessWidget {
     required this.previousFormData,
     required this.arrayIndex,
     required this.title,
+    required this.dependenciesToMerge,
     this.readOnly = false,
   });
 
@@ -23,6 +24,7 @@ class _UiWidget extends StatelessWidget {
   final dynamic previousFormData;
   final int? arrayIndex;
   final String? title;
+  final Map<String, JsonSchema> dependenciesToMerge;
   final bool readOnly;
 
   @override
@@ -179,7 +181,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomDropdownMenu<String>(
-          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+          readOnly: _isReadOnly(),
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(
@@ -210,7 +212,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomRadioGroup<String>(
-          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+          readOnly: _isReadOnly(),
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(
@@ -242,7 +244,7 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue,
       childFormBuilder: (field) {
         return _CustomRadioGroup<bool>(
-          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+          readOnly: _isReadOnly(),
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
               ? const TextStyle(
@@ -273,7 +275,7 @@ class _UiWidget extends StatelessWidget {
       initialValue: initialValue?.first,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<bool>(
-          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+          readOnly: _isReadOnly(),
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
@@ -308,7 +310,7 @@ class _UiWidget extends StatelessWidget {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<String>(
-          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+          readOnly: _isReadOnly(),
           jsonKey: jsonKey!,
           label: "$title${hasRequiredValidator ? '*' : ''}",
           labelStyle: hasRequiredValidator
@@ -342,7 +344,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+        readOnly: _isReadOnly(),
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
@@ -374,7 +376,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+        readOnly: _isReadOnly(),
         onChanged: _onFieldChanged,
         hasRequiredValidator: hasRequiredValidator,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
@@ -433,7 +435,7 @@ class _UiWidget extends StatelessWidget {
       },
       childFormBuilder: (field) {
         return _CustomFileUpload(
-          readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+          readOnly: _isReadOnly(),
           acceptedExtensions: acceptedExtensions,
           hasFilePicker: hasFilePicker,
           hasCameraButton: hasCameraButton,
@@ -470,7 +472,7 @@ class _UiWidget extends StatelessWidget {
         canRequestFocus: false,
         mouseCursor: SystemMouseCursors.click,
         hasRequiredValidator: hasRequiredValidator,
-        onTap: readOnly
+        onTap: _isReadOnly()
             ? null
             : () async {
                 final minDate = DateTime(1900);
@@ -512,7 +514,7 @@ class _UiWidget extends StatelessWidget {
         canRequestFocus: false,
         mouseCursor: SystemMouseCursors.click,
         hasRequiredValidator: hasRequiredValidator,
-        onTap: readOnly
+        onTap: _isReadOnly()
             ? null
             : () async {
                 final minDate = DateTime(1900);
@@ -560,7 +562,7 @@ class _UiWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
-        readOnly: jsonSchema.readOnly ?? uiSchema?.readonly ?? readOnly,
+        readOnly: _isReadOnly(),
         onChanged: _onFieldChanged,
         labelText: "$title${hasRequiredValidator ? '*' : ''}",
         defaultValue: initialValue,
@@ -650,5 +652,19 @@ class _UiWidget extends StatelessWidget {
       return true;
     }
     return false;
+  }
+
+  bool _isReadOnly() {
+    if (readOnly) {
+      return true;
+    }
+
+    final dependency = dependenciesToMerge[jsonKey];
+
+    if (dependency != null && dependency.readOnly != null) {
+      return dependency.readOnly!;
+    }
+
+    return jsonSchema.readOnly ?? uiSchema?.readonly ?? false;
   }
 }

@@ -1,0 +1,247 @@
+{
+    "jsonSchema": {
+        "dependencies": {
+          "beforeAfterHours": {
+            "oneOf": [
+              {
+                "properties": {
+                  "beforeAfterHours": {
+                    "const": "Yes"
+                  },
+                  "beforeAfterHoursExplanation": {
+                    "readOnly": false
+                  },
+                  "clientRequestCheckbox": {
+                    "readOnly": false
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "beforeAfterHours": {
+                    "const": "No"
+                  },
+                  "beforeAfterHoursExplanation": {
+                    "readOnly": true
+                  },
+                  "clientRequestCheckbox": {
+                    "readOnly": true
+                  }
+                }
+              }
+            ]
+          },
+          "hazardLocation": {
+            "oneOf": [
+              {
+                "properties": {
+                  "hazardLocation": {
+                    "const": "Specific Location"
+                  },
+                  "specificHazardLocation": {
+                    "readOnly": false
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "hazardLocation": {
+                    "const": "Entire Store"
+                  },
+                  "specificHazardLocation": {
+                    "readOnly": true
+                  }
+                }
+              }
+            ]
+          },
+          "repairDisturbance": {
+            "oneOf": [
+              {
+                "properties": {
+                  "disturbanceExplanation": {
+                    "readOnly": false
+                  },
+                  "repairDisturbance": {
+                    "const": "Yes"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "disturbanceExplanation": {
+                    "readOnly": true
+                  },
+                  "repairDisturbance": {
+                    "const": "No"
+                  }
+                }
+              }
+            ]
+          },
+          "safetyHazards": {
+            "oneOf": [
+              {
+                "properties": {
+                  "safetyHazardDescription": {
+                    "readOnly": false
+                  },
+                  "safetyHazards": {
+                    "const": "Yes"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "safetyHazardDescription": {
+                    "readOnly": true
+                  },
+                  "safetyHazards": {
+                    "const": "No"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "description": "Please indicate any potential jobsite hazards and disruption to the business.",
+        "properties": {
+          "beforeAfterHours": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "title": "Does the repair need to be done before/after hours?",
+            "type": "string"
+          },
+          "beforeAfterHoursExplanation": {
+            "default": "",
+            "readOnly": true,
+            "title": "Explain why it needs to be done before/after hours.",
+            "type": "string"
+          },
+          "clientRequestCheckbox": {
+            "default": false,
+            "readOnly": true,
+            "title": "Manager or Client requested before/after hours",
+            "type": "boolean"
+          },
+          "disturbanceExplanation": {
+            "default": "",
+            "readOnly": true,
+            "title": "Explain why it will disturb the business or foot traffic.",
+            "type": "string"
+          },
+          "hazardLocation": {
+            "enum": [
+              "Entire Store",
+              "Specific Location"
+            ],
+            "title": "Hazard(s) location:",
+            "type": "string"
+          },
+          "repairDisturbance": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "title": "Will the repair disturb the business or foot traffic?",
+            "type": "string"
+          },
+          "safetyHazardDescription": {
+            "default": "",
+            "readOnly": true,
+            "title": "Describe the safety hazard(s).",
+            "type": "string"
+          },
+          "safetyHazards": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "title": "Are there safety hazards?",
+            "type": "string"
+          },
+          "specificHazardLocation": {
+            "default": "",
+            "readOnly": true,
+            "title": "Please specify the location",
+            "type": "string"
+          }
+        },
+        "title": "Site Safety",
+        "type": "object"
+      },
+      "uiSchema": {
+        "beforeAfterHours": {
+          "ui:options": {
+            "inline": true
+          },
+          "ui:widget": "radio"
+        },
+        "beforeAfterHoursExplanation": {
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value",
+          "ui:widget": "textarea"
+        },
+        "clientRequestCheckbox": {
+          "ui:widget": "checkbox"
+        },
+        "disturbanceExplanation": {
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value",
+          "ui:widget": "textarea"
+        },
+        "hazardLocation": {
+          "ui:options": {
+            "inline": true
+          },
+          "ui:widget": "radio"
+        },
+        "repairDisturbance": {
+          "ui:options": {
+            "inline": true
+          },
+          "ui:widget": "radio"
+        },
+        "safetyHazardDescription": {
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value",
+          "ui:widget": "textarea"
+        },
+        "safetyHazards": {
+          "ui:options": {
+            "inline": true
+          },
+          "ui:widget": "radio"
+        },
+        "specificHazardLocation": {
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value",
+          "ui:widget": "textarea"
+        },
+        "ui:order": [
+          "repairDisturbance",
+          "disturbanceExplanation",
+          "beforeAfterHours",
+          "beforeAfterHoursExplanation",
+          "clientRequestCheckbox",
+          "safetyHazards",
+          "safetyHazardDescription",
+          "hazardLocation",
+          "specificHazardLocation",
+          "*"
+        ]
+      },
+      "formData":{
+
+      }
+}
