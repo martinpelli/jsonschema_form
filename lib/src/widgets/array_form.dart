@@ -7,8 +7,8 @@ class _ArrayForm extends StatefulWidget {
     required this.uiSchema,
     required this.formData,
     required this.buildJsonschemaForm,
-    required this.readOnly,
-    required this.isRequired,
+    required this.getReadOnly,
+    required this.getIsRequired,
   });
 
   final JsonSchema jsonSchema;
@@ -24,8 +24,8 @@ class _ArrayForm extends StatefulWidget {
     String? previousJsonKey,
     int? arrayIndex,
   }) buildJsonschemaForm;
-  final bool readOnly;
-  final bool isRequired;
+  final bool Function() getReadOnly;
+  final bool Function() getIsRequired;
 
   @override
   State<_ArrayForm> createState() => _ArrayFormState();
@@ -152,7 +152,7 @@ class _ArrayFormState extends State<_ArrayForm> {
   @override
   Widget build(BuildContext context) {
     return _CustomFormFieldValidator<bool>(
-      isEnabled: widget.isRequired,
+      isEnabled: widget.getIsRequired(),
       initialValue: _arrayItems.length == _initialItems.length ? null : true,
       childFormBuilder: (field) {
         return Column(
@@ -233,7 +233,7 @@ class _ArrayFormState extends State<_ArrayForm> {
       final addButton = Align(
         alignment: Alignment.centerRight,
         child: IconButton(
-          onPressed: widget.readOnly
+          onPressed: widget.getReadOnly()
               ? null
               : () {
                   _modifyFormData();
@@ -289,7 +289,7 @@ class _ArrayFormState extends State<_ArrayForm> {
     if (hasRemoveButton) {
       final removeButton = Align(
         alignment: Alignment.centerRight,
-        child: widget.readOnly
+        child: widget.getReadOnly()
             ? null
             : IconButton(
                 onPressed: () {

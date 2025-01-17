@@ -87,33 +87,54 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       formData,
     );
 
-    final title = _getTitle(jsonSchema, uiSchema, previousSchema, arrayIndex);
-
-    final description = _getDescription(jsonSchema, uiSchema);
-
-    final isRequired = (previousSchema?.requiredFields?.isNotEmpty ?? false) &&
-        (jsonKey != null &&
-            (previousSchema?.requiredFields?.contains(jsonKey) ?? false));
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (jsonSchema.type == JsonType.object ||
             jsonSchema.type == JsonType.array) ...[
-          if (title != null) ...[
-            Text(
-              title + (isRequired ? '*' : ''),
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const Divider(),
-            const SizedBox(height: 10),
-          ],
-          if (description != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Text(description),
-            ),
+          ...(() {
+            final widgets = <Widget>[];
+
+            final title = _getTitle(
+              jsonKey,
+              jsonSchema,
+              uiSchema,
+              previousSchema,
+              arrayIndex,
+            );
+
+            if (title != null) {
+              final isRequired = _getIsRequired(
+                jsonKey,
+                previousSchema,
+                arrayIndex,
+                previousFormData,
+              );
+
+              widgets.addAll([
+                Text(
+                  title + (isRequired ? '*' : ''),
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const Divider(),
+                const SizedBox(height: 10),
+              ]);
+            }
+
+            final description = _getDescription(jsonKey, jsonSchema, uiSchema);
+
+            if (description != null) {
+              widgets.add(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(description),
+                ),
+              );
+            }
+
+            return widgets;
+          })(),
         ],
         if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
           if (uiSchema?.order == null)
@@ -145,9 +166,16 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousJsonKey: previousJsonKey,
               buildJsonschemaForm: _buildJsonschemaForm,
               rebuildForm: _rebuildForm,
-              title: title ?? jsonKey,
-              description: description,
-              readOnly: widget.readOnly,
+              getTitle: () => _getTitle(
+                jsonKey,
+                jsonSchema,
+                uiSchema,
+                previousSchema,
+                arrayIndex,
+              ),
+              getDescription: () =>
+                  _getDescription(jsonKey, jsonSchema, uiSchema),
+              getReadOnly: () => _getReadOnly(jsonKey, jsonSchema, uiSchema),
               dependenciesToMerge: dependenciesToMerge,
             ),
         ] else if (jsonSchema.type == JsonType.array)
@@ -157,8 +185,13 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             uiSchema: uiSchema,
             formData: newFormData,
             buildJsonschemaForm: _buildJsonschemaForm,
-            readOnly: widget.readOnly,
-            isRequired: isRequired,
+            getReadOnly: () => _getReadOnly(jsonKey, jsonSchema, uiSchema),
+            getIsRequired: () => _getIsRequired(
+              jsonKey,
+              previousSchema,
+              arrayIndex,
+              previousFormData,
+            ),
           )
         else
           _UiWidget(
@@ -170,10 +203,29 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             previousSchema: previousSchema,
             previousFormData: previousFormData,
             arrayIndex: arrayIndex,
-            title: title ?? jsonKey,
-            description: description,
-            readOnly: widget.readOnly,
-            dependenciesToMerge: dependenciesToMerge,
+            getTitle: () => _getTitle(
+              jsonKey,
+              jsonSchema,
+              uiSchema,
+              previousSchema,
+              arrayIndex,
+            ),
+            getDescription: () =>
+                _getDescription(jsonKey, jsonSchema, uiSchema),
+            getDefaultValue: () => _getDefaultValue(
+              jsonKey,
+              jsonSchema,
+              formData,
+              previousSchema,
+              arrayIndex,
+            ),
+            getIsRequired: () => _getIsRequired(
+              jsonKey,
+              previousSchema,
+              arrayIndex,
+              previousFormData,
+            ),
+            getReadOnly: () => _getReadOnly(jsonKey, jsonSchema, uiSchema),
           ),
       ],
     );
@@ -235,37 +287,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     }
 
     return (formData, previousFormData);
-  }
-
-  String? _getTitle(
-    JsonSchema jsonSchema,
-    UiSchema? uiSchema,
-    JsonSchema? previousSchema,
-    int? arrayIndex,
-  ) {
-    if (uiSchema?.title != null && uiSchema!.title!.isNotEmpty) {
-      return uiSchema.title;
-    }
-    if (jsonSchema.title != null && jsonSchema.title!.isNotEmpty) {
-      return jsonSchema.title;
-    }
-
-    if (arrayIndex != null && previousSchema?.title != null) {
-      return '${previousSchema?.title}-${arrayIndex + 1}';
-    }
-
-    return null;
-  }
-
-  String? _getDescription(JsonSchema jsonSchema, UiSchema? uiSchema) {
-    if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty) {
-      return uiSchema.description;
-    }
-    if (jsonSchema.description != null && jsonSchema.description!.isNotEmpty) {
-      return jsonSchema.description;
-    }
-
-    return null;
   }
 
   /// Rebulds the whole form when needed. For example: when a nested field
@@ -359,5 +380,183 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     }
 
     return widgets;
+  }
+
+  dynamic _getDefaultValue(
+    String? jsonKey,
+    JsonSchema jsonSchema,
+    dynamic formData,
+    JsonSchema? previousSchema,
+    int? arrayIndex,
+  ) {
+    /// If the previous jsonSchema has uniqueItems it means that this is a
+    /// multiple choice list, so it cannot have default values
+    final hasUniqueItems = previousSchema?.uniqueItems ?? false;
+    if (hasUniqueItems) {
+      return null;
+    }
+
+    if (formData is Map) {
+      if (formData.containsKey(jsonKey)) {
+        return formData[jsonKey]?.toString() ?? jsonSchema.defaultValue;
+      } else {
+        return jsonSchema.defaultValue;
+      }
+    } else if (formData is List) {
+      if (arrayIndex! <= formData.length - 1) {
+        final fieldData = formData[arrayIndex];
+        if (fieldData is Map) {
+          return fieldData[jsonKey] ?? jsonSchema.defaultValue;
+        } else {
+          return fieldData ?? jsonSchema.defaultValue;
+        }
+      } else {
+        final dependency = dependenciesToMerge[jsonKey];
+
+        if (dependency != null && dependency.defaultValue != null) {
+          return dependency.defaultValue;
+        }
+
+        return jsonSchema.defaultValue;
+      }
+    }
+  }
+
+  String? _getTitle(
+    String? jsonKey,
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+    JsonSchema? previousSchema,
+    int? arrayIndex,
+  ) {
+    final dependency = dependenciesToMerge[jsonKey];
+
+    if (dependency != null && dependency.title != null) {
+      return dependency.title;
+    }
+
+    if (uiSchema?.title != null && uiSchema!.title!.isNotEmpty) {
+      return uiSchema.title;
+    }
+
+    if (jsonSchema.title != null && jsonSchema.title!.isNotEmpty) {
+      return jsonSchema.title;
+    }
+
+    if (arrayIndex != null && previousSchema?.title != null) {
+      return '${previousSchema?.title}-${arrayIndex + 1}';
+    }
+
+    return jsonKey;
+  }
+
+  String? _getDescription(
+    String? jsonKey,
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+  ) {
+    final dependency = dependenciesToMerge[jsonKey];
+
+    if (dependency != null && dependency.description != null) {
+      return dependency.description;
+    }
+
+    if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty) {
+      return uiSchema.description;
+    }
+    if (jsonSchema.description != null && jsonSchema.description!.isNotEmpty) {
+      return jsonSchema.description;
+    }
+
+    return null;
+  }
+
+  bool _getReadOnly(
+    String? jsonKey,
+    JsonSchema jsonSchema,
+    UiSchema? uiSchema,
+  ) {
+    if (widget.readOnly) {
+      return true;
+    }
+
+    final dependency = dependenciesToMerge[jsonKey];
+
+    if (dependency != null && dependency.readOnly != null) {
+      return dependency.readOnly!;
+    }
+
+    return jsonSchema.readOnly ?? uiSchema?.readonly ?? false;
+  }
+
+  /// The filed is required if the jsonSchema has its jsonKey in the required
+  /// array
+  /// if it a required item from an array with additional items
+  /// if is an item index less than minItems from an array
+  /// is required by a dependency
+  bool _getIsRequired(
+    String? jsonKey,
+    JsonSchema? previousSchema,
+    int? arrayIndex,
+    dynamic previousFormData,
+  ) {
+    List<String>? requiredFields;
+    dynamic items;
+    int? minItems;
+
+    final dependency = dependenciesToMerge[jsonKey];
+
+    if (dependency != null && dependency.requiredFields != null) {
+      requiredFields = dependency.requiredFields;
+      items = dependency.items;
+      minItems = dependency.minItems;
+    } else {
+      requiredFields = previousSchema?.requiredFields;
+      items = previousSchema?.items;
+      minItems = previousSchema?.minItems;
+    }
+
+    if (requiredFields?.contains(jsonKey) ?? false) {
+      return true;
+    }
+
+    if (items is List<dynamic> ||
+        (minItems != null && arrayIndex! < minItems)) {
+      return true;
+    }
+
+    return _isPropertyDependantAndDependencyHasValue(
+      jsonKey,
+      previousSchema,
+      previousFormData,
+    );
+  }
+
+  /// If a field is dependant of another one then it will add a required
+  /// validation if the field which depends on is filled with a valid value
+  bool _isPropertyDependantAndDependencyHasValue(
+    String? jsonKey,
+    JsonSchema? previousSchema,
+    dynamic previousFormData,
+  ) {
+    if (previousSchema?.dependencies != null) {
+      for (final dependency in previousSchema!.dependencies!.entries) {
+        /// Property dependency
+        if (dependency.value is List<String>) {
+          final dependencies = dependency.value as List<String>;
+
+          if (dependencies.contains(
+                jsonKey,
+              ) &&
+              ((previousFormData as Map<String, dynamic>?)?.containsKey(
+                    dependency.key,
+                  ) ??
+                  false)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }

@@ -3,6 +3,7 @@ part of '../jsonschema_form_builder.dart';
 class _CustomRadioGroup<T> extends StatefulWidget {
   const _CustomRadioGroup({
     required this.label,
+    required this.sublabel,
     required this.labelStyle,
     required this.items,
     required this.initialItem,
@@ -12,6 +13,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   });
 
   final String? label;
+  final String? sublabel;
   final TextStyle? labelStyle;
   final List<T> items;
   final T? initialItem;
@@ -43,6 +45,14 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(widget.label!, style: widget.labelStyle),
+          ),
+        if (widget.sublabel != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              widget.sublabel!,
+              style: const TextStyle(fontSize: 12),
+            ),
           ),
         Wrap(
           children: widget.items

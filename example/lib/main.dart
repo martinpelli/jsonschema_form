@@ -66,6 +66,7 @@ class _FormState extends State<_Form> {
     "jobsite_images",
     "permanent_materials_request",
     "site_safety",
+    "permanent_solution"
   ];
 
   String? selectedFileName;
