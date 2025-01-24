@@ -39,4 +39,11 @@ extension MapExtension on Map<String, dynamic> {
 
     return cleanedMap;
   }
+
+  /// Checks if every value of the map is from the type specified this is due to
+  /// something is Map<String, T> is no valid as it can lead to false when
+  /// something is just a Map without type
+  bool isMapOfStringAndType<T>() {
+    return values.every((value) => value is T);
+  }
 }

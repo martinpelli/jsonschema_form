@@ -57,8 +57,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
 }
 
 class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
-  Map<String, JsonSchema> dependenciesToMerge = {};
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -81,8 +79,11 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? previousJsonKey,
     int? arrayIndex,
   }) {
+    final mergedJsonSchema =
+        _mergeDependencies(jsonSchema, formData) ?? jsonSchema;
+
     final (newFormData, previousFormData) = _modifyFormData(
-      jsonSchema,
+      mergedJsonSchema,
       jsonKey,
       formData,
     );
@@ -91,14 +92,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (jsonSchema.type == JsonType.object ||
-            jsonSchema.type == JsonType.array) ...[
+        if (mergedJsonSchema.type == JsonType.object ||
+            mergedJsonSchema.type == JsonType.array) ...[
           ...(() {
             final widgets = <Widget>[];
 
             final title = _getTitle(
               jsonKey,
-              jsonSchema,
+              mergedJsonSchema,
               uiSchema,
               previousSchema,
               arrayIndex,
@@ -122,7 +123,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               ]);
             }
 
-            final description = _getDescription(jsonKey, jsonSchema, uiSchema);
+            final description =
+                _getDescription(jsonKey, mergedJsonSchema, uiSchema);
 
             if (description != null) {
               widgets.add(
@@ -136,14 +138,15 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             return widgets;
           })(),
         ],
-        if (jsonSchema.type == null || jsonSchema.type == JsonType.object) ...[
+        if (mergedJsonSchema.type == null ||
+            mergedJsonSchema.type == JsonType.object) ...[
           if (uiSchema?.order == null)
-            for (final entry in jsonSchema.properties?.entries ??
+            for (final entry in mergedJsonSchema.properties?.entries ??
                 <MapEntry<String, JsonSchema>>[])
               ..._buildObjectEntries(
                 entry,
                 jsonKey,
-                jsonSchema,
+                mergedJsonSchema,
                 uiSchema,
                 arrayIndex,
                 newFormData,
@@ -151,14 +154,14 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           else
             ..._buildOrderedObjectEntries(
               jsonKey,
-              jsonSchema,
+              mergedJsonSchema,
               uiSchema,
               arrayIndex,
               newFormData,
             ),
-          if (jsonSchema.oneOf != null)
+          if (mergedJsonSchema.oneOf != null)
             _OneOfForm(
-              jsonSchema,
+              mergedJsonSchema,
               jsonKey,
               uiSchema,
               newFormData as Map<String, dynamic>,
@@ -168,24 +171,25 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               rebuildForm: _rebuildForm,
               getTitle: () => _getTitle(
                 jsonKey,
-                jsonSchema,
+                mergedJsonSchema,
                 uiSchema,
                 previousSchema,
                 arrayIndex,
               ),
               getDescription: () =>
-                  _getDescription(jsonKey, jsonSchema, uiSchema),
-              getReadOnly: () => _getReadOnly(jsonKey, jsonSchema, uiSchema),
-              dependenciesToMerge: dependenciesToMerge,
+                  _getDescription(jsonKey, mergedJsonSchema, uiSchema),
+              getReadOnly: () =>
+                  _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
             ),
-        ] else if (jsonSchema.type == JsonType.array)
+        ] else if (mergedJsonSchema.type == JsonType.array)
           _ArrayForm(
-            jsonSchema: jsonSchema,
+            jsonSchema: mergedJsonSchema,
             jsonKey: jsonKey,
             uiSchema: uiSchema,
             formData: newFormData,
             buildJsonschemaForm: _buildJsonschemaForm,
-            getReadOnly: () => _getReadOnly(jsonKey, jsonSchema, uiSchema),
+            getReadOnly: () =>
+                _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
             getIsRequired: () => _getIsRequired(
               jsonKey,
               previousSchema,
@@ -195,7 +199,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           )
         else
           _UiWidget(
-            jsonSchema,
+            mergedJsonSchema,
             jsonKey,
             uiSchema,
             formData,
@@ -205,16 +209,16 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             arrayIndex: arrayIndex,
             getTitle: () => _getTitle(
               jsonKey,
-              jsonSchema,
+              mergedJsonSchema,
               uiSchema,
               previousSchema,
               arrayIndex,
             ),
             getDescription: () =>
-                _getDescription(jsonKey, jsonSchema, uiSchema),
+                _getDescription(jsonKey, mergedJsonSchema, uiSchema),
             getDefaultValue: () => _getDefaultValue(
               jsonKey,
-              jsonSchema,
+              mergedJsonSchema,
               formData,
               previousSchema,
               arrayIndex,
@@ -225,7 +229,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               arrayIndex,
               previousFormData,
             ),
-            getReadOnly: () => _getReadOnly(jsonKey, jsonSchema, uiSchema),
+            getReadOnly: () =>
+                _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
           ),
       ],
     );
@@ -321,9 +326,10 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       /// dynamically depending on other field values
       if (jsonSchema.dependencies != null &&
           jsonSchema.dependencies![entry.key] is JsonSchema &&
-          jsonSchema.dependencies!.keys.contains(entry.key) &&
-          ((newFormData as Map<String, dynamic>?)?.containsKey(entry.key) ??
-              false))
+          jsonSchema.dependencies!.keys.contains(entry.key))
+
+        /// This is a schema based dependency, so new fields will be added
+        /// dynamically
         _buildJsonschemaForm(
           jsonSchema.dependencies![entry.key] as JsonSchema,
           entry.key,
@@ -411,12 +417,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           return fieldData ?? jsonSchema.defaultValue;
         }
       } else {
-        final dependency = dependenciesToMerge[jsonKey];
-
-        if (dependency != null && dependency.defaultValue != null) {
-          return dependency.defaultValue;
-        }
-
         return jsonSchema.defaultValue;
       }
     }
@@ -429,12 +429,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     JsonSchema? previousSchema,
     int? arrayIndex,
   ) {
-    final dependency = dependenciesToMerge[jsonKey];
-
-    if (dependency != null && dependency.title != null) {
-      return dependency.title;
-    }
-
     if (uiSchema?.title != null && uiSchema!.title!.isNotEmpty) {
       return uiSchema.title;
     }
@@ -455,12 +449,6 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     JsonSchema jsonSchema,
     UiSchema? uiSchema,
   ) {
-    final dependency = dependenciesToMerge[jsonKey];
-
-    if (dependency != null && dependency.description != null) {
-      return dependency.description;
-    }
-
     if (uiSchema?.description != null && uiSchema!.description!.isNotEmpty) {
       return uiSchema.description;
     }
@@ -480,41 +468,24 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       return true;
     }
 
-    final dependency = dependenciesToMerge[jsonKey];
-
-    if (dependency != null && dependency.readOnly != null) {
-      return dependency.readOnly!;
-    }
-
     return jsonSchema.readOnly ?? uiSchema?.readonly ?? false;
   }
 
-  /// The filed is required if the jsonSchema has its jsonKey in the required
-  /// array
-  /// if it a required item from an array with additional items
-  /// if is an item index less than minItems from an array
-  /// is required by a dependency
+  /// The field is required if:
+  /// The jsonSchema has its jsonKey in the required array
+  /// It is a required item from an array with additional items
+  /// It is an item index less than minItems from an array
+  /// It is required by a dependency
   bool _getIsRequired(
     String? jsonKey,
     JsonSchema? previousSchema,
     int? arrayIndex,
     dynamic previousFormData,
   ) {
-    List<String>? requiredFields;
-    dynamic items;
-    int? minItems;
+    final items = previousSchema?.items;
+    final minItems = previousSchema?.minItems;
 
-    final dependency = dependenciesToMerge[jsonKey];
-
-    if (dependency != null && dependency.requiredFields != null) {
-      requiredFields = dependency.requiredFields;
-      items = dependency.items;
-      minItems = dependency.minItems;
-    } else {
-      requiredFields = previousSchema?.requiredFields;
-      items = previousSchema?.items;
-      minItems = previousSchema?.minItems;
-    }
+    final requiredFields = previousSchema?.requiredFields;
 
     if (requiredFields?.contains(jsonKey) ?? false) {
       return true;
@@ -558,5 +529,48 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       }
     }
     return false;
+  }
+
+  JsonSchema? _mergeDependencies(
+    JsonSchema jsonSchema,
+    dynamic formData,
+  ) {
+    if (jsonSchema.dependencies == null) {
+      return jsonSchema;
+    }
+
+    final mergedJsonSchema = jsonSchema.dependencies!.entries.fold(jsonSchema,
+        (previousValue, dependency) {
+      final dependencyValue = dependency.value;
+
+      if (dependencyValue is JsonSchema && dependencyValue.oneOf != null) {
+        if (jsonSchema.properties?.keys.contains(dependency.key) ?? false) {
+          if (dependencyValue.oneOf != null) {
+            final dependencySchema = dependencyValue.oneOf!.firstWhereOrNull(
+              (element) {
+                final firstOneOfValue =
+                    element.properties![dependency.key]!.enumValue?.first ??
+                        element.properties![dependency.key]!.constValue;
+
+                if (formData is Map<String, dynamic>) {
+                  return firstOneOfValue == formData[dependency.key];
+                } else if (formData is List<String>) {
+                  return formData.contains(firstOneOfValue);
+                } else {
+                  return false;
+                }
+              },
+            );
+
+            if (dependencySchema != null) {
+              return previousValue.mergeWith(dependencySchema);
+            }
+          }
+        }
+      }
+      return previousValue;
+    });
+
+    return mergedJsonSchema;
   }
 }

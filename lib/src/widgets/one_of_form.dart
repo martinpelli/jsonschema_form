@@ -11,7 +11,6 @@ class _OneOfForm extends StatefulWidget {
     required this.getTitle,
     required this.getDescription,
     required this.getReadOnly,
-    required this.dependenciesToMerge,
     this.previousSchema,
     this.previousJsonKey,
   });
@@ -34,7 +33,6 @@ class _OneOfForm extends StatefulWidget {
   final bool Function() getReadOnly;
   final String? Function() getTitle;
   final String? Function() getDescription;
-  final Map<String, JsonSchema> dependenciesToMerge;
 
   @override
   State<_OneOfForm> createState() => _OneOfFormState();
@@ -195,10 +193,9 @@ class _OneOfFormState extends State<_OneOfForm> {
       /// defined, for example there can be only a readOnly key, in such case
       /// we don't want to build a widget because there is not enough info to
       /// do it, so it will be merged in UiWidget
-      if (widget.previousSchema?.properties?.keys.contains(entry.key) ??
-          false) {
-        widget.dependenciesToMerge[entry.key] = entry.value;
-      } else {
+
+      if (!(widget.previousSchema?.properties?.containsKey(entry.key) ??
+          false)) {
         widgets.add(
           widget.buildJsonschemaForm(
             entry.value,
