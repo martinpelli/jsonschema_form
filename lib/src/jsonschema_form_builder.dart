@@ -105,7 +105,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               arrayIndex,
             );
 
-            if (title != null) {
+            if (title != null && !(mergedJsonSchema.uniqueItems ?? false)) {
               final isRequired = _getIsRequired(
                 jsonKey,
                 previousSchema,
@@ -438,7 +438,11 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     }
 
     if (arrayIndex != null && previousSchema?.title != null) {
-      return '${previousSchema?.title}-${arrayIndex + 1}';
+      if (previousSchema?.uniqueItems ?? false) {
+        return previousSchema?.title;
+      } else {
+        return '${previousSchema?.title}-${arrayIndex + 1}';
+      }
     }
 
     return jsonKey;
