@@ -1,8 +1,8 @@
 part of '../jsonschema_form_builder.dart';
 
-//TODO add possibility to change to front camera
-//TODO add possibility to change to use flash light
-//TODO fix issue some time buildPreview() is showing actual live camera
+// TODO(martinpelli): add possibility to change to front camera
+// TODO(martinpelli): add possibility to change to use flash light
+// TODO(martinpelli): some times buildPreview() is showing actual live camera
 class _CameraScreen extends StatefulWidget {
   const _CameraScreen({
     required this.isPhotoAllowed,
