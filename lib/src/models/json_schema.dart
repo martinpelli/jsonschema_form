@@ -267,7 +267,7 @@ class JsonSchema extends Equatable {
       properties: mergedProperties ?? properties,
       enumValue: mergedEnumValue ?? enumValue,
       constValue: schemaToMerge.constValue ?? constValue,
-      dependencies: dependencies,
+      dependencies: mergedDependencies ?? dependencies,
       items: mergedItems ?? items,
       additionalItems: mergedAdditionalItems ?? additionalItems,
       minItems: schemaToMerge.minItems ?? minItems,
