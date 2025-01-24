@@ -274,8 +274,9 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             if (jsonSchema.type == JsonType.object) {
               return <String, dynamic>{};
             } else {
-              if (DynamicUtils.isListOfMaps(jsonSchema.items) ||
-                  jsonSchema.items is JsonSchema) {
+              if ((DynamicUtils.isListOfMaps(jsonSchema.items) ||
+                      jsonSchema.items is JsonSchema) &&
+                  !(jsonSchema.uniqueItems ?? false)) {
                 return <Map<String, dynamic>>[];
               } else {
                 return <dynamic>[];
