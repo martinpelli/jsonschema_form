@@ -9,6 +9,8 @@ class _ArrayForm extends StatefulWidget {
     required this.buildJsonschemaForm,
     required this.getReadOnly,
     required this.getIsRequired,
+    required this.onItemAdded,
+    required this.onItemRemoved,
   });
 
   final JsonSchema jsonSchema;
@@ -26,6 +28,8 @@ class _ArrayForm extends StatefulWidget {
   }) buildJsonschemaForm;
   final bool Function() getReadOnly;
   final bool Function() getIsRequired;
+  final void Function(JsonSchema)? onItemAdded;
+  final void Function()? onItemRemoved;
 
   @override
   State<_ArrayForm> createState() => _ArrayFormState();
@@ -241,11 +245,14 @@ class _ArrayFormState extends State<_ArrayForm> {
                   final hasAdditionalItems =
                       widget.jsonSchema.additionalItems != null;
 
+                  final JsonSchema newItem;
                   if (hasAdditionalItems) {
-                    _addArrayItem(widget.jsonSchema.additionalItems!);
+                    newItem = widget.jsonSchema.additionalItems!;
                   } else {
-                    _addArrayItem(widget.jsonSchema.items as JsonSchema);
+                    newItem = widget.jsonSchema.items as JsonSchema;
                   }
+
+                  _addArrayItem(newItem);
 
                   /// If the array has a required validator, then when there is
                   /// an item added by the user, we will let the validator known
@@ -253,6 +260,8 @@ class _ArrayFormState extends State<_ArrayForm> {
                   if (_arrayItems.length > _initialItems.length) {
                     field?.didChange(true);
                   }
+
+                  widget.onItemAdded?.call(newItem);
                 },
           icon: const Icon(Icons.add),
         ),
@@ -296,6 +305,8 @@ class _ArrayFormState extends State<_ArrayForm> {
                   onRemovePressed();
 
                   setState(() {});
+
+                  widget.onItemRemoved?.call();
                 },
                 icon: const Icon(Icons.remove),
               ),

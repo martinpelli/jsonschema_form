@@ -38,6 +38,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
     required this.jsonSchemaForm,
     this.formKey,
     this.readOnly = false,
+    this.onItemAdded,
+    this.onItemRemoved,
     super.key,
   });
 
@@ -51,6 +53,12 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// will be editable. This can be usefule if you don't want to provide a
   /// ui:readonly key to each field.
   final bool readOnly;
+
+  /// Function called when an item is added to an array
+  final void Function(JsonSchema)? onItemAdded;
+
+  /// Function called when an item is removed from an array
+  final void Function()? onItemRemoved;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -196,6 +204,8 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               arrayIndex,
               previousFormData,
             ),
+            onItemAdded: widget.onItemAdded,
+            onItemRemoved: widget.onItemRemoved,
           )
         else
           _UiWidget(
