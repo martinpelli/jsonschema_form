@@ -1,8 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 
 /// Extension for useful non built-in methods for Map<String, dyamic>
 extension MapExtension on Map<String, dynamic> {
-  /// Checks if a map and all its submaps are empty
+  /// Checks and removes every empty map
   Map<String, dynamic> removeEmptySubmaps({Map<String, dynamic>? map}) {
     final cleanedMap = <String, dynamic>{};
 
@@ -40,10 +41,43 @@ extension MapExtension on Map<String, dynamic> {
     return cleanedMap;
   }
 
-  /// Checks if every value of the map is from the type specified this is due to
-  /// something is Map<String, T> is no valid as it can lead to false when
+  /// Checks if every value of the map is from the type specified.
+  /// This is necessary in some scenarios where doing
+  /// [something is Map<String, T>] is no tvalid as it can lead to false when
   /// something is just a Map without type
   bool isMapOfStringAndType<T>() {
     return values.every((value) => value is T);
+  }
+
+  /// Checks if a map (and every submap) of type Map<String, dynamic> is equal
+  /// to a nother one of same type.
+  /// This method can be used to check for example, if two formData are the same
+  bool isEqualToMap(Map<String, dynamic> map) {
+    const deepEquality = DeepCollectionEquality();
+    return deepEquality.equals(this, map);
+  }
+
+  /// .from is only applied to the map or list but not to submaps nor sublist.
+  /// Therefore, deepCopy supports deep .from
+  Map<String, dynamic> deepCopy({Map<String, dynamic>? copiedMap}) {
+    return (copiedMap ?? this).map((key, value) {
+      if (value is Map<String, dynamic>) {
+        return MapEntry(key, deepCopy(copiedMap: value));
+      } else if (value is List) {
+        return MapEntry(
+          key,
+          value.map((item) {
+            if (item is Map<String, dynamic>) {
+              return deepCopy(
+                copiedMap: item,
+              );
+            }
+            return item;
+          }).toList(),
+        );
+      } else {
+        return MapEntry(key, value);
+      }
+    });
   }
 }
