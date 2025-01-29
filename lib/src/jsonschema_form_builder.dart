@@ -46,25 +46,34 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// The json schema for the form.
   final JsonschemaForm jsonSchemaForm;
 
-  /// Form key to validate fields
+  /// Form key to validate the form
   final GlobalKey<FormState>? formKey;
 
   /// Useful if the user needs to see the whole form in read only, so none field
-  /// will be editable. This can be usefule if you don't want to provide a
+  /// will be editable. This can be useful if you don't want to provide a
   /// ui:readonly key to each field.
   final bool readOnly;
 
   /// Function called when an item is added to an array
+  /// This can be useful if you want to scroll to the bottom in case the new
+  /// item overflows the screen
   final void Function(JsonSchema)? onItemAdded;
 
   /// Function called when an item is removed from an array
   final void Function()? onItemRemoved;
 
   @override
-  State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
+  State<JsonschemaFormBuilder> createState() => JsonschemaFormBuilderState();
 }
 
-class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
+/// The state of the [JsonschemaFormBuilder].
+/// It is needed to rebuild the form when there is a conditional dependency
+/// change.
+/// It is also needed to hold each field key, you can access the state to use
+/// [getFirstInvalidFieldContext] method
+class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
+  final _formFieldKeys = <GlobalKey<FormFieldState<dynamic>>>[];
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -241,6 +250,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
             getReadOnly: () =>
                 _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
+            formFieldKeys: _formFieldKeys,
           ),
       ],
     );
@@ -587,5 +597,19 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     });
 
     return mergedJsonSchema;
+  }
+
+  /// Method used to get the context of the first field with an error after
+  /// submitting the form. Useful to scroll to that context.
+  BuildContext? getFirstInvalidFieldContext() {
+    for (final formFieldKey in _formFieldKeys) {
+      if (formFieldKey.currentState != null &&
+          formFieldKey.currentContext != null) {
+        if (formFieldKey.currentState!.hasError) {
+          return formFieldKey.currentContext!;
+        }
+      }
+    }
+    return null;
   }
 }
