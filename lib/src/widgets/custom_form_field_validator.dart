@@ -2,12 +2,14 @@ part of '../jsonschema_form_builder.dart';
 
 class _CustomFormFieldValidator<T> extends StatelessWidget {
   const _CustomFormFieldValidator({
+    required this.formFieldKey,
     required this.childFormBuilder,
     required this.initialValue,
     required this.isEnabled,
     this.isEmpty,
   });
 
+  final GlobalKey<FormFieldState<dynamic>> formFieldKey;
   final Widget Function(FormFieldState<T>?) childFormBuilder;
   final T? initialValue;
   final bool isEnabled;
@@ -20,6 +22,7 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
     }
 
     return FormField<T>(
+      key: formFieldKey,
       initialValue: initialValue,
       validator: (value) {
         if (value == null || (isEmpty != null && isEmpty!(value))) {

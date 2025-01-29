@@ -36,6 +36,8 @@ class _ArrayForm extends StatefulWidget {
 }
 
 class _ArrayFormState extends State<_ArrayForm> {
+  final _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+
   final List<JsonSchema> _arrayItems = [];
 
   final List<Widget> _initialItems = [];
@@ -156,6 +158,7 @@ class _ArrayFormState extends State<_ArrayForm> {
   @override
   Widget build(BuildContext context) {
     return _CustomFormFieldValidator<bool>(
+      formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
       initialValue: _arrayItems.length == _initialItems.length ? null : true,
       childFormBuilder: (field) {
