@@ -41,6 +41,14 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
       child: LayoutBuilder(
         builder: (context, contraints) {
           return DropdownMenu<T>(
+            inputDecorationTheme: InputDecorationTheme(
+                filled: widget.readOnly,
+                fillColor: widget.readOnly
+                    ? Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.1)
+                    : null),
             enabled: !widget.readOnly,
             width: contraints.maxWidth,
             enableSearch: false,

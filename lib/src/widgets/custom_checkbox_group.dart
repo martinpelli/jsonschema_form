@@ -68,6 +68,16 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                     Checkbox(
                       splashRadius: 0,
                       value: _selectedItems.contains(item),
+                      fillColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.disabled)) {
+                          return Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1);
+                        }
+
+                        return Colors.transparent;
+                      }),
                       onChanged: widget.readOnly
                           ? null
                           : (value) {
