@@ -385,6 +385,7 @@ class _UiWidget extends StatelessWidget {
     BuildContext context,
     String? initialValue,
   ) {
+    final isReadOnly = getReadOnly();
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -397,9 +398,10 @@ class _UiWidget extends StatelessWidget {
         autofocus: uiSchema?.autofocus,
         readOnly: true,
         canRequestFocus: false,
-        mouseCursor: SystemMouseCursors.click,
+        mouseCursor:
+            isReadOnly ? SystemMouseCursors.text : SystemMouseCursors.click,
         hasRequiredValidator: getIsRequired(),
-        onTap: getReadOnly()
+        onTap: isReadOnly
             ? null
             : () async {
                 final minDate = DateTime(1900);
@@ -426,6 +428,7 @@ class _UiWidget extends StatelessWidget {
     BuildContext context,
     String? initialValue,
   ) {
+    final isReadOnly = getReadOnly();
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -438,9 +441,10 @@ class _UiWidget extends StatelessWidget {
         autofocus: uiSchema?.autofocus,
         readOnly: true,
         canRequestFocus: false,
-        mouseCursor: SystemMouseCursors.click,
+        mouseCursor:
+            isReadOnly ? SystemMouseCursors.text : SystemMouseCursors.click,
         hasRequiredValidator: getIsRequired(),
-        onTap: getReadOnly()
+        onTap: isReadOnly
             ? null
             : () async {
                 final minDate = DateTime(1900);

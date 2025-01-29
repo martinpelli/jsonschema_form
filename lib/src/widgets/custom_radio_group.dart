@@ -61,6 +61,16 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Radio(
+                      hoverColor: widget.readOnly ? Colors.transparent : null,
+                      fillColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.disabled)) {
+                          return Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1);
+                        }
+                        return Theme.of(context).colorScheme.primary;
+                      }),
                       splashRadius: 0,
                       value: _selectedItem == item,
                       groupValue: true,
