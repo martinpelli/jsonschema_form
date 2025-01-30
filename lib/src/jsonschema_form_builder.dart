@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
+import 'package:jsonschema_form/src/models/input_type.dart';
 import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/json_schema_format.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
@@ -19,6 +20,7 @@ import 'package:jsonschema_form/src/utils/string_extension.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
 import 'package:jsonschema_form/src/widgets/app_image.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:phone_form_field/phone_form_field.dart';
 
 part 'screens/camera_screen.dart';
 part 'widgets/array_form.dart';
@@ -28,6 +30,7 @@ part 'widgets/custom_file_upload.dart';
 part 'widgets/custom_form_field_validator.dart';
 part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_text_form_field.dart';
+part 'widgets/custom_phone_form_field.dart';
 part 'widgets/one_of_form.dart';
 part 'widgets/ui_widget.dart';
 

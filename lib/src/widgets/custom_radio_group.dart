@@ -89,7 +89,6 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
               )
               .toList(),
         ),
-        const SizedBox(height: 10),
       ],
     );
   }
