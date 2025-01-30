@@ -76,6 +76,9 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                               .withValues(alpha: 0.1);
                         }
 
+                        if (states.contains(WidgetState.selected)) {
+                          return Theme.of(context).colorScheme.secondary;
+                        }
                         return Colors.transparent;
                       }),
                       onChanged: widget.readOnly
