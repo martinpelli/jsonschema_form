@@ -40,7 +40,10 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
             if (field.hasError)
               Text(
                 field.errorText!,
-                style: const TextStyle(color: Colors.red),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: Theme.of(context).colorScheme.error),
               ),
           ],
         );

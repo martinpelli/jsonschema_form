@@ -125,29 +125,32 @@ class _UiWidgetState extends State<_UiWidget> {
       (widget.uiSchema?.widget == null && widget.jsonSchema.enumValue != null);
 
   Widget _buildDropdown(String? initialValue) {
-    return _CustomFormFieldValidator<String>(
-      formFieldKey: _formFieldKey,
-      isEnabled: widget.getIsRequired(),
-      initialValue: initialValue,
-      isEmpty: (value) => value.isEmpty,
-      childFormBuilder: (field) {
-        return _CustomDropdownMenu<String>(
-          readOnly: widget.getReadOnly(),
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
-          labelStyle: widget.getIsRequired()
-              ? const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                )
-              : null,
-          itemLabel: (_, item) => item,
-          items: widget.jsonSchema.enumValue!,
-          selectedItem: initialValue,
-          onDropdownValueSelected: (value) {
-            _onFieldChangedWithValidator<String>(field, value);
-          },
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: _CustomFormFieldValidator<String>(
+        formFieldKey: _formFieldKey,
+        isEnabled: widget.getIsRequired(),
+        initialValue: initialValue,
+        isEmpty: (value) => value.isEmpty,
+        childFormBuilder: (field) {
+          return _CustomDropdownMenu<String>(
+            readOnly: widget.getReadOnly(),
+            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            labelStyle: widget.getIsRequired()
+                ? const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  )
+                : null,
+            itemLabel: (_, item) => item,
+            items: widget.jsonSchema.enumValue!,
+            selectedItem: initialValue,
+            onDropdownValueSelected: (value) {
+              _onFieldChangedWithValidator<String>(field, value);
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -156,30 +159,33 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildRadioGroup(
     String? initialValue,
   ) {
-    return _CustomFormFieldValidator<String>(
-      formFieldKey: _formFieldKey,
-      isEnabled: widget.getIsRequired(),
-      initialValue: initialValue,
-      isEmpty: (value) => value.isEmpty,
-      childFormBuilder: (field) {
-        return _CustomRadioGroup<String>(
-          readOnly: widget.getReadOnly(),
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
-          labelStyle: widget.getIsRequired()
-              ? const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                )
-              : null,
-          sublabel: widget.getDescription(),
-          itemLabel: (_, item) => item,
-          items: widget.jsonSchema.enumValue!,
-          initialItem: initialValue,
-          onRadioValueSelected: (value) {
-            _onFieldChangedWithValidator<String>(field, value);
-          },
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: _CustomFormFieldValidator<String>(
+        formFieldKey: _formFieldKey,
+        isEnabled: widget.getIsRequired(),
+        initialValue: initialValue,
+        isEmpty: (value) => value.isEmpty,
+        childFormBuilder: (field) {
+          return _CustomRadioGroup<String>(
+            readOnly: widget.getReadOnly(),
+            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            labelStyle: widget.getIsRequired()
+                ? const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  )
+                : null,
+            sublabel: widget.getDescription(),
+            itemLabel: (_, item) => item,
+            items: widget.jsonSchema.enumValue!,
+            initialItem: initialValue,
+            onRadioValueSelected: (value) {
+              _onFieldChangedWithValidator<String>(field, value);
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -190,29 +196,32 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildRadio(
     bool? initialValue,
   ) {
-    return _CustomFormFieldValidator<bool>(
-      formFieldKey: _formFieldKey,
-      isEnabled: widget.getIsRequired(),
-      initialValue: initialValue,
-      childFormBuilder: (field) {
-        return _CustomRadioGroup<bool>(
-          readOnly: widget.getReadOnly(),
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
-          labelStyle: widget.getIsRequired()
-              ? const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                )
-              : null,
-          sublabel: widget.getDescription(),
-          itemLabel: (_, item) => item ? 'Yes' : 'No',
-          items: const [false, true],
-          initialItem: initialValue,
-          onRadioValueSelected: (value) {
-            _onFieldChangedWithValidator<bool>(field, value);
-          },
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: _CustomFormFieldValidator<bool>(
+        formFieldKey: _formFieldKey,
+        isEnabled: widget.getIsRequired(),
+        initialValue: initialValue,
+        childFormBuilder: (field) {
+          return _CustomRadioGroup<bool>(
+            readOnly: widget.getReadOnly(),
+            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            labelStyle: widget.getIsRequired()
+                ? const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  )
+                : null,
+            sublabel: widget.getDescription(),
+            itemLabel: (_, item) => item ? 'Yes' : 'No',
+            items: const [false, true],
+            initialItem: initialValue,
+            onRadioValueSelected: (value) {
+              _onFieldChangedWithValidator<bool>(field, value);
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -385,28 +394,31 @@ class _UiWidgetState extends State<_UiWidget> {
             false) &&
         (widget.uiSchema?.options?[UiOptions.video.name] as bool);
 
-    return _CustomFormFieldValidator<XFile?>(
-      formFieldKey: _formFieldKey,
-      isEnabled: widget.getIsRequired(),
-      initialValue: initialValue?.base64ToXFile(),
-      isEmpty: (value) {
-        return value == null;
-      },
-      childFormBuilder: (field) {
-        return _CustomFileUpload(
-          readOnly: widget.getReadOnly(),
-          acceptedExtensions: acceptedExtensions,
-          hasFilePicker: hasFilePicker,
-          hasCameraButton: hasCameraButton,
-          title: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
-          onFileChosen: (value) async {
-            await _onFieldChangedWithValidator<XFile?>(field, value);
-          },
-          isPhotoAllowed: isPhotoAllowed,
-          isVideoAllowed: isVideoAllowed,
-          fileData: initialValue?.base64ToXFile(),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: _CustomFormFieldValidator<XFile?>(
+        formFieldKey: _formFieldKey,
+        isEnabled: widget.getIsRequired(),
+        initialValue: initialValue?.base64ToXFile(),
+        isEmpty: (value) {
+          return value == null;
+        },
+        childFormBuilder: (field) {
+          return _CustomFileUpload(
+            readOnly: widget.getReadOnly(),
+            acceptedExtensions: acceptedExtensions,
+            hasFilePicker: hasFilePicker,
+            hasCameraButton: hasCameraButton,
+            title: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            onFileChosen: (value) async {
+              await _onFieldChangedWithValidator<XFile?>(field, value);
+            },
+            isPhotoAllowed: isPhotoAllowed,
+            isVideoAllowed: isVideoAllowed,
+            fileData: initialValue?.base64ToXFile(),
+          );
+        },
+      ),
     );
   }
 
