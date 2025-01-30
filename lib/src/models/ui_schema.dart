@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jsonschema_form/src/models/input_type.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
 import 'package:meta/meta.dart';
@@ -51,6 +52,10 @@ class UiSchema extends Equatable {
       options = null;
     } else {
       options = (json['ui:options'] as Map<String, dynamic>).map((key, value) {
+        if (key == 'inputType') {
+          return MapEntry(key, $InputTypeFromJson[value]);
+        }
+
         return MapEntry(key, value as dynamic);
       });
     }

@@ -89,6 +89,11 @@ class _UiWidgetState extends State<_UiWidget> {
       return _buildDate(context, initialStringValue);
     } else if (_isDateTime()) {
       return _buildDateTime(context, initialStringValue);
+    } else if ((widget.uiSchema?.options
+                ?.containsKey(UiOptions.inputType.name) ??
+            false) &&
+        widget.uiSchema!.options![UiOptions.inputType.name] == InputType.tel) {
+      return _buildPhoneText(initialStringValue);
     } else {
       return _buildText(initialStringValue);
     }
@@ -506,6 +511,24 @@ class _UiWidgetState extends State<_UiWidget> {
 
                 return null;
               },
+      ),
+    );
+  }
+
+  Widget _buildPhoneText(String? initialValue) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: _CustomPhoneFormField(
+        formFieldKey: _formFieldKey,
+        enabled: !widget.getReadOnly(),
+        onChanged: _onFieldChanged,
+        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        defaultValue: initialValue,
+        emptyValue: widget.uiSchema?.emptyValue,
+        placeholder: widget.uiSchema?.placeholder,
+        helperText: widget.uiSchema?.help,
+        autofocus: widget.uiSchema?.autofocus,
+        hasRequiredValidator: widget.getIsRequired(),
       ),
     );
   }

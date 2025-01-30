@@ -34,5 +34,8 @@ enum UiOptions {
   /// Used for files when format is specified in jsonSchema. If it is true then
   /// a [camera] option will allow videos
   /// If is not provided then it will be taken as false
-  video;
+  video,
+
+  /// Used for building specific inputs, for now only tel is supported.
+  inputType;
 }
