@@ -19,16 +19,17 @@ class _CustomFileUpload extends StatefulWidget {
   final bool isVideoAllowed;
   final List<String>? acceptedExtensions;
   final String? title;
-  final void Function(XFile? value) onFileChosen;
+  final void Function(String? value) onFileChosen;
   final bool readOnly;
-  final XFile? fileData;
+  final String? fileData;
 
   @override
   State<_CustomFileUpload> createState() => _CustomFileUploadState();
 }
 
-class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindingObserver {
-  XFile? _file;
+class _CustomFileUploadState extends State<_CustomFileUpload>
+    with WidgetsBindingObserver {
+  String? _file;
   late String? _fileName;
 
   bool _isLoading = false;
@@ -53,9 +54,8 @@ class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindin
         if (_file != null)
           Row(
             children: [
-              AppImage(
-                imageData: _file!.path,
-                width: 200,
+              FilePreview(
+                fileData: _file!,
               ),
               const SizedBox(width: 10),
               IconButton(
@@ -133,18 +133,18 @@ class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindin
     );
 
     if (selectedFile != null) {
+      final base64 = await selectedFile.getBase64();
       if (mounted) setState(() => _isLoading = true);
 
       try {
         widget.onFileChosen(
           // ignore: lines_longer_than_80_chars
-          selectedFile,
+          base64,
         );
-
         if (mounted) {
           setState(() {
-            _file = selectedFile;
-            _fileName = _file!.name;
+            _file = base64;
+            _fileName = selectedFile.name;
           });
         }
       } catch (e) {
@@ -170,22 +170,17 @@ class _CustomFileUploadState extends State<_CustomFileUpload> with WidgetsBindin
     );
 
     if (file != null) {
+      final base64 = await file.getBase64();
       widget.onFileChosen(
         // ignore: lines_longer_than_80_chars
-        file,
+        base64,
       );
 
       setState(() {
-        _file = file;
-        _fileName = _file!.name.isEmpty ? DateTime.now().toIso8601String() : _file!.name;
+        _file = base64;
+        _fileName =
+            file.name.isEmpty ? DateTime.now().toIso8601String() : file.name;
       });
     }
-  }
-
-  @protected
-  @mustCallSuper
-  void dispose() {
-    print('dispose $runtimeType');
-    super.dispose();
   }
 }

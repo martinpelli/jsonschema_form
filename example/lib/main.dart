@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:example/json_pretifier.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,7 @@ class _FormState extends State<_Form> {
   Map<String, dynamic>? _decodedFormData;
 
   final _fileNames = [
+    "jobsite_images",
     "simple_with_data",
     "ui_options",
     "deep_level_with_data",
@@ -53,7 +55,6 @@ class _FormState extends State<_Form> {
     "property_dependencies_with_data",
     "schema_dependencies_with_data",
     "files",
-    "jobsite_images",
     "problem_identification_with_data",
     "site_safety_with_data",
     "temporary_steps_and_solution_with_data",
@@ -147,11 +148,11 @@ class _FormState extends State<_Form> {
                                 _jsonschemaForm.formData!);
 
                             newFormData.removeEmptySubmaps();
-
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(newFormData.toString()),
-                              backgroundColor: Colors.green,
-                            ));
+                            log(newFormData.toString());
+                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            //   content: Text(newFormData.toString()),
+                            //   backgroundColor: Colors.green,
+                            // ));
                           }
                         },
                         child: const Text('Submit'),

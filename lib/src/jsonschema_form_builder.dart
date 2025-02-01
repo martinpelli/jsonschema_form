@@ -17,7 +17,7 @@ import 'package:jsonschema_form/src/models/ui_type.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/string_extension.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
-import 'package:jsonschema_form/src/widgets/app_image.dart';
+import 'package:jsonschema_form/src/widgets/file_widgets/file_preview.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 part 'screens/camera_screen.dart';
