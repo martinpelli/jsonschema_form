@@ -54,7 +54,7 @@ class VideoThumbnailPreview extends StatelessWidget {
   /// Generates a thumbnail for the given video file.
   ///
   /// The method uses the [VideoThumbnail] package to generate a thumbnail
-  /// from the video file and returns an [String] containing the thumbnail image.
+  /// from the video file and returns an [String] containing the thumbnail image
   Future<String> generateThumbnail(String path) async {
     var thumbnailPath = path;
     if (path.isValidUrl) {

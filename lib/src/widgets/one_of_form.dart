@@ -48,34 +48,18 @@ class _OneOfFormState extends State<_OneOfForm> {
       /// first element of the oneOf list
       selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.first;
     } else {
-      // /// If there is data in formData then it will select the oneOf item if the
-      // /// first key from oneOf items matches the first key from the formData
-      // selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.firstWhere((element) {
-      //   /// First it tries to look for a const value, becuase if there is one,
-      //   /// it should be different in each oneOf object, so it can be selected
-      //   /// base ond const value.
-      //   final firstConstValue = element.properties!.entries.firstWhereOrNull(
-      //     (element) => element.value.constValue != null,
-      //   );
-      //   if (firstConstValue != null) {
-      //     return widget.formData[firstConstValue.key] ==
-      //         firstConstValue.value.constValue!;
-      //   }
-
-      //   /// If const value is not present then it will try to look at the first
-      //   /// key and the formData should have only that key
-      //   return element.properties!.entries.first.key ==
-      //       widget.formData.entries.first.key;
-      // });
+      /// If there is data in formData then it will select the oneOf item if the
+      /// first key from oneOf items matches the first key from the formData
       // Inside your widget or method
       selectedOneOfJsonSchema = widget.jsonSchema.oneOf!.firstWhereOrNull(
             (
               element,
             ) {
-              /// First it tries to look for a const value, because if there is one,
-              /// it should be different in each oneOf object, so it can be selected
-              /// based on const value.
-              final firstConstValue = element.properties!.entries.firstWhereOrNull(
+              /// First it tries to look for a const value,
+              /// because if there is one, it should be different in each oneOf
+              /// object, so it can be selected based on const value.
+              final firstConstValue =
+                  element.properties!.entries.firstWhereOrNull(
                 (element) => element.value.constValue != null,
               );
 
@@ -87,9 +71,10 @@ class _OneOfFormState extends State<_OneOfForm> {
                 // return true;
               }
 
-              /// If const value is not present, then it will try to look at the first
-              /// key, and the formData should have only that key
-              return element.properties!.entries.first.key == widget.formData.entries.first.key;
+              /// If const value is not present, then it will try to look at
+              /// the first key, and the formData should have only that key
+              return element.properties!.entries.first.key ==
+                  widget.formData.entries.first.key;
             },
           ) ??
           widget.jsonSchema.oneOf!.first;
@@ -101,7 +86,8 @@ class _OneOfFormState extends State<_OneOfForm> {
     /// If oneOf list is part of dependencies, then it means it will conditional
     /// select one element of the list depending on other selected value
     if (widget.previousSchema?.dependencies != null &&
-        (widget.previousSchema!.properties?.containsKey(widget.jsonKey) ?? false) &&
+        (widget.previousSchema!.properties?.containsKey(widget.jsonKey) ??
+            false) &&
         widget.formData.containsKey(widget.jsonKey)) {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -148,7 +134,8 @@ class _OneOfFormState extends State<_OneOfForm> {
       if (widget.jsonKey == null) {
         widget.formData.removeWhere(removeWhere);
       } else if (widget.formData[widget.jsonKey] is Map<String, dynamic>) {
-        (widget.formData[widget.jsonKey] as Map<String, dynamic>).removeWhere(removeWhere);
+        (widget.formData[widget.jsonKey] as Map<String, dynamic>)
+            .removeWhere(removeWhere);
       }
 
       /// When oneOf has changed, it will rebuild the whole form so that all
@@ -156,9 +143,11 @@ class _OneOfFormState extends State<_OneOfForm> {
       widget.rebuildForm();
     }
 
-    String itemLabel(int index, JsonSchema item) => item.title ?? 'Option ${index + 1}';
+    String itemLabel(int index, JsonSchema item) =>
+        item.title ?? 'Option ${index + 1}';
 
-    if (widget.uiSchema?.widget == null || widget.uiSchema?.widget == UiType.select) {
+    if (widget.uiSchema?.widget == null ||
+        widget.uiSchema?.widget == UiType.select) {
       return _CustomDropdownMenu<JsonSchema>(
         readOnly: widget.uiSchema?.readonly ?? widget.readOnly,
         label: widget.title,
@@ -189,7 +178,8 @@ class _OneOfFormState extends State<_OneOfForm> {
     final dependencySchema = widget.jsonSchema.oneOf!
         .firstWhere((element) {
           final firstOneOfValue =
-              element.properties![widget.jsonKey]!.enumValue?.first ?? element.properties![widget.jsonKey]!.constValue;
+              element.properties![widget.jsonKey]!.enumValue?.first ??
+                  element.properties![widget.jsonKey]!.constValue;
           return firstOneOfValue == widget.formData[widget.jsonKey];
         })
         .properties!

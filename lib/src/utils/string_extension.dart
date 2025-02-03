@@ -6,31 +6,6 @@ import 'package:jsonschema_form/src/utils/file_type.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 
-const Map<String, String> fileTypeMap = {
-  'png': 'image/png',
-  'jpeg': 'image/jpeg',
-  'jpg': 'image/jpeg',
-  'gif': 'image/gif',
-  'svg': 'image/svg+xml',
-  'bmp': 'image/bmp',
-  'webp': 'image/webp',
-  'tiff': 'image/tiff',
-  'ico': 'image/x-icon',
-  'heif': 'image/heif',
-  'heic': 'image/heic',
-  'avif': 'image/avif',
-
-  // Video files
-  'mp4': 'video/mp4',
-  'webm': 'video/webm',
-  'ogg': 'video/ogg',
-  'avi': 'video/avi',
-  'mov': 'video/quicktime',
-  'mkv': 'video/x-matroska',
-  '3gp': 'video/3gpp',
-  'flv': 'video/x-flv',
-};
-
 /// Extension on [String] to provide a method to check if the string
 /// is a valid base64 encoded string.
 extension StringExt on String {
@@ -93,7 +68,18 @@ extension StringExt on String {
     }
   }
 
-  // Check if the string is a valid URL
+  /// Returns `true` if the string is a valid URL with
+  /// an `http` or `https` scheme.
+  ///
+  /// This is a simple check using a regular expression to verify that 
+  /// the string starts with `http://` or `https://`,
+  /// followed by a domain and other URL components.
+  ///
+  /// Example:
+  /// ```dart
+  /// 'https://example.com'.isValidUrl; // Returns true
+  /// 'invalid-url'.isValidUrl; // Returns false
+  /// ```
   bool get isValidUrl {
     final urlRegex = RegExp(
       r'^(http|https):\/\/[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-]+.*$',
@@ -102,7 +88,23 @@ extension StringExt on String {
     return urlRegex.hasMatch(this);
   }
 
-  // Check if the URL is an image
+  /// Determines the type of media from the URL's file extension.
+  ///
+  /// This method checks the file extension of the URL and classifies
+  /// it into one of the following categories:
+  /// - `FileType.image` for image files (e.g., PNG, JPEG, GIF)
+  /// - `FileType.video` for video files (e.g., MP4, AVI, MKV)
+  /// - `FileType.unknown` for unsupported or unknown file types.
+  ///
+  /// The method compares the file extension or MIME type in the URL 
+  /// to known image and video formats to return the correct `FileType`.
+  ///
+  /// Example:
+  /// ```dart
+  /// 'https://example.com/image.jpg'.fileType; // Returns FileType.image
+  /// 'https://example.com/video.mp4'.fileType; // Returns FileType.video
+  /// 'https://example.com/file.txt'.fileType; // Returns FileType.unknown
+  /// ```
   FileType get fileType {
     final uri = Uri.parse(this);
 
@@ -158,6 +160,23 @@ extension StringExt on String {
     }
   }
 
+/// Fetches the media from the URL and returns an `XFile` with the media data.
+  ///
+  /// This method performs an HTTP GET request to the provided URL,
+  /// retrieves the media file (such as an image or video), and returns
+  /// an `XFile` containing the raw byte data and MIME type of the file.
+  ///
+  /// The file is saved with a generated name based on the current timestamp.
+  ///
+  /// Returns `null` if the URL cannot be reached or the request fails.
+  ///
+  /// Example:
+  /// ```dart
+  /// final mediaFile = await 'https://example.com/image.png'.urlMediaToFile();
+  /// if (mediaFile != null) {
+  ///   // Handle the file (e.g., save it, display it)
+  /// }
+  /// ```
   Future<XFile?> urlMediaToFile() async {
     final response = await http.get(Uri.parse(this));
 
