@@ -1,61 +1,66 @@
 {
-    "jsonSchema": {
-      "description": "Please fill out the details related to the jobsite conditions.",
-      "properties": {
-        "jobsiteImages": {
-          "description": "Please provide photos or videos of the jobsite conditions before starting work. Use the buttons below to add additional photos or videos. Take at least three photos and one video.",
-          "items": {
-            "properties": {
-              "file": {
-                "format": "data-url",
-                "title": "File",
-                "type": "string"
-              },
-              "type": {
-                "enum": [
-                  "photo",
-                  "video"
-                ],
-                "title": "Type",
-                "type": "string"
-              }
-            },
-            "required": [
-              "type",
-              "file"
-            ],
-            "type": "object"
-          },
-          "title": "Jobsite Images",
-          "type": "array"
-        }
-      },
-      "required": [
-        "jobsiteImages"
-      ],
-      "title": "Jobsite Assessment Form",
-      "type": "object"
-    },
-    "uiSchema":{
+  "jsonSchema": {
+    "type": "object",
+    "title": "Jobsite Assessment Form",
+    "required": [
+      "jobsiteImages"
+    ],
+    "properties": {
       "jobsiteImages": {
+        "type": "array",
         "items": {
-          "file": {
-            "ui:title": "Upload file",
-            "ui:widget": "file"
-          },
-          "type": {
-            "ui:enumDisabled": [],
-            "ui:title": "Select media type",
-            "ui:widget": "radio"
+          "type": "object",
+          "required": [
+            "type",
+            "file"
+          ],
+          "properties": {
+            "file": {
+              "type": "string",
+              "title": "File",
+              "format": "data-url"
+            },
+            "type": {
+              "enum": [
+                "photo",
+                "video"
+              ],
+              "type": "string",
+              "title": "Type"
+            }
           }
         },
-        "ui:options": {
-          "addable": true,
-          "removable": true
-        }
+        "title": "Jobsite Images",
+        "description": "Please provide photos or videos of the jobsite conditions before starting work. Use the buttons below to add additional photos or videos. Take at least three photos and one video."
       }
     },
-    "formData":{
-        "jobsiteImages": []
+    "description": "Please fill out the details related to the jobsite conditions."
+  },
+  "uiSchema": {
+    "jobsiteImages": {
+      "items": {
+        "file": {
+          "ui:title": "Upload file",
+          "ui:widget": "file"
+        },
+        "type": {
+          "ui:title": "Select media type",
+          "ui:widget": "radio",
+          "ui:enumDisabled": []
+        }
+      },
+      "ui:options": {
+        "addable": true,
+        "removable": true
+      }
     }
+  },
+  "formData": {
+    "jobsiteImages": [
+      {
+        "file": "https://as2.ftcdn.net/v2/jpg/10/40/81/11/1000_F_1040811164_Sww10YsHGAYfBFLQ6lYvkUum0deVQFwn.jpg",
+        "type": "photo"
+      }
+    ]
+  }
 }

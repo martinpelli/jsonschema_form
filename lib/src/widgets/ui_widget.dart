@@ -401,12 +401,12 @@ class _UiWidgetState extends State<_UiWidget> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: _CustomFormFieldValidator<XFile?>(
+      child: _CustomFormFieldValidator<String?>(
         formFieldKey: _formFieldKey,
         isEnabled: widget.getIsRequired(),
-        initialValue: initialValue?.base64ToXFile(),
+        initialValue: initialValue,
         isEmpty: (value) {
-          return value == null;
+          return value == null || value.isEmpty == true;
         },
         childFormBuilder: (field) {
           return _CustomFileUpload(
@@ -416,11 +416,11 @@ class _UiWidgetState extends State<_UiWidget> {
             hasCameraButton: hasCameraButton,
             title: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
             onFileChosen: (value) async {
-              await _onFieldChangedWithValidator<XFile?>(field, value);
+              await _onFieldChangedWithValidator<String?>(field, value);
             },
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
-            fileData: initialValue?.base64ToXFile(),
+            fileData: initialValue,
           );
         },
       ),

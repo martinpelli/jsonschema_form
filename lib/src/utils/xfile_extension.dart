@@ -4,7 +4,9 @@ import 'dart:isolate';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+import 'package:jsonschema_form/src/utils/file_type.dart';
 import 'package:path/path.dart' as path;
+
 
 /// Extension for useful non built-in methods for XFile
 extension XFileExtension on XFile {
@@ -50,7 +52,7 @@ extension XFileExtension on XFile {
   /// 'data:image/png;name=image.png;base64,....'
   /// ```
   Future<String?> getBase64() async {
-    final encodedFile = kIsWeb
+    final fileData = kIsWeb
         ? await _encodeFileForWeb(
             this,
           )
@@ -58,7 +60,118 @@ extension XFileExtension on XFile {
             this.path,
           );
 
-    return 'data:$mimeType;name=$name;base64,$encodedFile';
+    final fileExtension = name.split('.').last.toLowerCase();
+    final fileType = fileTypeMap[fileExtension];
+
+    final base64 = 'data:$fileType;base64,$fileData';
+    return base64;
+  }
+
+  /// Determines the type of file based on its MIME type.
+  ///
+  /// This getter checks the MIME type of the file and returns the appropriate
+  /// `FileType` (either `image`, `video`, or `unknown`). It is useful for
+  /// categorizing the file to handle it properly (e.g.,
+  /// for previewing or processing).
+  ///
+  /// The MIME types are matched with known types for images and videos. If the
+  /// MIME type doesn't match any of the known types,
+  /// it defaults to `FileType.unknown`.
+  ///
+  /// Example:
+  /// - For `image/png`, it will return `FileType.image`.
+  /// - For `video/mp4`, it will return `FileType.video`.
+  /// - For unknown MIME types, it will return `FileType.unknown`.
+  FileType get fileType {
+    // FileType
+    switch (mimeType) {
+      case 'png':
+      case 'jpeg':
+      case 'jpg':
+      case 'gif':
+      case 'svg':
+      case 'bmp':
+      case 'webp':
+      case 'tiff':
+      case 'ico':
+      case 'heif':
+      case 'heic':
+      case 'avif':
+      case 'image/png':
+      case 'image/jpeg':
+      case 'image/gif':
+      case 'image/svg+xml':
+      case 'image/bmp':
+      case 'image/webp':
+      case 'image/tiff':
+      case 'image/x-icon':
+      case 'image/heif':
+      case 'image/heic':
+      case 'image/avif':
+        return FileType.image;
+      // Video files
+      case 'mp4':
+      case 'webm':
+      case 'ogg':
+      case 'avi':
+      case 'mov':
+      case 'mkv':
+      case '3gp':
+      case 'flv':
+      case 'video/mp4':
+      case 'video/webm':
+      case 'video/ogg':
+      case 'video/avi':
+      case 'video/quicktime':
+      case 'video/x-matroska':
+      case 'video/3gpp':
+      case 'video/x-flv':
+        return FileType.video;
+      default:
+        return FileType.unknown;
+    }
+  }
+
+  /// Retrieves an updated `XFile` with the file's details,
+  /// including bytes, length, last modified date, and MIME type.
+  ///
+  /// This method reads the file's bytes, length, and last modified timestamp,
+  /// and constructs an updated `XFile` object with the current
+  /// file's information.
+  /// It also determines the file's MIME type based on
+  /// its extension using the `fileTypeMap`.
+  /// If the MIME type cannot be determined from the extension,
+  /// the method falls back to using
+  /// the extension as the MIME type.
+  ///
+  /// This method is useful for updating file details when they change or
+  /// when new file information is needed
+  /// (e.g., for uploading, previewing, etc.).
+  ///
+  /// Returns an updated `XFile` object with the following details:
+  /// - `bytes`: The raw byte data of the file.
+  /// - `length`: The length of the file in bytes.
+  /// - `lastModified`: The last modified timestamp of the file.
+  /// - `mimeType`: The MIME type determined from the file extension
+  /// or `fileTypeMap`.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// XFile updatedFile = await getUpdatedFile();
+  /// ```
+  Future<XFile> getUpdatedFile() async {
+    final bytes = await readAsBytes();
+    final length = await this.length();
+    final lastModified = await this.lastModified();
+    final fileExtension = name.split('.').last.toLowerCase();
+    return XFile(
+      this.path,
+      mimeType: fileTypeMap[fileExtension] ?? fileExtension,
+      name: name,
+      length: length,
+      bytes: bytes,
+      lastModified: lastModified,
+    );
   }
 
   /// Encoding for Web
