@@ -56,19 +56,6 @@
     }
   },
   "formData": {
-    "jobsiteImages": [
-      {
-        "file": {
-          "id": "s3id",
-          "file": "url 1 to image "
-        }
-      },
-      {
-        "file": {
-          "id": "s3id",
-          "file": "url 2 to image "
-        }
-      }
-    ]
+    "jobsiteImages": []
   }
 }
