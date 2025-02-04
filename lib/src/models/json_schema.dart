@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
 import 'package:jsonschema_form/src/models/json_schema_format.dart';
 import 'package:jsonschema_form/src/models/json_type.dart';
@@ -154,6 +155,131 @@ class JsonSchema extends Equatable {
 
   /// Deserializes the given [JsonMap] into a [JsonSchema].
   static JsonSchema fromJson(JsonMap json) => _$JsonSchemaFromJson(json);
+
+  /// merge two JsonSchemas into one
+  JsonSchema mergeWith(JsonSchema schemaToMerge) {
+    List<String>? mergedRequiredFields;
+    if (schemaToMerge.requiredFields != null) {
+      mergedRequiredFields = [
+        ...{
+          if (requiredFields != null) ...requiredFields!,
+          ...schemaToMerge.requiredFields!,
+        },
+      ];
+    }
+
+    Map<String, JsonSchema>? mergedProperties;
+    if (schemaToMerge.properties != null) {
+      if (properties == null) {
+        mergedProperties = schemaToMerge.properties;
+      } else {
+        mergedProperties = Map<String, JsonSchema>.from(properties!);
+        schemaToMerge.properties!.forEach((key, value) {
+          if (mergedProperties!.containsKey(key)) {
+            mergedProperties[key] = mergedProperties[key]!.mergeWith(value);
+          } else {
+            mergedProperties[key] = value;
+          }
+        });
+      }
+    }
+
+    List<String>? mergedEnumValue;
+    if (schemaToMerge.enumValue != null) {
+      mergedEnumValue = [
+        ...{
+          if (enumValue != null) ...enumValue!,
+          ...schemaToMerge.enumValue!,
+        },
+      ];
+    }
+
+    Map<String, dynamic>? mergedDependencies;
+    if (schemaToMerge.dependencies != null) {
+      if (dependencies == null) {
+        mergedDependencies = schemaToMerge.dependencies;
+      } else if (dependencies!.isMapOfStringAndType<JsonSchema>()) {
+        mergedDependencies = Map<String, JsonSchema>.from(dependencies!);
+
+        if (schemaToMerge.dependencies!.isMapOfStringAndType<JsonSchema>()) {
+          schemaToMerge.dependencies!
+              .cast<String, JsonSchema>()
+              .forEach((key, value) {
+            if (mergedDependencies!.containsKey(key)) {
+              mergedDependencies[key] =
+                  (mergedDependencies as Map<String, JsonSchema>)[key]!
+                      .mergeWith(value);
+            } else {
+              mergedDependencies[key] = value;
+            }
+          });
+        } else {
+          // TODO(martinpelli): implement other types
+          throw UnimplementedError();
+        }
+      } else {
+        // TODO(martinpelli): implement other types
+        throw UnimplementedError();
+      }
+    }
+
+    JsonSchema? mergedItems;
+    if (schemaToMerge.items != null) {
+      final itemsToMerge = schemaToMerge.items;
+      if (itemsToMerge is JsonSchema) {
+        if (items != null) {
+          if (items is JsonSchema) {
+            mergedItems = (items as JsonSchema).mergeWith(itemsToMerge);
+          } else {
+            // TODO(martinpelli): implement other types
+            throw UnimplementedError();
+          }
+        } else {
+          mergedItems = itemsToMerge;
+        }
+      } else {
+        // TODO(martinpelli): implement other types
+        throw UnimplementedError();
+      }
+    }
+
+    JsonSchema? mergedAdditionalItems;
+    if (schemaToMerge.additionalItems != null) {
+      if (additionalItems != null) {
+        mergedAdditionalItems =
+            additionalItems!.mergeWith(schemaToMerge.additionalItems!);
+      } else {
+        mergedAdditionalItems = schemaToMerge.additionalItems;
+      }
+    }
+
+    if (schemaToMerge.oneOf != null) {
+      // TODO(martinpelli): implement oneOf merge
+      throw UnimplementedError();
+    }
+
+    return JsonSchema(
+      title: schemaToMerge.title ?? title,
+      description: schemaToMerge.description ?? description,
+      defaultValue: schemaToMerge.defaultValue ?? defaultValue,
+      type: schemaToMerge.type ?? type,
+      requiredFields: mergedRequiredFields ?? requiredFields,
+      properties: mergedProperties ?? properties,
+      enumValue: mergedEnumValue ?? enumValue,
+      constValue: schemaToMerge.constValue ?? constValue,
+      dependencies: mergedDependencies ?? dependencies,
+      items: mergedItems ?? items,
+      additionalItems: mergedAdditionalItems ?? additionalItems,
+      minItems: schemaToMerge.minItems ?? minItems,
+      maxItems: schemaToMerge.maxItems ?? maxItems,
+      uniqueItems: schemaToMerge.uniqueItems ?? uniqueItems,
+      oneOf: oneOf,
+      format: schemaToMerge.format ?? format,
+      minLength: schemaToMerge.minLength ?? minLength,
+      maxLength: schemaToMerge.maxLength ?? maxLength,
+      readOnly: schemaToMerge.readOnly ?? readOnly,
+    );
+  }
 
   @override
   List<Object?> get props => [

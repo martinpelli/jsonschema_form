@@ -2,6 +2,7 @@ part of '../jsonschema_form_builder.dart';
 
 class _CustomTextFormField extends StatefulWidget {
   const _CustomTextFormField({
+    required this.formFieldKey,
     required this.onChanged,
     this.labelText,
     this.helperText,
@@ -21,6 +22,7 @@ class _CustomTextFormField extends StatefulWidget {
     this.mouseCursor,
   });
 
+  final GlobalKey<FormFieldState<dynamic>> formFieldKey;
   final void Function(String) onChanged;
   final String? labelText;
   final String? helperText;
@@ -71,13 +73,17 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: widget.formFieldKey,
       canRequestFocus: !widget.readOnly,
       mouseCursor: widget.mouseCursor,
       readOnly: widget.readOnly,
       autofocus: widget.autofocus ?? false,
       controller: _controller,
       decoration: InputDecoration(
-        fillColor: widget.readOnly ? Colors.grey.shade100 : null,
+        hoverColor: widget.readOnly ? Colors.transparent : null,
+        fillColor: widget.readOnly
+            ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)
+            : null,
         filled: widget.readOnly,
         labelText: widget.labelText,
         hintText: widget.placeholder,

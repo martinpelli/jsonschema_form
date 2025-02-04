@@ -4,6 +4,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   const _CustomCheckboxGroup({
     required this.jsonKey,
     required this.label,
+    required this.sublabel,
     required this.labelStyle,
     required this.items,
     required this.itemLabel,
@@ -13,6 +14,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   });
 
   final String? label;
+  final String? sublabel;
   final TextStyle? labelStyle;
   final List<T> items;
   final String Function(int index, T item) itemLabel;
@@ -49,6 +51,14 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(widget.label!, style: widget.labelStyle),
           ),
+        if (widget.sublabel != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              widget.sublabel!,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
         Wrap(
           children: widget.items
               .mapIndexed(
@@ -58,6 +68,19 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                     Checkbox(
                       splashRadius: 0,
                       value: _selectedItems.contains(item),
+                      fillColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.disabled)) {
+                          return Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1);
+                        }
+
+                        if (states.contains(WidgetState.selected)) {
+                          return Theme.of(context).colorScheme.secondary;
+                        }
+                        return Colors.transparent;
+                      }),
                       onChanged: widget.readOnly
                           ? null
                           : (value) {

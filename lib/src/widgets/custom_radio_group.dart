@@ -3,6 +3,7 @@ part of '../jsonschema_form_builder.dart';
 class _CustomRadioGroup<T> extends StatefulWidget {
   const _CustomRadioGroup({
     required this.label,
+    required this.sublabel,
     required this.labelStyle,
     required this.items,
     required this.initialItem,
@@ -12,6 +13,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   });
 
   final String? label;
+  final String? sublabel;
   final TextStyle? labelStyle;
   final List<T> items;
   final T? initialItem;
@@ -44,6 +46,14 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(widget.label!, style: widget.labelStyle),
           ),
+        if (widget.sublabel != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              widget.sublabel!,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
         Wrap(
           children: widget.items
               .mapIndexed(
@@ -51,6 +61,16 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Radio(
+                      hoverColor: widget.readOnly ? Colors.transparent : null,
+                      fillColor: WidgetStateColor.resolveWith((states) {
+                        if (states.contains(WidgetState.disabled)) {
+                          return Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1);
+                        }
+                        return Theme.of(context).colorScheme.primary;
+                      }),
                       splashRadius: 0,
                       value: _selectedItem == item,
                       groupValue: true,
@@ -69,7 +89,6 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
               )
               .toList(),
         ),
-        const SizedBox(height: 10),
       ],
     );
   }

@@ -18,10 +18,18 @@ extension StringExt on String {
   /// Returns `true` if the string is valid base64, otherwise `false`.
   bool isBase64() {
     try {
-      // Remove the data URI scheme if it exists (e.g., 'data:image/png;base64,')
+      // Check if input matches the pattern for a Base64 string
+      final base64Pattern = RegExp(r'^[A-Za-z0-9+/=]+$');
+
+      // Remove data URI prefix if it exists
       final cleanBase64String = replaceAll(RegExp('^data.*base64,'), '');
 
-      // Attempt to decode the cleaned base64 string
+      // Validate the cleaned string against the Base64 pattern
+      if (!base64Pattern.hasMatch(cleanBase64String)) {
+        return false;
+      }
+
+      // Attempt to decode the Base64 string
       base64Decode(cleanBase64String);
       return true;
     } catch (e) {

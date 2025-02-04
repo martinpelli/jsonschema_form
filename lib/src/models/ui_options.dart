@@ -46,4 +46,7 @@ enum UiOptions {
   /// This option is used to define the resolution settings for capturing media
   /// via camera, e.g., low, high, or max.
   resolution,
+
+  /// Used for building specific inputs, for now only tel is supported.
+  inputType;
 }

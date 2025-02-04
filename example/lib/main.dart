@@ -64,7 +64,11 @@ class _FormState extends State<_Form> {
     "array_with_multiple_choice_with_data",
     "array_of_files",
     "materials_request",
-    "problem_and_root_cause"
+    "problem_and_root_cause",
+    "jobsite_images",
+    "permanent_materials_request",
+    "site_safety",
+    "permanent_solution"
   ];
 
   String? selectedFileName;

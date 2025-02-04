@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:jsonschema_form/src/models/input_type.dart';
 import 'package:jsonschema_form/src/models/json_map.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
 import 'package:meta/meta.dart';
@@ -27,6 +28,7 @@ class UiSchema extends Equatable {
     this.help,
     this.options,
     this.readonly,
+    this.order,
   });
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
@@ -50,6 +52,10 @@ class UiSchema extends Equatable {
       options = null;
     } else {
       options = (json['ui:options'] as Map<String, dynamic>).map((key, value) {
+        if (key == 'inputType') {
+          return MapEntry(key, $InputTypeFromJson[value]);
+        }
+
         return MapEntry(key, value as dynamic);
       });
     }
@@ -63,6 +69,9 @@ class UiSchema extends Equatable {
       description: json['ui:description'] as String?,
       help: json['ui:help'] as String?,
       readonly: json['ui:readonly'] as bool?,
+      order: json['ui:order'] == null
+          ? null
+          : List<String>.from(json['ui:order']! as List<dynamic>),
       options: options,
       children: parsedChildren,
     );
@@ -104,6 +113,9 @@ class UiSchema extends Equatable {
   /// }
   /// then this indicates user can't delete items from array
   final Map<String, dynamic>? options;
+
+  /// Defines the order in which fields should be displayed
+  final List<String>? order;
 
   @override
   List<Object?> get props => [

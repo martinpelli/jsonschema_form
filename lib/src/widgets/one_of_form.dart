@@ -8,10 +8,11 @@ class _OneOfForm extends StatefulWidget {
     this.formData, {
     required this.buildJsonschemaForm,
     required this.rebuildForm,
-    required this.readOnly,
+    required this.getTitle,
+    required this.getDescription,
+    required this.getReadOnly,
     this.previousSchema,
     this.previousJsonKey,
-    this.title,
   });
 
   final JsonSchema jsonSchema;
@@ -29,8 +30,9 @@ class _OneOfForm extends StatefulWidget {
     String? previousJsonKey,
   }) buildJsonschemaForm;
   final void Function() rebuildForm;
-  final bool readOnly;
-  final String? title;
+  final bool Function() getReadOnly;
+  final String? Function() getTitle;
+  final String? Function() getDescription;
 
   @override
   State<_OneOfForm> createState() => _OneOfFormState();
@@ -71,8 +73,8 @@ class _OneOfFormState extends State<_OneOfForm> {
                 // return true;
               }
 
-              /// If const value is not present, then it will try to look at
-              /// the first key, and the formData should have only that key
+              /// If const value is not present, then it will try to look at the
+              /// first key, and the formData should have only that key
               return element.properties!.entries.first.key ==
                   widget.formData.entries.first.key;
             },
@@ -87,8 +89,7 @@ class _OneOfFormState extends State<_OneOfForm> {
     /// select one element of the list depending on other selected value
     if (widget.previousSchema?.dependencies != null &&
         (widget.previousSchema!.properties?.containsKey(widget.jsonKey) ??
-            false) &&
-        widget.formData.containsKey(widget.jsonKey)) {
+            false)) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: _buildOneOfDependencies(),
@@ -149,8 +150,8 @@ class _OneOfFormState extends State<_OneOfForm> {
     if (widget.uiSchema?.widget == null ||
         widget.uiSchema?.widget == UiType.select) {
       return _CustomDropdownMenu<JsonSchema>(
-        readOnly: widget.uiSchema?.readonly ?? widget.readOnly,
-        label: widget.title,
+        readOnly: widget.uiSchema?.readonly ?? widget.getReadOnly(),
+        label: widget.getTitle(),
         labelStyle: null,
         itemLabel: itemLabel,
         items: widget.jsonSchema.oneOf!,
@@ -159,9 +160,10 @@ class _OneOfFormState extends State<_OneOfForm> {
       );
     } else {
       return _CustomRadioGroup<JsonSchema>(
-        readOnly: widget.uiSchema?.readonly ?? widget.readOnly,
-        label: widget.title,
+        readOnly: widget.uiSchema?.readonly ?? widget.getReadOnly(),
+        label: widget.getTitle(),
         labelStyle: null,
+        sublabel: widget.getDescription(),
         itemLabel: itemLabel,
         items: widget.jsonSchema.oneOf!,
         initialItem: selectedOneOfJsonSchema,
@@ -171,34 +173,43 @@ class _OneOfFormState extends State<_OneOfForm> {
   }
 
   List<Widget> _buildOneOfDependencies() {
-    /// This is neccessary in order to match the dependency from the current
-    /// schema
-    /// The first element of the property [oneOf] is the selected value, so it
-    /// is skipped
-    final dependencySchema = widget.jsonSchema.oneOf!
-        .firstWhere((element) {
-          final firstOneOfValue =
-              element.properties![widget.jsonKey]!.enumValue?.first ??
-                  element.properties![widget.jsonKey]!.constValue;
-          return firstOneOfValue == widget.formData[widget.jsonKey];
-        })
-        .properties!
-        .entries
-        .skip(1);
+    final dependencySchema = widget.jsonSchema.oneOf!.firstWhereOrNull(
+      (element) {
+        final firstOneOfValue =
+            element.properties![widget.jsonKey]!.enumValue?.first ??
+                element.properties![widget.jsonKey]!.constValue;
+        return firstOneOfValue == widget.formData[widget.jsonKey];
+      },
+    );
+
+    final dependencyEntries = dependencySchema?.properties?.entries
+        .where((element) => element.key != widget.jsonKey);
+
+    if (dependencyEntries == null) {
+      return [];
+    }
 
     final widgets = <Widget>[];
 
-    for (final entry in dependencySchema) {
-      widgets.add(
-        widget.buildJsonschemaForm(
-          entry.value,
-          entry.key,
-          widget.uiSchema?.children?[entry.key],
-          widget.formData,
-          previousSchema: widget.jsonSchema,
-          previousJsonKey: widget.jsonKey,
-        ),
-      );
+    for (final entry in dependencyEntries) {
+      /// There are some schemas defined inside a oneOf that are not fully
+      /// defined, for example there can be only a readOnly key, in such case
+      /// we don't want to build a widget because there is not enough info to
+      /// do it, so it will be merged in UiWidget
+
+      if (!(widget.previousSchema?.properties?.containsKey(entry.key) ??
+          false)) {
+        widgets.add(
+          widget.buildJsonschemaForm(
+            entry.value,
+            entry.key,
+            widget.uiSchema?.children?[entry.key],
+            widget.formData,
+            previousSchema: widget.jsonSchema,
+            previousJsonKey: widget.jsonKey,
+          ),
+        );
+      }
     }
 
     return widgets;
