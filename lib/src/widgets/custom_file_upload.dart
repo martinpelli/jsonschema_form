@@ -11,6 +11,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.onFileChosen,
     required this.readOnly,
     this.fileData,
+    this.resolution = CameraResolution.max,
   });
 
   final bool hasFilePicker;
@@ -22,6 +23,7 @@ class _CustomFileUpload extends StatefulWidget {
   final void Function(String? value) onFileChosen;
   final bool readOnly;
   final String? fileData;
+  final CameraResolution resolution;
 
   @override
   State<_CustomFileUpload> createState() => _CustomFileUploadState();
@@ -164,6 +166,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
           return _CameraScreen(
             isPhotoAllowed: widget.isPhotoAllowed,
             isVideoAllowed: widget.isVideoAllowed,
+            resolution: widget.resolution,
           );
         },
       ),

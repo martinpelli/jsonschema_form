@@ -58,8 +58,16 @@
   "formData": {
     "jobsiteImages": [
       {
-        "file": "https://as2.ftcdn.net/v2/jpg/10/40/81/11/1000_F_1040811164_Sww10YsHGAYfBFLQ6lYvkUum0deVQFwn.jpg",
-        "type": "photo"
+        "file": {
+          "id": "s3id",
+          "file": "url 1 to image "
+        }
+      },
+      {
+        "file": {
+          "id": "s3id",
+          "file": "url 2 to image "
+        }
       }
     ]
   }

@@ -1,38 +1,49 @@
-/// This enum defines possible values for the ui widgets types in jsonSchema
+/// This enum defines possible values for the UI widget types in a JSON Schema.
+///
+/// Each option represents a UI feature that can be customized in the schema.
+/// These options define behaviors for buttons, file input handling,
+/// and file uploads.
 enum UiOptions {
-  /// If either items or additionalItems contains a schema object, an add button
-  ///  for new items is shown by default. You can turn this off with the addable
-  ///  option in uiSchema
+  /// If either `items` or `additionalItems` contains a schema object, an "add"
+  /// button for adding new items is shown by default. You can turn this off
+  /// with the `addable` option in the `uiSchema`.
   addable,
 
-  /// A remove button is shown by default for an item if items contains a schema
-  /// object, or the item is an additionalItems instance. You can turn this off
-  /// with the removable option in uiSchema:
+  /// A "remove" button is shown by default for an item if `items` contains
+  /// a schema object, or the item is an `additionalItems` instance.
+  /// You can turn this off with the `removable` option in the `uiSchema`.
   removable,
 
-  /// Used for files when format is specified in jsonSchema. It can be used for
-  /// specifiying particular files extensions to accept
-  /// To specify more than one extension use ,
-  /// Fo rexzample '.pdf,.mp4'
+  /// Used for file inputs when the `format` is specified in the `jsonSchema`.
+  /// This option  can be used to specify particular file extensions to accept.
+  /// Multiple extensions can be provided, separated by commas.
+  /// For example, `.pdf,.mp4`.
   accept,
 
-  /// Used for files when format is specified in jsonSchema. If it is true then
-  /// a camera button will apear to take a photo/video for file uploading.
-  /// If is not provided then it will be taken as false
+  /// Used for file inputs when the `format` is specified in the `jsonSchema`.
+  /// If `camera` is set to true, a camera button will appear to allow users
+  /// to take a photo or video for file uploading.
+  /// If this option is not provided, it will default to false.
   camera,
 
-  /// Used for files when format is specified in jsonSchema. If it is true then
-  /// a choose file button will apear to pick a file from explorer.
-  /// If is not provided then it will be taken as true
+  /// Used for file inputs when the `format` is specified in the `jsonSchema`.
+  /// If `explorer` is set to true, a "choose file" button will appear to allow
+  /// users to pick a file from the file explorer.
+  /// If this option is not provided, it will default to true.
   explorer,
 
-  /// Used for files when format is specified in jsonSchema. If it is true then
-  /// a [camera] option will allow photos
-  /// If is not provided then it will be taken as true
+  /// Used for file inputs when the `format` is specified in the `jsonSchema`.
+  /// If `photo` is set to true, the [camera] option will allow users to
+  /// take photos. If this option is not provided, it will default to true.
   photo,
 
-  /// Used for files when format is specified in jsonSchema. If it is true then
-  /// a [camera] option will allow videos
-  /// If is not provided then it will be taken as false
-  video;
+  /// Used for file inputs when the `format` is specified in the `jsonSchema`.
+  /// If `video` is set to true, the [camera] option will allow users to
+  /// take videos. If this option is not provided, it will default  to false.
+  video,
+
+  /// Specifies the resolution option for media files (photos and videos).
+  /// This option is used to define the resolution settings for capturing media
+  /// via camera, e.g., low, high, or max.
+  resolution,
 }

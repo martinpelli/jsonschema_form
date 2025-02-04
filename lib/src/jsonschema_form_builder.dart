@@ -14,6 +14,7 @@ import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
+import 'package:jsonschema_form/src/screens/camera_resolution.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
 import 'package:jsonschema_form/src/widgets/file_widgets/file_preview.dart';
@@ -37,6 +38,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
     required this.jsonSchemaForm,
     this.formKey,
     this.readOnly = false,
+    this.resolution = CameraResolution.max,
     super.key,
   });
 
@@ -50,6 +52,9 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// will be editable. This can be usefule if you don't want to provide a
   /// ui:readonly key to each field.
   final bool readOnly;
+
+  /// [CameraResolution] affect the quality of video recording and image capture
+  final CameraResolution resolution;
 
   @override
   State<JsonschemaFormBuilder> createState() => _JsonschemaFormBuilderState();
@@ -174,6 +179,7 @@ class _JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             arrayIndex: arrayIndex,
             title: title ?? jsonKey,
             readOnly: widget.readOnly,
+            resolution: widget.resolution,
           ),
       ],
     );

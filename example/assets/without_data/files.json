@@ -1,62 +1,60 @@
 {
-    "jsonSchema": {
-        "title": "Files",
-        "type": "object",
-        "properties": {
-          "file": {
-            "type": "string",
-            "format": "data-url",
-            "title": "Single file"
-          },
-          "files": {
-            "type": "array",
-            "title": "Multiple files",
-            "items": {
-              "type": "string",
-              "format": "data-url"
-            }
-          },
-          "filesAccept": {
-            "type": "string",
-            "format": "data-url",
-            "title": "Single File with Accept attribute"
-          },
-          "withCameraWithoutExplorer": {
-            "type": "string",
-            "format": "data-url",
-            "title": "Single File with camera and without explorer"
-          },
-          "withCameraAndExplorer": {
-            "type": "string",
-            "format": "data-url",
-            "title": "Single File with camera and with explorer"
-          }
+  "jsonSchema": {
+    "title": "Files",
+    "type": "object",
+    "properties": {
+      "file": {
+        "type": "string",
+        "format": "data-url",
+        "title": "Single file"
+      },
+      "files": {
+        "type": "array",
+        "title": "Multiple files",
+        "items": {
+          "type": "string",
+          "format": "data-url"
         }
       },
-    "uiSchema": {
-        "filesAccept": {
-          "ui:options": {
-            "accept": ".pdf"
-          }
-        },
-        "withCameraWithoutExplorer": {
-          "ui:options": {
-            "camera": true,
-            "explorer": false,
-            "photo": true,
-            "video": true
-          }
-        },
-        "withCameraAndExplorer": {
-          "ui:options": {
-            "camera": true,
-            "photo": false,
-            "video": true
-          }
-        }
+      "filesAccept": {
+        "type": "string",
+        "format": "data-url",
+        "title": "Single File with Accept attribute"
       },
-    "formData":{
-
+      "withCameraWithoutExplorer": {
+        "type": "string",
+        "format": "data-url",
+        "title": "Single File with camera and without explorer"
+      },
+      "withCameraAndExplorer": {
+        "type": "string",
+        "format": "data-url",
+        "title": "Single File with camera and with explorer"
+      }
     }
-
+  },
+  "uiSchema": {
+    "filesAccept": {
+      "ui:options": {
+        "accept": ".pdf"
+      }
+    },
+    "withCameraWithoutExplorer": {
+      "ui:options": {
+        "camera": true,
+        "explorer": false,
+        "photo": true,
+        "video": true,
+        "resolution": "medium"
+      }
+    },
+    "withCameraAndExplorer": {
+      "ui:options": {
+        "camera": true,
+        "photo": false,
+        "video": true
+      }
+    }
+  },
+  "formData": {}
 }

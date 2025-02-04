@@ -132,48 +132,6 @@ extension XFileExtension on XFile {
     }
   }
 
-  /// Retrieves an updated `XFile` with the file's details,
-  /// including bytes, length, last modified date, and MIME type.
-  ///
-  /// This method reads the file's bytes, length, and last modified timestamp,
-  /// and constructs an updated `XFile` object with the current
-  /// file's information.
-  /// It also determines the file's MIME type based on
-  /// its extension using the `fileTypeMap`.
-  /// If the MIME type cannot be determined from the extension,
-  /// the method falls back to using
-  /// the extension as the MIME type.
-  ///
-  /// This method is useful for updating file details when they change or
-  /// when new file information is needed
-  /// (e.g., for uploading, previewing, etc.).
-  ///
-  /// Returns an updated `XFile` object with the following details:
-  /// - `bytes`: The raw byte data of the file.
-  /// - `length`: The length of the file in bytes.
-  /// - `lastModified`: The last modified timestamp of the file.
-  /// - `mimeType`: The MIME type determined from the file extension
-  /// or `fileTypeMap`.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// XFile updatedFile = await getUpdatedFile();
-  /// ```
-  Future<XFile> getUpdatedFile() async {
-    final bytes = await readAsBytes();
-    final length = await this.length();
-    final lastModified = await this.lastModified();
-    final fileExtension = name.split('.').last.toLowerCase();
-    return XFile(
-      this.path,
-      mimeType: fileTypeMap[fileExtension] ?? fileExtension,
-      name: name,
-      length: length,
-      bytes: bytes,
-      lastModified: lastModified,
-    );
-  }
-
   /// Encoding for Web
   Future<String> _encodeFileForWeb(XFile selectedFile) async {
     try {

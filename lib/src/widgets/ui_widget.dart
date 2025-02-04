@@ -12,6 +12,7 @@ class _UiWidget extends StatelessWidget {
     required this.arrayIndex,
     required this.title,
     this.readOnly = false,
+    this.resolution = CameraResolution.max,
   });
 
   final JsonSchema jsonSchema;
@@ -24,6 +25,7 @@ class _UiWidget extends StatelessWidget {
   final int? arrayIndex;
   final String? title;
   final bool readOnly;
+  final CameraResolution resolution;
 
   @override
   Widget build(BuildContext context) {
@@ -425,6 +427,13 @@ class _UiWidget extends StatelessWidget {
             false) &&
         (uiSchema?.options?[UiOptions.video.name] as bool);
 
+    final resolution = (uiSchema?.options?.containsKey(
+              UiOptions.resolution.name,
+            ) ??
+            false)
+        ? (uiSchema?.options?['resolution'] as String?).cameraResolution
+        : this.resolution;
+
     return _CustomFormFieldValidator<String?>(
       isEnabled: hasRequiredValidator,
       initialValue: initialValue,
@@ -444,6 +453,7 @@ class _UiWidget extends StatelessWidget {
           isPhotoAllowed: isPhotoAllowed,
           isVideoAllowed: isVideoAllowed,
           fileData: initialValue,
+          resolution: resolution ?? this.resolution,
         );
       },
     );
