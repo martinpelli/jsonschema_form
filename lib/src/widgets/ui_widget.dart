@@ -16,6 +16,7 @@ class _UiWidget extends StatefulWidget {
     required this.getIsRequired,
     required this.getReadOnly,
     required this.formFieldKeys,
+    this.resolution = CameraResolution.max,
   });
 
   final JsonSchema jsonSchema;
@@ -26,6 +27,7 @@ class _UiWidget extends StatefulWidget {
   final JsonSchema? previousSchema;
   final dynamic previousFormData;
   final int? arrayIndex;
+  final CameraResolution resolution;
   final String? Function() getTitle;
   final String? Function() getDescription;
   final dynamic Function() getDefaultValue;
@@ -399,6 +401,13 @@ class _UiWidgetState extends State<_UiWidget> {
             false) &&
         (widget.uiSchema?.options?[UiOptions.video.name] as bool);
 
+    final resolution = (widget.uiSchema?.options?.containsKey(
+              UiOptions.resolution.name,
+            ) ??
+            false)
+        ? (widget.uiSchema?.options?['resolution'] as String?).cameraResolution
+        : widget.resolution;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<String?>(
@@ -421,6 +430,7 @@ class _UiWidgetState extends State<_UiWidget> {
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
             fileData: initialValue,
+            resolution: resolution ?? widget.resolution,
           );
         },
       ),

@@ -7,10 +7,12 @@ class _CameraScreen extends StatefulWidget {
   const _CameraScreen({
     required this.isPhotoAllowed,
     required this.isVideoAllowed,
+    this.resolution = CameraResolution.max,
   });
 
   final bool isPhotoAllowed;
   final bool isVideoAllowed;
+  final CameraResolution resolution;
 
   @override
   State<_CameraScreen> createState() => _CameraScreenState();
@@ -46,7 +48,10 @@ class _CameraScreenState extends State<_CameraScreen>
     }
     _controller = null;
     availableCameras().then((cameras) {
-      _controller = CameraController(cameras[0], ResolutionPreset.max);
+      _controller = CameraController(
+        cameras[0],
+        widget.resolution.resolutionPreset,
+      );
       _controller?.initialize().then((_) {
         if (!mounted) {
           return;
@@ -266,5 +271,24 @@ class _CameraScreenState extends State<_CameraScreen>
     _controller?.dispose();
     _timer?.cancel();
     super.dispose();
+  }
+}
+
+extension CameraResolutionExt on CameraResolution {
+  ResolutionPreset get resolutionPreset {
+    switch (this) {
+      case CameraResolution.low:
+        return ResolutionPreset.low;
+      case CameraResolution.medium:
+        return ResolutionPreset.medium;
+      case CameraResolution.high:
+        return ResolutionPreset.high;
+      case CameraResolution.veryHigh:
+        return ResolutionPreset.veryHigh;
+      case CameraResolution.ultraHigh:
+        return ResolutionPreset.ultraHigh;
+      case CameraResolution.max:
+        return ResolutionPreset.max;
+    }
   }
 }

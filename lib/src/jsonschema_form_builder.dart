@@ -15,6 +15,7 @@ import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
+import 'package:jsonschema_form/src/screens/camera_resolution.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
 import 'package:jsonschema_form/src/widgets/file_widgets/file_preview.dart';
@@ -27,9 +28,9 @@ part 'widgets/custom_checkbox_group.dart';
 part 'widgets/custom_dropdown_menu.dart';
 part 'widgets/custom_file_upload.dart';
 part 'widgets/custom_form_field_validator.dart';
+part 'widgets/custom_phone_form_field.dart';
 part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_text_form_field.dart';
-part 'widgets/custom_phone_form_field.dart';
 part 'widgets/one_of_form.dart';
 part 'widgets/ui_widget.dart';
 
@@ -40,6 +41,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
     required this.jsonSchemaForm,
     this.formKey,
     this.readOnly = false,
+    this.resolution = CameraResolution.max,
     this.onItemAdded,
     this.onItemRemoved,
     super.key,
@@ -55,6 +57,9 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// will be editable. This can be useful if you don't want to provide a
   /// ui:readonly key to each field.
   final bool readOnly;
+
+  /// [CameraResolution] affect the quality of video recording and image capture
+  final CameraResolution resolution;
 
   /// Function called when an item is added to an array
   /// This can be useful if you want to scroll to the bottom in case the new
@@ -228,6 +233,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             previousSchema: previousSchema,
             previousFormData: previousFormData,
             arrayIndex: arrayIndex,
+            resolution: widget.resolution,
             getTitle: () => _getTitle(
               jsonKey,
               mergedJsonSchema,
