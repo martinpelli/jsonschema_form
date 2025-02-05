@@ -13,6 +13,7 @@ class _OneOfForm extends StatefulWidget {
     required this.getReadOnly,
     this.previousSchema,
     this.previousJsonKey,
+    this.previousUiSchema,
   });
 
   final JsonSchema jsonSchema;
@@ -21,6 +22,7 @@ class _OneOfForm extends StatefulWidget {
   final Map<String, dynamic> formData;
   final JsonSchema? previousSchema;
   final String? previousJsonKey;
+  final UiSchema? previousUiSchema;
   final Widget Function(
     JsonSchema jsonSchema,
     String? jsonKey,
@@ -28,6 +30,7 @@ class _OneOfForm extends StatefulWidget {
     dynamic formData, {
     JsonSchema? previousSchema,
     String? previousJsonKey,
+    UiSchema? previousUiSchema,
   }) buildJsonschemaForm;
   final void Function() rebuildForm;
   final bool Function() getReadOnly;
@@ -112,8 +115,9 @@ class _OneOfFormState extends State<_OneOfForm> {
           widget.jsonKey,
           widget.uiSchema,
           widget.formData,
-          previousSchema: widget.jsonSchema,
-          previousJsonKey: widget.jsonKey,
+          previousSchema: widget.previousSchema,
+          previousJsonKey: widget.previousJsonKey,
+          previousUiSchema: widget.previousUiSchema,
         ),
       ],
     );
@@ -203,10 +207,11 @@ class _OneOfFormState extends State<_OneOfForm> {
           widget.buildJsonschemaForm(
             entry.value,
             entry.key,
-            widget.uiSchema?.children?[entry.key],
+            widget.previousUiSchema?.children?[entry.key],
             widget.formData,
             previousSchema: widget.jsonSchema,
             previousJsonKey: widget.jsonKey,
+            previousUiSchema: widget.uiSchema,
           ),
         );
       }

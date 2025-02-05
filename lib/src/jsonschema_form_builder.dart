@@ -101,6 +101,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     dynamic formData, {
     JsonSchema? previousSchema,
     String? previousJsonKey,
+    UiSchema? previousUiSchema,
     int? arrayIndex,
   }) {
     final mergedJsonSchema =
@@ -191,6 +192,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               newFormData as Map<String, dynamic>,
               previousSchema: previousSchema,
               previousJsonKey: previousJsonKey,
+              previousUiSchema: previousUiSchema,
               buildJsonschemaForm: _buildJsonschemaForm,
               rebuildForm: _rebuildForm,
               getTitle: () => _getTitle(
@@ -211,6 +213,9 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             jsonKey: jsonKey,
             uiSchema: uiSchema,
             formData: newFormData,
+            previousJsonKey: previousJsonKey,
+            previousSchema: previousSchema,
+            previousUiSchema: previousUiSchema,
             buildJsonschemaForm: _buildJsonschemaForm,
             getReadOnly: () =>
                 _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
@@ -348,6 +353,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         newFormData,
         previousSchema: jsonSchema,
         previousJsonKey: jsonKey,
+        previousUiSchema: uiSchema,
         arrayIndex: arrayIndex,
       ),
 
@@ -366,6 +372,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           newFormData,
           previousSchema: jsonSchema,
           previousJsonKey: jsonKey,
+          previousUiSchema: uiSchema,
           arrayIndex: arrayIndex,
         ),
     ];
