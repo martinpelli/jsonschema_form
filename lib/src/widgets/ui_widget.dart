@@ -91,10 +91,7 @@ class _UiWidgetState extends State<_UiWidget> {
       return _buildDate(context, initialStringValue);
     } else if (_isDateTime()) {
       return _buildDateTime(context, initialStringValue);
-    } else if ((widget.uiSchema?.options
-                ?.containsKey(UiOptions.inputType.name) ??
-            false) &&
-        widget.uiSchema!.options![UiOptions.inputType.name] == InputType.tel) {
+    } else if (_isPhone()) {
       return _buildPhoneText(initialStringValue);
     } else {
       return _buildText(initialStringValue);
@@ -524,6 +521,11 @@ class _UiWidgetState extends State<_UiWidget> {
       ),
     );
   }
+
+  bool _isPhone() =>
+      (widget.uiSchema?.options?.containsKey(UiOptions.inputType.name) ??
+          false) &&
+      widget.uiSchema!.options![UiOptions.inputType.name] == InputType.tel;
 
   Widget _buildPhoneText(String? initialValue) {
     return Padding(
