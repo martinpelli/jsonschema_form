@@ -65,6 +65,10 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
       /// When oneOf has changed, it will rebuild the whole form so that all
       /// controllers get cleared
       WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.text = widget.defaultValue!;
+      });
     }
 
     super.didUpdateWidget(oldWidget);

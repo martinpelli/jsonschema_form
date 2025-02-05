@@ -6,6 +6,9 @@ class _ArrayForm extends StatefulWidget {
     required this.jsonKey,
     required this.uiSchema,
     required this.formData,
+    required this.previousSchema,
+    required this.previousJsonKey,
+    required this.previousUiSchema,
     required this.buildJsonschemaForm,
     required this.getReadOnly,
     required this.getIsRequired,
@@ -17,6 +20,9 @@ class _ArrayForm extends StatefulWidget {
   final String? jsonKey;
   final UiSchema? uiSchema;
   final dynamic formData;
+  final String? previousJsonKey;
+  final JsonSchema? previousSchema;
+  final UiSchema? previousUiSchema;
   final Widget Function(
     JsonSchema jsonSchema,
     String? jsonKey,
@@ -24,6 +30,7 @@ class _ArrayForm extends StatefulWidget {
     dynamic formData, {
     JsonSchema? previousSchema,
     String? previousJsonKey,
+    UiSchema? previousUiSchema,
     int? arrayIndex,
   }) buildJsonschemaForm;
   final bool Function() getReadOnly;
@@ -83,8 +90,9 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.uiSchema,
             widget.formData,
             arrayIndex: i + initialItemsLength,
-            previousSchema: widget.jsonSchema,
-            previousJsonKey: widget.jsonKey,
+            previousSchema: widget.previousSchema,
+            previousJsonKey: widget.previousJsonKey,
+            previousUiSchema: widget.previousUiSchema,
           ),
         );
       }
@@ -108,8 +116,9 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.uiSchema,
             widget.formData,
             arrayIndex: initialItemsLength,
-            previousSchema: widget.jsonSchema,
-            previousJsonKey: widget.jsonKey,
+            previousSchema: widget.previousSchema,
+            previousJsonKey: widget.previousJsonKey,
+            previousUiSchema: widget.previousUiSchema,
           ),
         );
       }
@@ -133,8 +142,9 @@ class _ArrayFormState extends State<_ArrayForm> {
           widget.uiSchema,
           widget.formData,
           arrayIndex: i + initialItemsLength,
-          previousSchema: widget.jsonSchema,
-          previousJsonKey: widget.jsonKey,
+          previousSchema: widget.previousSchema,
+          previousJsonKey: widget.previousJsonKey,
+          previousUiSchema: widget.previousUiSchema,
         ),
       );
     }
@@ -208,6 +218,13 @@ class _ArrayFormState extends State<_ArrayForm> {
               : null
           : widget.uiSchema;
 
+      final previousUiSchema = castedListOfMaps != null
+          ? (widget.uiSchema?.children != null &&
+                  widget.uiSchema!.children!.containsKey('items'))
+              ? widget.uiSchema
+              : null
+          : widget.previousUiSchema;
+
       items.add(
         widget.buildJsonschemaForm(
           _arrayItems[i],
@@ -217,6 +234,7 @@ class _ArrayFormState extends State<_ArrayForm> {
           arrayIndex: i + _initialItems.length,
           previousSchema: widget.jsonSchema,
           previousJsonKey: castedListOfMaps != null ? widget.jsonKey : null,
+          previousUiSchema: previousUiSchema,
         ),
       );
     }
