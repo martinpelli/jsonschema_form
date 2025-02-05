@@ -89,23 +89,24 @@ class _CameraScreenState extends State<_CameraScreen>
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
+                        color: Colors.red,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         _formatSecondsToHHMMSS(_timer!.tick),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: const TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
-                Positioned(
-                  left: 20,
-                  top: 20,
-                  child: IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back, size: 50),
+                if (!kIsWeb)
+                  Positioned(
+                    left: 20,
+                    top: 20,
+                    child: IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back, size: 50),
+                    ),
                   ),
-                ),
                 Positioned(
                   bottom: 50,
                   child: Row(
@@ -137,18 +138,21 @@ class _CameraScreenState extends State<_CameraScreen>
             setState(() {
               _isLoading = true;
             });
+
+            final navigator = Navigator.of(context);
+
             file = await _controller!.takePicture();
 
             if (!kIsWeb) {
               file = await file?.rename(DateTime.now().toIso8601String());
             }
 
-            await _buildPreviewAndAskIfDone();
+            //await _buildPreviewAndAskIfDone();
+            navigator.pop(file);
           },
-          child: const Text(
-            'Take Picture',
-            textAlign: TextAlign.center,
-          ),
+          child: const Text('Take Picture',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black)),
         ),
       );
 
@@ -175,13 +179,17 @@ class _CameraScreenState extends State<_CameraScreen>
                 _isLoading = true;
               });
 
+              final navigator = Navigator.of(context);
+
               file = await _controller!.stopVideoRecording();
 
               if (!kIsWeb) {
                 file = await file?.rename(DateTime.now().toIso8601String());
               }
 
-              await _buildPreviewAndAskIfDone();
+              //await _buildPreviewAndAskIfDone();
+
+              navigator.pop(file);
             } else {
               await _controller!.startVideoRecording();
               _timer?.cancel();
@@ -195,6 +203,7 @@ class _CameraScreenState extends State<_CameraScreen>
           child: Text(
             isRecording ? 'Stop' : 'Record',
             textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black),
           ),
         ),
       );
