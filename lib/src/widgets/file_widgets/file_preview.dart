@@ -48,7 +48,9 @@ class FilePreview extends StatelessWidget {
             },
             child: AppImage(
               imageData: path,
-              width: 200,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           );
         case FileType.video:
@@ -79,7 +81,9 @@ class FilePreview extends StatelessWidget {
             },
             child: AppImage(
               imageData: fileData,
-              width: 200,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           );
         case FileType.video:
