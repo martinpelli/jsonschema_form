@@ -39,9 +39,11 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
-    this.formKey,
     this.readOnly = false,
     this.resolution = CameraResolution.max,
+    this.isScrollable = true,
+    this.scrollToBottom = true,
+    this.scrollToFirstError = true,
     this.onItemAdded,
     this.onItemRemoved,
     super.key,
@@ -50,16 +52,30 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// The json schema for the form.
   final JsonschemaForm jsonSchemaForm;
 
-  /// Form key to validate the form
-  final GlobalKey<FormState>? formKey;
-
   /// Useful if the user needs to see the whole form in read only, so none field
   /// will be editable. This can be useful if you don't want to provide a
   /// ui:readonly key to each field.
   final bool readOnly;
 
-  /// [CameraResolution] affect the quality of video recording and image capture
+  /// [CameraResolution] affects the quality of video recording and image
+  /// capture.
   final CameraResolution resolution;
+
+  /// If the form overflows the screen it will be automatically scrollable.
+  /// Default set to true.
+  final bool isScrollable;
+
+  /// if [isScrollable] and [scrollToBottom] are true then when new fields are
+  /// added to the screen and they overflow, the form will automaticallly scroll
+  /// to the bottom.
+  /// Default set to true.
+  final bool scrollToBottom;
+
+  /// if [isScrollable] and [scrollToFirstError] are true then when the form is
+  /// validated and it overflows the screen, the form will automaticallly scroll
+  /// to first error field
+  /// Default set to true.
+  final bool scrollToFirstError;
 
   /// Function called when an item is added to an array
   /// This can be useful if you want to scroll to the bottom in case the new
@@ -74,17 +90,38 @@ class JsonschemaFormBuilder extends StatefulWidget {
 }
 
 /// The state of the [JsonschemaFormBuilder].
+/// It can be accessed using a GlobalKey to [submit] the form
 /// It is needed to rebuild the form when there is a conditional dependency
 /// change.
-/// It is also needed to hold each field key, you can access the state to use
-/// [getFirstInvalidFieldContext] method
+/// It is also needed to hold each field key and the [ScrollController] if valid
 class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
+  final _formKey = GlobalKey<FormState>();
+
   final _formFieldKeys = <GlobalKey<FormFieldState<dynamic>>>[];
+
+  late final ScrollController? _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.isScrollable) {
+      _scrollController = ScrollController();
+    } else {
+      _scrollController = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: widget.formKey,
+    final form = Form(
+      key: _formKey,
       child: _buildJsonschemaForm(
         widget.jsonSchemaForm.jsonSchema!,
         null,
@@ -92,6 +129,12 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         widget.jsonSchemaForm.formData,
       ),
     );
+
+    if (widget.isScrollable) {
+      return SingleChildScrollView(controller: _scrollController, child: form);
+    } else {
+      return form;
+    }
   }
 
   Widget _buildJsonschemaForm(
@@ -227,6 +270,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             ),
             onItemAdded: widget.onItemAdded,
             onItemRemoved: widget.onItemRemoved,
+            scrollToBottom: _scrollToBottom,
           )
         else
           _UiWidget(
@@ -238,7 +282,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             previousSchema: previousSchema,
             previousFormData: previousFormData,
             arrayIndex: arrayIndex,
-            resolution: widget.resolution,
             getTitle: () => _getTitle(
               jsonKey,
               mergedJsonSchema,
@@ -264,6 +307,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
             getReadOnly: () =>
                 _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
             formFieldKeys: _formFieldKeys,
+            resolution: widget.resolution,
           ),
       ],
     );
@@ -614,9 +658,43 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     return mergedJsonSchema;
   }
 
+  void _scrollToBottom() {
+    if (!widget.isScrollable || !widget.scrollToBottom) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController!.animateTo(
+        _scrollController.position.maxScrollExtent,
+        curve: Curves.easeIn,
+        duration: const Duration(milliseconds: 300),
+      );
+    });
+  }
+
+  void _scrollToFirstInvalidField() {
+    if (!widget.isScrollable || !widget.scrollToFirstError) {
+      return;
+    }
+
+    final context = _getFirstInvalidFieldContext();
+
+    if (context == null) return;
+
+    final renderObject = context.findRenderObject() as RenderBox?;
+
+    if (renderObject == null) return;
+
+    _scrollController?.position.ensureVisible(
+      renderObject,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+  }
+
   /// Method used to get the context of the first field with an error after
   /// submitting the form. Useful to scroll to that context.
-  BuildContext? getFirstInvalidFieldContext() {
+  BuildContext? _getFirstInvalidFieldContext() {
     for (final formFieldKey in _formFieldKeys) {
       if (formFieldKey.currentState != null &&
           formFieldKey.currentContext != null) {
@@ -626,5 +704,20 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       }
     }
     return null;
+  }
+
+  /// Validated the form. If the form is invalid it will return null otherwise
+  /// it will return the cleared formData.
+  Map<String, dynamic>? submit() {
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isFormValid) {
+      _scrollToFirstInvalidField();
+
+      return null;
+    }
+
+    return Map<String, dynamic>.from(widget.jsonSchemaForm.formData!)
+        .removeEmptySubmaps();
   }
 }

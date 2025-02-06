@@ -620,7 +620,6 @@ class _UiWidgetState extends State<_UiWidget> {
     if (isValid) {
       await _onFieldChanged(value);
     }
-    _rebuildFormIfHasDependants();
   }
 
   void _addMinLengthValidator(List<String? Function(String?)> validators) {
