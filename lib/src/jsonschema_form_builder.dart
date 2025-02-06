@@ -46,6 +46,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
     this.scrollToFirstError = true,
     this.onItemAdded,
     this.onItemRemoved,
+    this.padding,
     super.key,
   });
 
@@ -85,6 +86,10 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// Function called when an item is removed from an array
   final void Function()? onItemRemoved;
 
+  // For adding padding to the form. Useful if you have [isScrollable] set to
+  // true
+  final EdgeInsets? padding;
+
   @override
   State<JsonschemaFormBuilder> createState() => JsonschemaFormBuilderState();
 }
@@ -120,13 +125,16 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    final form = Form(
-      key: _formKey,
-      child: _buildJsonschemaForm(
-        widget.jsonSchemaForm.jsonSchema!,
-        null,
-        widget.jsonSchemaForm.uiSchema,
-        widget.jsonSchemaForm.formData,
+    final form = Padding(
+      padding: widget.padding ?? EdgeInsets.zero,
+      child: Form(
+        key: _formKey,
+        child: _buildJsonschemaForm(
+          widget.jsonSchemaForm.jsonSchema!,
+          null,
+          widget.jsonSchemaForm.uiSchema,
+          widget.jsonSchemaForm.formData,
+        ),
       ),
     );
 

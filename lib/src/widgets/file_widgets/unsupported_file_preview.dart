@@ -30,8 +30,8 @@ class UnsupportedFilePreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 250,
-        height: 150,
+        width: 100,
+        height: 100,
         decoration: BoxDecoration(
           color: Colors.grey[200], // Light grey background
           borderRadius: BorderRadius.circular(8),
@@ -42,7 +42,6 @@ class UnsupportedFilePreview extends StatelessWidget {
             'Preview Not Available',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.black54,
             ),

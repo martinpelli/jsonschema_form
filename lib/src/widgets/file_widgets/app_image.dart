@@ -67,18 +67,15 @@ class AppImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget thumbnail;
+
     // Check if the image is an SVG by looking at the file extension
     final isSvgImage = imageData.split('.').last == 'svg';
 
     // If the imageData is empty, show the placeholder widget or
     // load the placeholder asset.
     if (imageData.isEmpty) {
-      return placeholderWidget ??
-          ((placeholder != null)
-              ? loadLocalAsset(
-                  placeholder!,
-                )
-              : const SizedBox());
+      thumbnail = _getPlaceholderWidget();
     }
 
     // Check if the image is base64 encoded
@@ -86,12 +83,12 @@ class AppImage extends StatelessWidget {
 
     // Handle local image paths (e.g., assets or file paths)
     if (!imageData.contains('http') && !isBase64) {
-      return loadLocalAsset(imageData);
+      thumbnail = loadLocalAsset(imageData);
     }
 
     // Handle SVG images
     if (isSvgImage) {
-      return SvgPicture.network(
+      thumbnail = SvgPicture.network(
         imageData,
         width: width,
         height: height,
@@ -102,45 +99,58 @@ class AppImage extends StatelessWidget {
                 BlendMode.srcIn,
               )
             : null,
+        placeholderBuilder: (context) {
+          return _getPlaceholderWidget();
+        },
       );
     }
     // Handle base64 encoded images
     else if (isBase64) {
-      return Base64ImageWidget(
+      thumbnail = Base64ImageWidget(
         base64String: imageData,
         width: width,
         height: height,
         fit: fit,
-        placeholderWidget: placeholderWidget ??
-            ((placeholder != null)
-                ? loadLocalAsset(
-                    placeholder!,
-                  )
-                : const SizedBox()),
+        placeholderWidget: _getPlaceholderWidget(),
       );
     }
     // Handle network images
     else {
-      return ExtendedImage.network(
-        imageData,
-        width: width,
-        height: height,
-        fit: fit,
-        color: color,
-        loadStateChanged: (state) {
-          switch (state.extendedImageLoadState) {
-            case LoadState.completed:
-              return state.completedWidget;
-            case LoadState.loading:
-            case LoadState.failed:
-              return (placeholder != null)
-                  ? loadLocalAsset(
-                      placeholder!,
-                    )
-                  : const SizedBox();
-          }
-        },
+      thumbnail = MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: ExtendedImage.network(
+          imageData,
+          width: width,
+          height: height,
+          fit: fit,
+          color: color,
+          loadStateChanged: (state) {
+            switch (state.extendedImageLoadState) {
+              case LoadState.completed:
+                return state.completedWidget;
+              case LoadState.failed || LoadState.loading:
+                return _getPlaceholderWidget();
+            }
+          },
+        ),
       );
+    }
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: thumbnail,
+    );
+  }
+
+  Widget _getPlaceholderWidget() {
+    if (placeholderWidget != null) {
+      return placeholderWidget!;
+    } else if (placeholder != null) {
+      return loadLocalAsset(
+        placeholder!,
+      );
+    } else {
+      return const SizedBox();
     }
   }
 

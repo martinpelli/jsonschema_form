@@ -48,7 +48,9 @@ class FilePreview extends StatelessWidget {
             },
             child: AppImage(
               imageData: path,
-              width: 200,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           );
         case FileType.video:
@@ -60,7 +62,11 @@ class FilePreview extends StatelessWidget {
                 path,
               );
             },
-            child: VideoThumbnailPreview(path: path),
+            child: VideoThumbnailPreview(
+              path: path,
+              width: 100,
+              height: 100,
+            ),
           );
         // ignore: no_default_cases
         default:
@@ -79,7 +85,9 @@ class FilePreview extends StatelessWidget {
             },
             child: AppImage(
               imageData: fileData,
-              width: 200,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           );
         case FileType.video:
@@ -91,7 +99,11 @@ class FilePreview extends StatelessWidget {
                 fileData,
               );
             },
-            child: VideoThumbnailPreview(path: fileData),
+            child: VideoThumbnailPreview(
+              path: fileData,
+              width: 100,
+              height: 100,
+            ),
           );
         // ignore: no_default_cases
         default:
