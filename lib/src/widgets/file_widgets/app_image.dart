@@ -73,12 +73,7 @@ class AppImage extends StatelessWidget {
     // If the imageData is empty, show the placeholder widget or
     // load the placeholder asset.
     if (imageData.isEmpty) {
-      return placeholderWidget ??
-          ((placeholder != null)
-              ? loadLocalAsset(
-                  placeholder!,
-                )
-              : const SizedBox());
+      return _getPlaceholderWidget();
     }
 
     // Check if the image is base64 encoded
@@ -102,6 +97,9 @@ class AppImage extends StatelessWidget {
                 BlendMode.srcIn,
               )
             : null,
+        placeholderBuilder: (context) {
+          return _getPlaceholderWidget();
+        },
       );
     }
     // Handle base64 encoded images
@@ -111,12 +109,7 @@ class AppImage extends StatelessWidget {
         width: width,
         height: height,
         fit: fit,
-        placeholderWidget: placeholderWidget ??
-            ((placeholder != null)
-                ? loadLocalAsset(
-                    placeholder!,
-                  )
-                : const SizedBox()),
+        placeholderWidget: _getPlaceholderWidget(),
       );
     }
     // Handle network images
@@ -131,16 +124,23 @@ class AppImage extends StatelessWidget {
           switch (state.extendedImageLoadState) {
             case LoadState.completed:
               return state.completedWidget;
-            case LoadState.loading:
-            case LoadState.failed:
-              return (placeholder != null)
-                  ? loadLocalAsset(
-                      placeholder!,
-                    )
-                  : const SizedBox();
+            case LoadState.failed || LoadState.loading:
+              return _getPlaceholderWidget();
           }
         },
       );
+    }
+  }
+
+  Widget _getPlaceholderWidget() {
+    if (placeholderWidget != null) {
+      return placeholderWidget!;
+    } else if (placeholder != null) {
+      return loadLocalAsset(
+        placeholder!,
+      );
+    } else {
+      return const SizedBox();
     }
   }
 
