@@ -14,6 +14,7 @@ class _ArrayForm extends StatefulWidget {
     required this.getIsRequired,
     required this.onItemAdded,
     required this.onItemRemoved,
+    required this.scrollToBottom,
   });
 
   final JsonSchema jsonSchema;
@@ -37,6 +38,7 @@ class _ArrayForm extends StatefulWidget {
   final bool Function() getIsRequired;
   final void Function(JsonSchema)? onItemAdded;
   final void Function()? onItemRemoved;
+  final void Function() scrollToBottom;
 
   @override
   State<_ArrayForm> createState() => _ArrayFormState();
@@ -283,6 +285,7 @@ class _ArrayFormState extends State<_ArrayForm> {
                   }
 
                   widget.onItemAdded?.call(newItem);
+                  widget.scrollToBottom.call();
                 },
           icon: const Icon(Icons.add),
         ),
