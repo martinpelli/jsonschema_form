@@ -18,6 +18,7 @@ class VideoThumbnailPreview extends StatelessWidget {
     required this.path,
     super.key,
     this.width,
+    this.height,
   });
 
   /// This file will be used to generate a thumbnail or to play the video
@@ -28,6 +29,11 @@ class VideoThumbnailPreview extends StatelessWidget {
   /// If null, the width will be automatically
   /// adjusted based on the parent widget's constraints.
   final double? width;
+
+  /// The height of the image to be displayed.
+  /// If null, the height will be automatically
+  /// adjusted based on the parent widget's constraints.
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,7 @@ class VideoThumbnailPreview extends StatelessWidget {
           return AppImage(
             imageData: snapshot.data!,
             width: width,
+            height: height,
           );
         } else {
           // If no thumbnail is generated
@@ -65,7 +72,9 @@ class VideoThumbnailPreview extends StatelessWidget {
     // Generate the thumbnail using the video file
     final fileName = await VideoThumbnail.thumbnailData(
       video: thumbnailPath,
-      maxWidth: 128, // Specify the maximum width for the thumbnail
+      maxWidth:
+          width?.toInt() ?? 100, // Specify the maximum width for the thumbnail
+      maxHeight: height?.toInt() ?? 100,
       quality: 25, // Specify the quality of the thumbnail
     );
 
