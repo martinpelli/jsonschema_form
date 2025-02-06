@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:jsonschema_form/src/utils/file_type.dart';
 import 'package:path/path.dart' as path;
 
-
 /// Extension for useful non built-in methods for XFile
 extension XFileExtension on XFile {
   /// Rename a file by returning a new [XFile] class.
@@ -118,6 +117,8 @@ extension XFileExtension on XFile {
       case 'mkv':
       case '3gp':
       case 'flv':
+      case 'audio/weba':
+        return FileType.video;
       case 'video/mp4':
       case 'video/webm':
       case 'video/ogg':
