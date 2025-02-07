@@ -17,16 +17,8 @@
           "properties": {
             "file": {
               "type": "string",
-              "title": "File",
-              "format": "data-url"
-            },
-            "type": {
-              "enum": [
-                "photo",
-                "video"
-              ],
-              "type": "string",
-              "title": "Type"
+              "format": "data-url",
+              "title": "Single File with camera and without explorer"
             }
           }
         },
@@ -41,12 +33,14 @@
       "items": {
         "file": {
           "ui:title": "Upload file",
-          "ui:widget": "file"
-        },
-        "type": {
-          "ui:title": "Select media type",
-          "ui:widget": "radio",
-          "ui:enumDisabled": []
+          "ui:widget": "file",
+          "ui:options": {
+            "camera": true,
+            "explorer": false,
+            "photo": true,
+            "video": true,
+            "resolution": "medium"
+          }
         }
       },
       "ui:options": {
@@ -56,6 +50,10 @@
     }
   },
   "formData": {
-    "jobsiteImages": []
+    "jobsiteImages": [
+      {
+        "file": "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"
+      }
+    ]
   }
 }
