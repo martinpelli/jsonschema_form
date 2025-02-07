@@ -1,6 +1,6 @@
+import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 /// A widget that provides a video player to play a media file.
 class MediaPlayerView extends StatefulWidget {
@@ -22,94 +22,62 @@ class MediaPlayerView extends StatefulWidget {
 }
 
 class _MediaPlayerViewState extends State<MediaPlayerView> {
-  late VideoPlayerController _controller;
-  bool _isPlaying = false;
+  late CachedVideoPlayerController _videoPlayerController;
+
+  late CustomVideoPlayerController _customVideoPlayerController;
+  late CustomVideoPlayerWebController _customVideoPlayerWebController;
+
+  final CustomVideoPlayerSettings _customVideoPlayerSettings =
+      const CustomVideoPlayerSettings(
+    showFullscreenButton: false,
+    playbackSpeedButtonAvailable: false,
+    settingsButtonAvailable: false,
+  );
+
+  late CustomVideoPlayerWebSettings _customVideoPlayerWebSettings;
 
   @override
   void initState() {
     super.initState();
 
-    if (kIsWeb) {
-      // Handle web behavior: Use `VideoPlayerController.networkUrl()` for web
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.path), // For web, path is treated as URL
-      )..initialize().then((_) {
-          setState(() {});
-          _isPlaying = true;
-          _controller.play(); // Optionally start the video on initialization
-        });
-    }
+    _videoPlayerController = CachedVideoPlayerController.network(
+      widget.path,
+    )..initialize().then((value) => setState(() {}));
+    _customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: _videoPlayerController,
+      customVideoPlayerSettings: _customVideoPlayerSettings,
+    );
+
+    _customVideoPlayerWebSettings = CustomVideoPlayerWebSettings(
+      src: widget.path,
+      autoplay: true,
+      hideDownloadButton: true,
+      disablePictureInPicture: true,
+    );
+
+    _customVideoPlayerWebController = CustomVideoPlayerWebController(
+      webVideoPlayerSettings: _customVideoPlayerWebSettings,
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _customVideoPlayerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        GestureDetector(
-          onTap: () {
-            if (_isPlaying) {
-              _controller.pause();
-            } else {
-              _controller.play();
-            }
-            setState(() {
-              _isPlaying = !_isPlaying;
-            });
-          },
-          child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: VideoPlayer(_controller),
-          ),
-        ),
-        // Play/Pause Button
-        Positioned(
-          bottom: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                if (_isPlaying) {
-                  _controller.pause();
-                } else {
-                  _controller.play();
-                }
-                _isPlaying = !_isPlaying;
-              });
-            },
-            backgroundColor: Colors.black.withValues(alpha: 0.5),
-            child: Icon(
-              _isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: kIsWeb
+          ? CustomVideoPlayerWeb(
+              customVideoPlayerWebController: _customVideoPlayerWebController,
+            )
+          : CustomVideoPlayer(
+              customVideoPlayerController: _customVideoPlayerController,
             ),
-          ),
-        ),
-        // Close Button with Shadow
-        Positioned(
-          top: 20,
-          right: 20,
-          child: FloatingActionButton(
-            onPressed: () {
-              // Dismiss or close the video player
-              Navigator.of(context).pop();
-            },
-            backgroundColor: Colors.black.withValues(alpha: 0.5),
-            child: const Icon(
-              Icons.close,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

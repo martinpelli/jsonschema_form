@@ -124,12 +124,51 @@ class FilePreview extends StatelessWidget {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return Dialog(
-          insetPadding: EdgeInsets.zero, // Optional, to remove padding
-          child: _buildFullScreenMedia(
-            context,
-            type,
-            path,
+        return Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(
+            16,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey),
+          ),
+          child: Column(
+            spacing: 16,
+            children: [
+              Expanded(
+                child: _buildFullScreenMedia(
+                  context,
+                  type,
+                  path,
+                ),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      8, // Set the corner radius to 8px
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Cancel',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ],
           ),
         );
       },

@@ -150,9 +150,11 @@ class _CameraScreenState extends State<_CameraScreen>
             //await _buildPreviewAndAskIfDone();
             navigator.pop(file);
           },
-          child: const Text('Take Picture',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black)),
+          child: const Text(
+            'Take Picture',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.black),
+          ),
         ),
       );
 
