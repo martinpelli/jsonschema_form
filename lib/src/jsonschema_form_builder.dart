@@ -39,6 +39,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// {@macro jsonschema_form_builder}
   const JsonschemaFormBuilder({
     required this.jsonSchemaForm,
+    this.prefixFormDataMapper,
+    this.suffixFormDataMapper,
     this.readOnly = false,
     this.resolution = CameraResolution.max,
     this.isScrollable = true,
@@ -52,6 +54,22 @@ class JsonschemaFormBuilder extends StatefulWidget {
 
   /// The json schema for the form.
   final JsonschemaForm jsonSchemaForm;
+
+  /// A function used to map or transform data before adding it to the form.
+  ///
+  /// This function is typically used to process or modify form data before it 
+  /// is added to the form submission. It takes a `String` as the key and
+  /// `dynamic` data as the value and returns a transformed value.
+  final dynamic Function(String, dynamic)? prefixFormDataMapper;
+
+  /// A function used to map or transform data after it is added to the form.
+  ///
+  /// This function is typically used to process or modify form data after it
+  /// has been added to the form, before it is submitted. It takes two `dynamic`
+  ///  parameters (the existing value and the new value) and returns
+  /// a transformed value.
+  final dynamic Function(dynamic, dynamic)? suffixFormDataMapper;
+
 
   /// Useful if the user needs to see the whole form in read only, so none field
   /// will be editable. This can be useful if you don't want to provide a
@@ -86,8 +104,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// Function called when an item is removed from an array
   final void Function()? onItemRemoved;
 
-  // For adding padding to the form. Useful if you have [isScrollable] set to
-  // true
+  /// For adding padding to the form. Useful if you have [isScrollable] set to
+  /// Padding applied to the widget or component.
   final EdgeInsets? padding;
 
   @override
@@ -130,7 +148,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       child: Form(
         key: _formKey,
         child: _buildJsonschemaForm(
-          widget.jsonSchemaForm.jsonSchema!,
+          widget.jsonSchemaForm.jsonSchema,
           null,
           widget.jsonSchemaForm.uiSchema,
           widget.jsonSchemaForm.formData,
@@ -297,8 +315,11 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               previousSchema,
               arrayIndex,
             ),
-            getDescription: () =>
-                _getDescription(jsonKey, mergedJsonSchema, uiSchema),
+            getDescription: () => _getDescription(
+              jsonKey,
+              mergedJsonSchema,
+              uiSchema,
+            ),
             getDefaultValue: () => _getDefaultValue(
               jsonKey,
               mergedJsonSchema,
@@ -492,7 +513,11 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
     if (formData is Map) {
       if (formData.containsKey(jsonKey)) {
-        return formData[jsonKey]?.toString() ?? jsonSchema.defaultValue;
+        final value =
+            widget.prefixFormDataMapper?.call(jsonKey!, formData[jsonKey]) ??
+                formData[jsonKey]?.toString() ??
+                jsonSchema.defaultValue;
+        return value;
       } else {
         return jsonSchema.defaultValue;
       }
@@ -724,8 +749,14 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
       return null;
     }
-
-    return Map<String, dynamic>.from(widget.jsonSchemaForm.formData!)
-        .removeEmptySubmaps();
+    final formData = Map<String, dynamic>.from(
+      widget.jsonSchemaForm.formData,
+    ).removeEmptySubmaps();
+    final dataJson = widget.jsonSchemaForm.dataJson;
+    return (widget.suffixFormDataMapper?.call(
+          formData,
+          dataJson,
+        ) as Map<String, dynamic>?) ??
+        formData;
   }
 }

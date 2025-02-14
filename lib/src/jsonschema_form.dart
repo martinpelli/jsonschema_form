@@ -1,5 +1,6 @@
 import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
+import 'package:jsonschema_form/src/utils/map_extension.dart';
 
 /// A form widget that manages a JSON schema, UI schema, and form data.
 ///
@@ -25,7 +26,7 @@ class JsonschemaForm {
   }) {
     jsonSchema = JsonSchema.fromJson(schemaJson);
     uiSchema = UiSchema.fromJson(uiJson);
-    _formData = dataJson;
+    formData = dataJson.deepCopy();
   }
 
   /// The JSON schema of the form, which defines the structure and validation
@@ -41,53 +42,11 @@ class JsonschemaForm {
   final Map<String, dynamic> dataJson;
 
   /// Private variable holding the parsed [JsonSchema] object.
-  late JsonSchema _jsonSchema;
+  late JsonSchema jsonSchema;
 
   /// Private variable holding the parsed [UiSchema] object.
-  late UiSchema _uiSchema;
+  late UiSchema uiSchema;
 
   /// Private variable holding the form data as a [Map<String, dynamic>].
-  late Map<String, dynamic> _formData;
-
-  /// Sets the [JsonSchema] for the form, replacing the current schema.
-  ///
-  /// This setter accepts a [JsonSchema] object that defines the validation
-  /// rules and structure for the form.
-  set jsonSchema(JsonSchema newJsonSchema) {
-    _jsonSchema = newJsonSchema;
-  }
-
-  /// Gets the current [JsonSchema] object.
-  ///
-  /// This getter returns the [JsonSchema] representing the current form's
-  /// schema.
-  JsonSchema get jsonSchema => _jsonSchema;
-
-  /// Sets the [UiSchema] for the form, replacing the current UI schema.
-  ///
-  /// This setter accepts a [UiSchema] object that defines how the form is
-  /// visually structured.
-  set uiSchema(UiSchema newUiSchema) {
-    _uiSchema = newUiSchema;
-  }
-
-  /// Gets the current [UiSchema] object.
-  ///
-  /// This getter returns the [UiSchema] representing the current form's
-  /// visual layout.
-  UiSchema get uiSchema => _uiSchema;
-
-  /// Sets the form data.
-  ///
-  /// This setter accepts a [Map<String, dynamic>] that represents the
-  /// current form data.
-  set formData(Map<String, dynamic> newFormData) {
-    _formData = newFormData;
-  }
-
-  /// Gets the current form data as a [Map<String, dynamic>].
-  ///
-  /// This getter returns the form data that represents the current state
-  /// of the form.
-  Map<String, dynamic> get formData => _formData;
+  late Map<String, dynamic> formData;
 }
