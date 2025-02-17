@@ -528,8 +528,10 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     if (arrayIndex != null && previousSchema?.title != null) {
       if (previousSchema?.uniqueItems ?? false) {
         return previousSchema?.title;
-      } else {
+      } else if (uiSchema?.showArrayTitles ?? true) {
         return '${previousSchema?.title}-${arrayIndex + 1}';
+      } else {
+        return null;
       }
     }
 

@@ -29,6 +29,7 @@ class UiSchema extends Equatable {
     this.options,
     this.readonly,
     this.order,
+    this.showArrayTitles,
   });
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
@@ -72,6 +73,7 @@ class UiSchema extends Equatable {
       order: json['ui:order'] == null
           ? null
           : List<String>.from(json['ui:order']! as List<dynamic>),
+      showArrayTitles: json['ui:showArrayTitles'] as bool?,
       options: options,
       children: parsedChildren,
     );
@@ -116,6 +118,10 @@ class UiSchema extends Equatable {
 
   /// Defines the order in which fields should be displayed
   final List<String>? order;
+
+  /// If the jsonSchema type is array, this property is true by default. Pass
+  /// false if you want to avoid a title with a divider on each array item
+  final bool? showArrayTitles;
 
   @override
   List<Object?> get props => [
