@@ -236,6 +236,7 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildCheckbox(
     List<bool>? initialValue,
   ) {
+    final title = widget.getTitle();
     return _CustomFormFieldValidator<bool>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
@@ -244,7 +245,7 @@ class _UiWidgetState extends State<_UiWidget> {
         return _CustomCheckboxGroup<bool>(
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+          label: null,
           labelStyle: widget.getIsRequired()
               ? const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -252,7 +253,9 @@ class _UiWidgetState extends State<_UiWidget> {
                 )
               : null,
           sublabel: widget.getDescription(),
-          itemLabel: (_, item) => item ? 'Yes' : 'No',
+          itemLabel: (_, item) => title != null
+              ? "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}"
+              : (item ? 'Yes' : 'No'),
           items: const [true],
           initialItems: initialValue,
           onCheckboxValuesSelected: (value) {
