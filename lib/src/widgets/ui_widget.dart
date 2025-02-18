@@ -321,9 +321,7 @@ class _UiWidgetState extends State<_UiWidget> {
         hasRequiredValidator: widget.getIsRequired(),
         labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
         minLines: 4,
-        maxLines: widget.uiSchema?.maxLines == 0
-            ? null
-            : widget.uiSchema?.maxLines ?? 1,
+        maxLines: null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
