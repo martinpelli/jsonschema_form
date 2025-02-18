@@ -321,7 +321,9 @@ class _UiWidgetState extends State<_UiWidget> {
         hasRequiredValidator: widget.getIsRequired(),
         labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
         minLines: 4,
-        maxLines: null,
+        maxLines: widget.uiSchema?.maxLines == 0
+            ? null
+            : widget.uiSchema?.maxLines ?? 1,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -582,9 +584,11 @@ class _UiWidgetState extends State<_UiWidget> {
         labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
-        placeholder: widget.uiSchema?.placeholder,
         helperText: widget.uiSchema?.help,
         autofocus: widget.uiSchema?.autofocus,
+        maxLines: widget.uiSchema?.maxLines == 0
+            ? null
+            : widget.uiSchema?.maxLines ?? 1,
         inputFormatters: isNumberTextFormFiled
             ? [FilteringTextInputFormatter.digitsOnly]
             : null,
