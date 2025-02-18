@@ -86,8 +86,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// Function called when an item is removed from an array
   final void Function()? onItemRemoved;
 
-  // For adding padding to the form. Useful if you have [isScrollable] set to
-  // true
+  /// For adding padding to the form. Useful if you have [isScrollable] set to
+  /// true
   final EdgeInsets? padding;
 
   @override
