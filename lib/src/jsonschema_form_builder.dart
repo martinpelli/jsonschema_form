@@ -530,12 +530,10 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         return previousSchema?.title;
       } else if (uiSchema?.showArrayTitles ?? true) {
         return '${previousSchema?.title}-${arrayIndex + 1}';
-      } else {
-        return null;
       }
     }
 
-    return jsonKey;
+    return null;
   }
 
   String? _getDescription(
