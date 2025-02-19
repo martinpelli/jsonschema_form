@@ -129,6 +129,8 @@ class _UiWidgetState extends State<_UiWidget> {
       (widget.uiSchema?.widget == null && widget.jsonSchema.enumValue != null);
 
   Widget _buildDropdown(String? initialValue) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: _CustomFormFieldValidator<String>(
@@ -139,7 +141,9 @@ class _UiWidgetState extends State<_UiWidget> {
         childFormBuilder: (field) {
           return _CustomDropdownMenu<String>(
             readOnly: widget.getReadOnly(),
-            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            label: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             labelStyle: widget.getIsRequired()
                 ? const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -163,6 +167,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildRadioGroup(
     String? initialValue,
   ) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<String>(
@@ -173,7 +179,9 @@ class _UiWidgetState extends State<_UiWidget> {
         childFormBuilder: (field) {
           return _CustomRadioGroup<String>(
             readOnly: widget.getReadOnly(),
-            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            label: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             labelStyle: widget.getIsRequired()
                 ? const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -200,6 +208,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildRadio(
     bool? initialValue,
   ) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<bool>(
@@ -209,7 +219,9 @@ class _UiWidgetState extends State<_UiWidget> {
         childFormBuilder: (field) {
           return _CustomRadioGroup<bool>(
             readOnly: widget.getReadOnly(),
-            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            label: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             labelStyle: widget.getIsRequired()
                 ? const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -236,6 +248,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildCheckbox(
     List<bool>? initialValue,
   ) {
+    final title = widget.getTitle();
+
     return _CustomFormFieldValidator<bool>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
@@ -244,7 +258,7 @@ class _UiWidgetState extends State<_UiWidget> {
         return _CustomCheckboxGroup<bool>(
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+          label: null,
           labelStyle: widget.getIsRequired()
               ? const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -252,7 +266,9 @@ class _UiWidgetState extends State<_UiWidget> {
                 )
               : null,
           sublabel: widget.getDescription(),
-          itemLabel: (_, item) => item ? 'Yes' : 'No',
+          itemLabel: (_, item) => title != null
+              ? "$title${widget.getIsRequired() ? '*' : ''}"
+              : (item ? 'Yes' : 'No'),
           items: const [true],
           initialItems: initialValue,
           onCheckboxValuesSelected: (value) {
@@ -271,6 +287,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildCheckboxGroup(
     List<String> initialValues,
   ) {
+    final title = widget.getTitle();
+
     return _CustomFormFieldValidator<List<String>>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
@@ -280,7 +298,9 @@ class _UiWidgetState extends State<_UiWidget> {
         return _CustomCheckboxGroup<String>(
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+          label: title != null
+              ? "$title${widget.getIsRequired() ? '*' : ''}"
+              : null,
           labelStyle: widget.getIsRequired()
               ? const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -309,6 +329,9 @@ class _UiWidgetState extends State<_UiWidget> {
     _addMinLengthValidator(validators);
 
     _addMaxLengthValidator(validators);
+
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -316,7 +339,8 @@ class _UiWidgetState extends State<_UiWidget> {
         readOnly: widget.getReadOnly(),
         onChanged: _onFieldChanged,
         hasRequiredValidator: widget.getIsRequired(),
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         minLines: 4,
         maxLines: null,
         defaultValue: initialValue,
@@ -342,6 +366,8 @@ class _UiWidgetState extends State<_UiWidget> {
   bool _isUpDown() => widget.uiSchema?.widget == UiType.updown;
 
   Widget _buildUpDown(String? initialValue) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -349,7 +375,8 @@ class _UiWidgetState extends State<_UiWidget> {
         readOnly: widget.getReadOnly(),
         onChanged: _onFieldChanged,
         hasRequiredValidator: widget.getIsRequired(),
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         defaultValue: initialValue,
@@ -405,6 +432,8 @@ class _UiWidgetState extends State<_UiWidget> {
         ? (widget.uiSchema?.options?['resolution'] as String?).cameraResolution
         : widget.resolution;
 
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<String?>(
@@ -420,7 +449,9 @@ class _UiWidgetState extends State<_UiWidget> {
             acceptedExtensions: acceptedExtensions,
             hasFilePicker: hasFilePicker,
             hasCameraButton: hasCameraButton,
-            title: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            title: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             onFileChosen: (value) async {
               await _onFieldChangedWithValidator<String?>(field, value);
             },
@@ -441,12 +472,17 @@ class _UiWidgetState extends State<_UiWidget> {
     String? initialValue,
   ) {
     final isReadOnly = widget.getReadOnly();
+
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
         formFieldKey: _formFieldKey,
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText: title != null
+            ? "$title${widget.getIsRequired() ? '*' : ''}"
+            : title,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -485,12 +521,16 @@ class _UiWidgetState extends State<_UiWidget> {
     String? initialValue,
   ) {
     final isReadOnly = widget.getReadOnly();
+
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
         formFieldKey: _formFieldKey,
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -528,13 +568,16 @@ class _UiWidgetState extends State<_UiWidget> {
       widget.uiSchema!.options![UiOptions.inputType.name] == InputType.tel;
 
   Widget _buildPhoneText(String? initialValue) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomPhoneFormField(
         formFieldKey: _formFieldKey,
         enabled: !widget.getReadOnly(),
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -570,18 +613,23 @@ class _UiWidgetState extends State<_UiWidget> {
 
     _addMaxLengthValidator(validators);
 
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
         formFieldKey: _formFieldKey,
         readOnly: widget.getReadOnly(),
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
-        placeholder: widget.uiSchema?.placeholder,
         helperText: widget.uiSchema?.help,
         autofocus: widget.uiSchema?.autofocus,
+        maxLines: widget.uiSchema?.maxLines == 0
+            ? null
+            : widget.uiSchema?.maxLines ?? 1,
         inputFormatters: isNumberTextFormFiled
             ? [FilteringTextInputFormatter.digitsOnly]
             : null,

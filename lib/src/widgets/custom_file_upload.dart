@@ -32,13 +32,14 @@ class _CustomFileUpload extends StatefulWidget {
 class _CustomFileUploadState extends State<_CustomFileUpload>
     with WidgetsBindingObserver {
   String? _file;
-  late String? _fileName;
+  String? _fileName;
 
   bool _isLoading = false;
 
   @override
   void initState() {
     _file = widget.fileData;
+    _fileName = null;
     super.initState();
   }
 
@@ -91,9 +92,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
               ],
               if (_isLoading)
                 const CircularProgressIndicator()
-              else if (_file == null)
-                const Text('No file chosen')
-              else
+              else if (_file != null)
                 Row(
                   children: [
                     Text(_fileName!),
@@ -109,7 +108,9 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                       icon: const Icon(Icons.delete),
                     ),
                   ],
-                ),
+                )
+              else if (widget.hasFilePicker)
+                const Text('No file chosen'),
             ],
           ),
         const SizedBox(height: 10),

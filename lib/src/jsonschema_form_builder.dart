@@ -86,8 +86,8 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// Function called when an item is removed from an array
   final void Function()? onItemRemoved;
 
-  // For adding padding to the form. Useful if you have [isScrollable] set to
-  // true
+  /// For adding padding to the form. Useful if you have [isScrollable] set to
+  /// true
   final EdgeInsets? padding;
 
   @override
@@ -528,12 +528,12 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     if (arrayIndex != null && previousSchema?.title != null) {
       if (previousSchema?.uniqueItems ?? false) {
         return previousSchema?.title;
-      } else {
+      } else if (uiSchema?.showArrayTitles ?? true) {
         return '${previousSchema?.title}-${arrayIndex + 1}';
       }
     }
 
-    return jsonKey;
+    return null;
   }
 
   String? _getDescription(
