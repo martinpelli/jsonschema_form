@@ -139,6 +139,7 @@ class _FormState extends State<_Form> {
                       child: JsonschemaFormBuilder(
                         key: _jsonschemaFormKey,
                         jsonSchemaForm: _jsonschemaForm,
+                        createArrayItemAs: CreateArrayItemAs.dialog,
                       ),
                     ),
                     const SizedBox(height: 10),

@@ -22,7 +22,7 @@ class _CustomTextFormField extends StatefulWidget {
     this.mouseCursor,
   });
 
-  final GlobalKey<FormFieldState<dynamic>> formFieldKey;
+  final GlobalKey<FormFieldState<dynamic>>? formFieldKey;
   final void Function(String) onChanged;
   final String? labelText;
   final String? helperText;
