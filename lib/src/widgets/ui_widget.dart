@@ -77,14 +77,15 @@ class _UiWidgetState extends State<_UiWidget> {
     } else if (_isRadioGroup()) {
       return _buildRadioGroup(initialStringValue);
     } else if (_isRadio()) {
-      final initialValue = widget.getDefaultValue is String
-          ? bool.tryParse(widget.getDefaultValue as String)
-          : null;
+      final initialValue = defaultValue is bool
+          ? defaultValue
+          : defaultValue is String
+              ? bool.tryParse(defaultValue)
+              : null;
       return _buildRadio(initialValue);
     } else if (_isCheckbox()) {
-      final initialValue = widget.getDefaultValue is String
-          ? [bool.tryParse(widget.getDefaultValue as String)!]
-          : null;
+      final initialValue =
+          defaultValue is String ? [bool.tryParse(defaultValue)!] : null;
       return _buildCheckbox(initialValue);
     } else if (_isCheckboxGroup()) {
       final initialValues = (widget.formData as List).cast<String>();
