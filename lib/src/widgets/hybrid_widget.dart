@@ -58,11 +58,8 @@ class _StatefulWrapper extends StatefulWidget {
 class _StatefulWrapperState extends State<_StatefulWrapper> {
   @override
   void dispose() {
-    widget.stateKeys.removeWhere(
-      (stateKey) =>
-          stateKey.currentState != null &&
-          stateKey.currentState!.widget.jsonKey == widget.jsonKey,
-    );
+    widget.stateKeys.removeWhere((stateKey) => stateKey.currentState == this);
+
     super.dispose();
   }
 
