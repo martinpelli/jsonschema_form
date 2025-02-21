@@ -180,7 +180,9 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     UiSchema? previousUiSchema,
     int? arrayIndex,
   }) {
-    final hasDependencies = jsonSchema.dependencies != null;
+    final hasDependencies = jsonSchema.dependencies != null ||
+        (jsonSchema.items is JsonSchema &&
+            (jsonSchema.items as JsonSchema).dependencies != null);
 
     _FormSection buildFormSection() => _FormSection(
           jsonSchema,
@@ -209,8 +211,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
       _formSectionKeys.add(formSectionKey);
 
-      print(_formSectionKeys.length);
-
       return _HybridWidget.stateful(
         stateKey: formSectionKey,
         stateKeys: _formSectionKeys,
@@ -229,9 +229,10 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// dependency so it gets updated accordingly
   void rebuildDependencies(String? jsonKeyDependency) {
     for (final formSectionKey in _formSectionKeys) {
-      if (formSectionKey.currentState != null &&
-          formSectionKey.currentState!.widget.jsonKey == jsonKeyDependency) {
-        formSectionKey.currentState!.rebuildFormSection();
+      if (formSectionKey.currentState != null) {
+        if (formSectionKey.currentState!.widget.jsonKey == jsonKeyDependency) {
+          formSectionKey.currentState!.rebuildFormSection();
+        }
       }
     }
   }

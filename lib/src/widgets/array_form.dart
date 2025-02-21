@@ -66,14 +66,6 @@ class _ArrayFormState extends State<_ArrayForm> {
     super.dispose();
   }
 
-  @override
-  void didUpdateWidget(covariant _ArrayForm oldWidget) {
-    _arrayItems.clear();
-    _initialItems.clear();
-    _initItems();
-    super.didUpdateWidget(oldWidget);
-  }
-
   void _initItems() {
     var initialItemsLength = _initialItems.length;
 
@@ -325,7 +317,7 @@ class _ArrayFormState extends State<_ArrayForm> {
       _arrayItems.length,
     );
 
-    final Map<String, dynamic>? addedFormData;
+    final dynamic addedFormData;
 
     final addButon = TextButton(
       onPressed: () => Navigator.of(context).pop(newFormData),
@@ -333,7 +325,7 @@ class _ArrayFormState extends State<_ArrayForm> {
     );
 
     if (isDialog) {
-      addedFormData = await showDialog<Map<String, dynamic>?>(
+      addedFormData = await showDialog<dynamic>(
         context: context,
         builder: (_) => AlertDialog(
           scrollable: true,
@@ -342,7 +334,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         ),
       );
     } else {
-      addedFormData = await Navigator.of(context).push<Map<String, dynamic>?>(
+      addedFormData = await Navigator.of(context).push<dynamic>(
         MaterialPageRoute(
           builder: (context) => Scaffold(
             appBar: AppBar(),
