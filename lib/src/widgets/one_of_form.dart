@@ -7,7 +7,6 @@ class _OneOfForm extends StatefulWidget {
     this.uiSchema,
     this.formData, {
     required this.buildJsonschemaForm,
-    required this.rebuildForm,
     required this.getTitle,
     required this.getDescription,
     required this.getReadOnly,
@@ -23,16 +22,7 @@ class _OneOfForm extends StatefulWidget {
   final JsonSchema? previousSchema;
   final String? previousJsonKey;
   final UiSchema? previousUiSchema;
-  final Widget Function(
-    JsonSchema jsonSchema,
-    String? jsonKey,
-    UiSchema? uiSchema,
-    dynamic formData, {
-    JsonSchema? previousSchema,
-    String? previousJsonKey,
-    UiSchema? previousUiSchema,
-  }) buildJsonschemaForm;
-  final void Function() rebuildForm;
+  final BuildJsonschemaForm buildJsonschemaForm;
   final bool Function() getReadOnly;
   final String? Function() getTitle;
   final String? Function() getDescription;
@@ -145,7 +135,9 @@ class _OneOfFormState extends State<_OneOfForm> {
 
       /// When oneOf has changed, it will rebuild the whole form so that all
       /// controllers get cleared
-      widget.rebuildForm();
+      ///widget.rebuildForm();
+      // TODO(martinpelli): clear only the proper updated section
+      throw UnimplementedError('simple one of not implemented');
     }
 
     String itemLabel(int index, JsonSchema item) =>

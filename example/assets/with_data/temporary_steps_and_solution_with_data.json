@@ -1,7 +1,6 @@
 {
     "jsonSchema":{
       "type": "object",
-      "title": "Temporary steps & solution",
       "required": [
         "temporaryRepair"
       ],
@@ -230,7 +229,10 @@
         "helpers": {
           "items": {
             "sourcing": {
-              "ui:widget": "radio"
+              "ui:widget": "radio",
+              "ui:options": {
+                "inline": true
+              }
             },
             "ui:order": [
               "technicianType",
@@ -244,22 +246,25 @@
             "contactName": {
               "ui:placeholder": "Enter the name"
             },
-            "contactPhone": {
-              "ui:placeholder": "Enter the phone",
-              "ui:options": {
-                "inputType": "tel"
-              }
-            },
             "helperCount": {
               "ui:widget": "updown",
               "ui:placeholder": "0"
+            },
+            "contactPhone": {
+              "ui:options": {
+                "inputType": "tel"
+              },
+              "ui:placeholder": "Enter the phone number"
             },
             "hoursPerHelper": {
               "ui:widget": "updown",
               "ui:placeholder": "0"
             },
             "technicianType": {
-              "ui:widget": "radio"
+              "ui:widget": "radio",
+              "ui:options": {
+                "inline": true
+              }
             },
             "technicianTrade": {
               "ui:widget": "select",
@@ -280,21 +285,25 @@
           "helpers"
         ],
         "repairSteps": {
-          "ui:widget": "textarea",
-          "ui:options": {
-            "rows": 3
-          },
+          "ui:widget": "text",
+          "ui:maxLines": 0,
           "ui:placeholder": "Enter value"
         },
         "laborSupport": {
-          "ui:widget": "radio"
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
         },
         "timeEstimate": {
           "ui:widget": "updown",
           "ui:placeholder": "Enter value"
         },
         "temporaryRepair": {
-          "ui:widget": "radio"
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
         }
       },
       "formData": {

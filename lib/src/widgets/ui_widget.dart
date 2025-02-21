@@ -6,8 +6,8 @@ class _UiWidget extends StatefulWidget {
     this.jsonKey,
     this.uiSchema,
     this.formData, {
-    required this.rebuildForm,
     required this.previousSchema,
+    required this.previousJsonKey,
     required this.previousFormData,
     required this.arrayIndex,
     required this.getTitle,
@@ -16,41 +16,49 @@ class _UiWidget extends StatefulWidget {
     required this.getIsRequired,
     required this.getReadOnly,
     required this.formFieldKeys,
-    this.resolution = CameraResolution.max,
+    this.cameraResolution = CameraResolution.max,
+    this.rebuildDependencies,
   });
 
   final JsonSchema jsonSchema;
   final String? jsonKey;
   final UiSchema? uiSchema;
   final dynamic formData;
-  final void Function() rebuildForm;
   final JsonSchema? previousSchema;
+  final String? previousJsonKey;
   final dynamic previousFormData;
   final int? arrayIndex;
-  final CameraResolution resolution;
   final String? Function() getTitle;
   final String? Function() getDescription;
   final dynamic Function() getDefaultValue;
   final bool Function() getIsRequired;
   final bool Function() getReadOnly;
-  final List<GlobalKey<FormFieldState<dynamic>>> formFieldKeys;
+  final CameraResolution cameraResolution;
+  final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
+  final void Function(String?)? rebuildDependencies;
 
   @override
   State<_UiWidget> createState() => _UiWidgetState();
 }
 
 class _UiWidgetState extends State<_UiWidget> {
-  final _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+  late final GlobalKey<FormFieldState<dynamic>>? _formFieldKey;
 
   @override
   void initState() {
     super.initState();
-    widget.formFieldKeys.add(_formFieldKey);
+
+    if (widget.formFieldKeys != null) {
+      _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+      widget.formFieldKeys!.add(_formFieldKey!);
+    } else {
+      _formFieldKey = null;
+    }
   }
 
   @override
   void dispose() {
-    widget.formFieldKeys.removeLast();
+    widget.formFieldKeys?.removeLast();
     super.dispose();
   }
 
@@ -69,14 +77,15 @@ class _UiWidgetState extends State<_UiWidget> {
     } else if (_isRadioGroup()) {
       return _buildRadioGroup(initialStringValue);
     } else if (_isRadio()) {
-      final initialValue = widget.getDefaultValue is String
-          ? bool.tryParse(widget.getDefaultValue as String)
-          : null;
+      final initialValue = defaultValue is bool
+          ? defaultValue
+          : defaultValue is String
+              ? bool.tryParse(defaultValue)
+              : null;
       return _buildRadio(initialValue);
     } else if (_isCheckbox()) {
-      final initialValue = widget.getDefaultValue is String
-          ? [bool.tryParse(widget.getDefaultValue as String)!]
-          : null;
+      final initialValue =
+          defaultValue is String ? [bool.tryParse(defaultValue)!] : null;
       return _buildCheckbox(initialValue);
     } else if (_isCheckboxGroup()) {
       final initialValues = (widget.formData as List).cast<String>();
@@ -430,7 +439,7 @@ class _UiWidgetState extends State<_UiWidget> {
             ) ??
             false)
         ? (widget.uiSchema?.options?['resolution'] as String?).cameraResolution
-        : widget.resolution;
+        : widget.cameraResolution;
 
     final title = widget.getTitle();
 
@@ -458,7 +467,7 @@ class _UiWidgetState extends State<_UiWidget> {
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
             fileData: initialValue,
-            resolution: resolution ?? widget.resolution,
+            resolution: resolution ?? widget.cameraResolution,
           );
         },
       ),
@@ -656,7 +665,7 @@ class _UiWidgetState extends State<_UiWidget> {
 
   Future<void> _onFieldChanged<T>(T value) async {
     await _setValueInFormData(value);
-    _rebuildFormIfHasDependants();
+    _rebuildFormIfHasOneOfDependencies<T>(value);
   }
 
   FutureOr<void> _onFieldChangedWithValidator<T>(
@@ -694,22 +703,12 @@ class _UiWidgetState extends State<_UiWidget> {
     }
   }
 
-  /// Property dependencies: unidirectional and bidirectional
-  void _rebuildFormIfHasDependants() {
-    if (_hasDependants()) {
-      widget.rebuildForm();
-    }
-  }
+  void _rebuildFormIfHasOneOfDependencies<T>(T value) {
+    final hasDependencies = widget.previousSchema?.dependencies != null &&
+        widget.previousSchema!.dependencies!.keys.contains(widget.jsonKey);
 
-  /// Property dependencies: unidirectional and bidirectional
-  /// If a field has dependants, it means that when the field is changed, the
-  /// whole form will be rebuilt so that the dependants fields are required or
-  /// not, depending if the value is valid or not
-  bool _hasDependants() {
-    if (widget.previousSchema?.dependencies != null &&
-        widget.previousSchema!.dependencies!.keys.contains(widget.jsonKey)) {
-      return true;
+    if (hasDependencies) {
+      widget.rebuildDependencies?.call(widget.previousJsonKey);
     }
-    return false;
   }
 }
