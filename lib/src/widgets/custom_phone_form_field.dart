@@ -14,7 +14,7 @@ class _CustomPhoneFormField extends StatefulWidget {
     this.enabled = false,
   });
 
-  final GlobalKey<FormFieldState<dynamic>> formFieldKey;
+  final GlobalKey<FormFieldState<dynamic>>? formFieldKey;
   final void Function(PhoneNumber) onChanged;
   final String? labelText;
   final String? helperText;
@@ -51,7 +51,7 @@ class _CustomPhoneFormFieldState extends State<_CustomPhoneFormField> {
       /// When oneOf has changed, it will rebuild the whole form so that all
       /// controllers get cleared
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => widget.formFieldKey.currentState?.reset(),
+        (_) => widget.formFieldKey?.currentState?.reset(),
       );
     }
 
