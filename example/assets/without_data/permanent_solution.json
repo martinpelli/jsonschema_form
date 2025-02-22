@@ -1,0 +1,377 @@
+{
+ "jsonSchema": {
+        "dependencies": {
+          "laborSupport": {
+            "oneOf": [
+              {
+                "properties": {
+                  "laborDetails": {
+                    "type": "array"
+                  },
+                  "laborSupport": {
+                    "enum": [
+                      "Yes"
+                    ]
+                  }
+                },
+                "required": [
+                  "laborDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "laborSupport": {
+                    "enum": [
+                      "No"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "workDuration": {
+            "oneOf": [
+              {
+                "properties": {
+                  "repairTime": {
+                    "title": "How many Hours will repair take?"
+                  },
+                  "workDuration": {
+                    "enum": [
+                      "Hours"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "laborDetails": {
+                    "items": {
+                      "dependencies": {
+                        "workDayType": {
+                          "oneOf": [
+                            {
+                              "properties": {
+                                "workDayType": {
+                                  "enum": [
+                                    "All work-days"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "properties": {
+                                "daysRequired": {
+                                  "items": {
+                                    "enum": [
+                                      "Day 1",
+                                      "Day 2",
+                                      "Day 3",
+                                      "Day 4",
+                                      "Day 5"
+                                    ],
+                                    "type": "string"
+                                  },
+                                  "title": "Select Days",
+                                  "type": "array",
+                                  "uniqueItems": true
+                                },
+                                "workDayType": {
+                                  "enum": [
+                                    "Specific Days"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "daysRequired"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "properties": {
+                        "workDayType": {
+                          "enum": [
+                            "All work-days",
+                            "Specific Days"
+                          ],
+                          "title": "What days will you need them?",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "repairTime": {
+                    "title": "How many Days will repair take?"
+                  },
+                  "workDuration": {
+                    "enum": [
+                      "Days"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "description": "Please outline your intended solution and time estimate.",
+        "properties": {
+          "laborDetails": {
+            "items": {
+              "dependencies": {
+                "sourcing": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "contactDetails": {
+                          "default": "",
+                          "title": "Enter their name and phone number",
+                          "type": "string"
+                        },
+                        "sourcing": {
+                          "enum": [
+                            "I have a contact"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "contactDetails"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "sourcing": {
+                          "enum": [
+                            "I need you to source them"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "technicianType": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "helperCount": {
+                          "title": "How many Helpers do you need?"
+                        },
+                        "hoursPerHelper": {
+                          "title": "Number of hours per Helper"
+                        },
+                        "technicianType": {
+                          "enum": [
+                            "Helper"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "helperCount": {
+                          "title": "How many Technicians do you need?"
+                        },
+                        "hoursPerHelper": {
+                          "title": "Number of hours per Technician"
+                        },
+                        "technicianTrade": {
+                          "enum": [
+                            "Electrician",
+                            "Plumber",
+                            "Carpenter",
+                            "Other"
+                          ],
+                          "title": "Technician's Trade",
+                          "type": "string"
+                        },
+                        "technicianType": {
+                          "enum": [
+                            "Technician"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "technicianTrade"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "properties": {
+                "helperCount": {
+                  "default": 0,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "hoursPerHelper": {
+                  "default": 0,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "sourcing": {
+                  "enum": [
+                    "I have a contact",
+                    "I need you to source them"
+                  ],
+                  "title": "How will you source them?",
+                  "type": "string"
+                },
+                "technicianType": {
+                  "enum": [
+                    "Helper",
+                    "Technician"
+                  ],
+                  "title": "Technician Type",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "technicianType",
+                "helperCount",
+                "hoursPerHelper",
+                "sourcing"
+              ],
+              "type": "object"
+            },
+            "title": "Labor Support Details",
+            "type": "array"
+          },
+          "laborSupport": {
+            "description": "(Such as a helper or another technician for the repair.)",
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "title": "Will you need labor support?",
+            "type": "string"
+          },
+          "repairTime": {
+            "default": 1,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "solutionSteps": {
+            "default": "",
+            "title": "What are the steps to resolve the issue permanently?",
+            "type": "string"
+          },
+          "workDuration": {
+            "enum": [
+              "Hours",
+              "Days"
+            ],
+            "title": "Work Duration",
+            "type": "string"
+          }
+        },
+        "required": [
+          "solutionSteps",
+          "workDuration",
+          "repairTime",
+          "laborSupport"
+        ],
+        "title": "Permanent Solution",
+        "type": "object"
+      },
+      "uiSchema": {
+        "laborDetails": {
+          "items": {
+            "contactDetails": {
+              "ui:options": {
+                "rows": 2
+              },
+              "ui:placeholder": "Enter value",
+              "ui:widget": "textarea"
+            },
+            "daysRequired": {
+              "ui:options": {
+                "inline": false
+              },
+              "ui:widget": "checkboxes"
+            },
+            "helperCount": {
+              "ui:placeholder": "0",
+              "ui:widget": "updown"
+            },
+            "hoursPerHelper": {
+              "ui:placeholder": "0",
+              "ui:widget": "updown"
+            },
+            "sourcing": {
+              "ui:options": {
+                "inline": false
+              },
+              "ui:widget": "radio"
+            },
+            "technicianTrade": {
+              "ui:placeholder": "Select options",
+              "ui:widget": "select"
+            },
+            "technicianType": {
+              "ui:options": {
+                "inline": false
+              },
+              "ui:widget": "radio"
+            },
+            "ui:order": [
+              "technicianType",
+              "technicianTrade",
+              "helperCount",
+              "hoursPerHelper",
+              "workDayType",
+              "daysRequired",
+              "sourcing",
+              "contactDetails"
+            ],
+            "workDayType": {
+              "ui:options": {
+                "inline": false
+              },
+              "ui:widget": "radio"
+            }
+          },
+          "ui:options": {
+            "addText": "+ Add Labor Support",
+            "addable": true,
+            "removable": true
+          }
+        },
+        "laborSupport": {
+          "ui:options": {
+            "inline": false
+          },
+          "ui:widget": "radio"
+        },
+        "repairTime": {
+          "ui:placeholder": "1",
+          "ui:widget": "updown"
+        },
+        "solutionSteps": {
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value",
+          "ui:widget": "textarea"
+        },
+        "ui:order": [
+          "solutionSteps",
+          "workDuration",
+          "repairTime",
+          "laborSupport",
+          "laborDetails"
+        ],
+        "workDuration": {
+          "ui:options": {
+            "inline": false
+          },
+          "ui:widget": "radio"
+        }
+      },
+      "formData": {
+        "laborDetails": [],
+        "laborSupport": "",
+        "repairTime": 1,
+        "solutionSteps": "",
+        "workDuration": ""
+      }   
+}

@@ -1,0 +1,107 @@
+{"jsonSchema": {
+  "type": "object",
+  "title": "Identify the Problem & Root Cause",
+  "required": [
+    "workScope",
+    "issueCause",
+    "issueMatch",
+    "issueDescription"
+  ],
+  "properties": {
+    "workScope": {
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "type": "string",
+      "title": "Is the work within your scope?"
+    },
+    "issueCause": {
+      "type": "string",
+      "title": "What is the cause of the issue?",
+      "default": ""
+    },
+    "issueMatch": {
+      "enum": [
+        "Yes",
+        "No"
+      ],
+      "type": "string",
+      "title": "Does issue on site match description provided?"
+    },
+    "clientDescription": {
+      "type": "string",
+      "title": "Client Description",
+      "default": "[Place holder text for client's description of the problem.]",
+      "readOnly": true
+    }
+  },
+  "description": "Please determine if the problem matches the Client's description provided below.",
+  "dependencies": {
+    "issueMatch": {
+      "oneOf": [
+        {
+          "properties": {
+            "issueMatch": {
+              "const": "Yes"
+            }
+          }
+        },
+        {
+          "properties": {
+            "issueMatch": {
+              "const": "No"
+            },
+            "issueDescription": {
+              "type": "string",
+              "title": "Please describe the issue on site.",
+              "default": ""
+            }
+          }
+        }
+      ]
+    }
+  }
+},
+      "uiSchema": {
+        "ui:order": [
+          "clientDescription",
+          "issueMatch",
+          "issueDescription",
+          "issueCause",
+          "workScope",
+          "*"
+        ],
+        "workScope": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "issueCause": {
+          "ui:widget": "text",
+          "ui:placeholder": "Enter value"
+        },
+        "issueMatch": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "issueDescription": {
+          "ui:widget": "text",
+          "ui:placeholder": "Enter value"
+        },
+        "clientDescription": {
+          "ui:widget": "text",
+          "ui:readonly": true
+        }
+      },
+      "formData": {
+        "workScope": "Yes",
+        "issueCause": "Poor installation of plumbing fixtures.",
+        "issueMatch": "No",
+        "issueDescription": "The pipes are leaking in multiple places.",
+        "clientDescription": "[Place holder text for client's description of the problem.]"
+      }
+    }

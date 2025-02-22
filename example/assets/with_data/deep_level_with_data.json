@@ -1,0 +1,117 @@
+{
+    "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "projectName": {
+            "type": "string",
+            "title": "Project Name"
+          },
+          "client": {
+            "type": "object",
+            "title": "Client Information",
+            "properties": {
+              "clientName": {
+                "type": "string",
+                "title": "Client Name"
+              },
+              "contactNumber": {
+                "type": "string",
+                "title": "Contact Number"
+              },
+              "address": {
+                "type": "object",
+                "title": "Address",
+                "properties": {
+                  "street": {
+                    "type": "string",
+                    "title": "Street Address"
+                  },
+                  "city": {
+                    "type": "string",
+                    "title": "City"
+                  },
+                  "postalCode": {
+                    "type": "string",
+                    "title": "Postal Code"
+                  },
+                  "country": {
+                    "type": "string",
+                    "title": "Country",
+                    "enum": [
+                      "Yes",
+                      "No",
+                      "Maybe"
+                  ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+    "uiSchema": {
+      "projectName": {
+        "ui:placeholder": "Enter the project name",
+        "ui:help": "This is the name of the project."
+      },
+      "client": {
+        "clientName": {
+          "ui:widget": "text",
+          "ui:placeholder": "Enter client's full name",
+          "ui:help": "Please provide the full legal name of the client."
+        },
+        "contactNumber": {
+          "ui:widget": "text",
+          "classNames": "contact-number-field",
+          "ui:help": "Include area code and country code if applicable."
+        },
+        "address": {
+          "street": {
+            "ui:placeholder": "Street address",
+            "classNames": "street-class"
+          },
+          "city": {
+            "ui:placeholder": "City name",
+            "classNames": "city-class"
+          },
+          "postalCode": {
+            "classNames": "postal-code-class",
+            "ui:help": "Numeric only."
+          },
+          "country": {
+            "ui:widget": "radio",
+            "ui:options": {
+              "enumOptions": [
+                {
+                  "value": "US",
+                  "label": "United States"
+                },
+                {
+                  "value": "CA",
+                  "label": "Canada"
+                },
+                {
+                  "value": "MX",
+                  "label": "Mexico"
+                }
+              ]
+            },
+            "classNames": "country-select-class"
+          }
+        }
+      }
+    },
+    "formData": {
+      "projectName": "Project anme",
+      "client": {
+        "clientName": "sss",
+        "contactNumber": "dddd",
+        "address": {
+          "street": "ffff",
+          "city": "ggg",
+          "postalCode": "hhh",
+          "country": "Maybe"
+        }
+      }
+    }
+}

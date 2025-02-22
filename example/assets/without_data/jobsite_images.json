@@ -1,0 +1,59 @@
+{
+  "jsonSchema": {
+    "type": "object",
+    "title": "Jobsite Assessment Form",
+    "required": [
+      "jobsiteImages"
+    ],
+    "properties": {
+      "jobsiteImages": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "type",
+            "file"
+          ],
+          "properties": {
+            "file": {
+              "type": "string",
+              "format": "data-url",
+              "title": "Single File with camera and without explorer"
+            }
+          }
+        },
+        "title": "Jobsite Images",
+        "description": "Please provide photos or videos of the jobsite conditions before starting work. Use the buttons below to add additional photos or videos. Take at least three photos and one video."
+      }
+    },
+    "description": "Please fill out the details related to the jobsite conditions."
+  },
+  "uiSchema": {
+    "jobsiteImages": {
+      "items": {
+        "file": {
+          "ui:title": "Upload file",
+          "ui:widget": "file",
+          "ui:options": {
+            "camera": true,
+            "explorer": false,
+            "photo": true,
+            "video": true,
+            "resolution": "medium"
+          }
+        }
+      },
+      "ui:options": {
+        "addable": true,
+        "removable": true
+      }
+    }
+  },
+  "formData": {
+    "jobsiteImages": [
+      {
+        "file": "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"
+      }
+    ]
+  }
+}

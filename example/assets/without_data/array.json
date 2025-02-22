@@ -1,0 +1,54 @@
+{
+        "jsonSchema":{
+            "type": "object",
+            "properties": {
+              "project": {
+                "type": "object",
+                "title": "Project Details",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "title": "Project Name"
+                  },
+                  "team": {
+                    "type": "array",
+                    "title": "Team Members",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "title": "Member Name"
+                        },
+                        "role": {
+                          "type": "string",
+                          "title": "Role"
+                        },
+                        "contactInfo": {
+                          "type": "object",
+                          "title": "Contact Information",
+                          "properties": {
+                            "email": {
+                              "type": "string",
+                              "format": "email",
+                              "title": "Email"
+                            },
+                            "phone": {
+                              "type": "string",
+                              "title": "Phone Number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+        "uiSchema": {
+           
+        },
+        "formData": {
+        }
+}

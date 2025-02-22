@@ -1,0 +1,116 @@
+{
+    "jsonSchema": {
+        "type": "object",
+        "title": "Permanent Materials Request",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "type",
+                "quantity",
+                "cost",
+                "acquireMethod"
+              ],
+              "properties": {
+                "cost": {
+                  "type": "number",
+                  "title": "Cost",
+                  "default": 0,
+                  "minimum": 0
+                },
+                "type": {
+                  "enum": [
+                    "Parts",
+                    "Materials",
+                    "Equipment",
+                    "Additional Fees",
+                    "Units",
+                    "Tools",
+                    "Consumables"
+                  ],
+                  "type": "string",
+                  "title": "Type"
+                },
+                "quantity": {
+                  "type": "integer",
+                  "title": "Quantity",
+                  "default": 0,
+                  "minimum": 0
+                },
+                "description": {
+                  "type": "string",
+                  "title": "Description",
+                  "default": ""
+                },
+                "acquireMethod": {
+                  "enum": [
+                    "I have it on-hand",
+                    "I can pick it up",
+                    "Need it delivered"
+                  ],
+                  "type": "string",
+                  "title": "How will you acquire it?"
+                },
+                "deliveryAddress": {
+                  "type": "string",
+                  "title": "Where do you need it delivered?",
+                  "default": "",
+                  "minLength": 0
+                }
+              }
+            },
+            "title": "Materials and Equipment",
+            "default": []
+          }
+        },
+        "description": "Do you need materials or equipment to complete the permanent solution? Use the form below to make your request."
+      },
+      "uiSchema":  {
+        "items": {
+          "items": {
+            "cost": {
+              "ui:widget": "updown",
+              "ui:placeholder": "Enter cost"
+            },
+            "type": {
+              "ui:widget": "select",
+              "ui:placeholder": "Select an option"
+            },
+            "quantity": {
+              "ui:widget": "updown",
+              "ui:placeholder": "Enter quantity"
+            },
+            "description": {
+              "ui:widget": "textarea",
+              "ui:options": {
+                "rows": 2
+              },
+              "ui:placeholder": "Enter value"
+            },
+            "acquireMethod": {
+              "ui:widget": "radio",
+              "ui:options": {
+                "inline": true
+              }
+            },
+            "deliveryAddress": {
+              "ui:widget": "textarea",
+              "ui:options": {
+                "rows": 3
+              },
+              "ui:placeholder": "Enter address (Street, City, State, ZIP)"
+            }
+          },
+          "ui:options": {
+            "addable": true,
+            "removable": true
+          }
+        }
+      },
+      "formData": null
+}

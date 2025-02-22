@@ -1,0 +1,143 @@
+{
+    "jsonSchema": {
+        "type": "object",
+        "title": "Site Safety",
+        "required": [
+          "repairDisturbance",
+          "beforeAfterHours",
+          "safetyHazards",
+          "hazardLocation"
+        ],
+        "properties": {
+          "safetyHazards": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "type": "string",
+            "title": "Are there safety hazards?"
+          },
+          "hazardLocation": {
+            "enum": [
+              "Entire Store",
+              "Specific Location"
+            ],
+            "type": "string",
+            "title": "Hazard(s) location:"
+          },
+          "beforeAfterHours": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "type": "string",
+            "title": "Does the repair need to be done before/after hours?"
+          },
+          "repairDisturbance": {
+            "enum": [
+              "Yes",
+              "No"
+            ],
+            "type": "string",
+            "title": "Will the repair disturb the business or foot traffic?"
+          },
+          "clientRequestCheckbox": {
+            "type": "boolean",
+            "title": "Manager or Client requested before/after hours?"
+          },
+          "disturbanceExplanation": {
+            "type": "string",
+            "title": "Explain why it will disturb the business or foot traffic.",
+            "default": "",
+            "minLength": 0
+          },
+          "specificHazardLocation": {
+            "type": "string",
+            "title": "Please specify the location",
+            "default": "",
+            "minLength": 0
+          },
+          "safetyHazardDescription": {
+            "type": "string",
+            "title": "Describe the safety hazard(s).",
+            "default": "",
+            "minLength": 0
+          },
+          "beforeAfterHoursExplanation": {
+            "type": "string",
+            "title": "Explain why it needs to be done before/after hours.",
+            "default": "",
+            "minLength": 0
+          }
+        },
+        "description": "Please indicate any potential jobsite hazards and disruption to the business."
+      },
+      "uiSchema": {
+        "safetyHazards": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "hazardLocation": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "beforeAfterHours": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "repairDisturbance": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": true
+          }
+        },
+        "clientRequestCheckbox": {
+          "ui:widget": "checkbox"
+        },
+        "disturbanceExplanation": {
+          "ui:widget": "textarea",
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value"
+        },
+        "specificHazardLocation": {
+          "ui:widget": "textarea",
+          "ui:options": {
+            "rows": 2
+          },
+          "ui:placeholder": "Enter value"
+        },
+        "safetyHazardDescription": {
+          "ui:widget": "textarea",
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value"
+        },
+        "beforeAfterHoursExplanation": {
+          "ui:widget": "textarea",
+          "ui:options": {
+            "rows": 3
+          },
+          "ui:placeholder": "Enter value"
+        }
+      },
+      "formData": {
+        "safetyHazards": "Yes",
+        "hazardLocation": "Specific Location",
+        "beforeAfterHours": "Yes",
+        "repairDisturbance": "Yes",
+        "clientRequestCheckbox": true,
+        "disturbanceExplanation": "Repair involves noisy equipment in high-traffic areas.",
+        "specificHazardLocation": "Near the front entrance.",
+        "safetyHazardDescription": "Loose wires and wet floors.",
+        "beforeAfterHoursExplanation": "Minimizing disruption during working hours."
+      }
+}

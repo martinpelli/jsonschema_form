@@ -1,0 +1,22 @@
+{
+    "jsonSchema":{
+        "type": "object",
+        "properties": {
+          "listOfStrings": {
+            "type": "array",
+            "title": "A list of strings",
+            "items": {
+              "type": "string",
+              "default": "bazinga"
+            },
+            "minItems": 3,
+            "maxItems": 4
+          }
+        }
+      },
+      "uiSchema": {
+           
+      },
+      "formData": {
+      }
+}
