@@ -145,10 +145,37 @@ class _FormState extends State<_Form> {
                   children: [
                     Expanded(
                       child: JsonschemaFormBuilder(
-                        key: _jsonschemaFormKey,
-                        jsonSchemaForm: _jsonschemaForm,
-                        createArrayItemAs: CreateArrayItemAs.dialog,
-                      ),
+                          key: _jsonschemaFormKey,
+                          jsonSchemaForm: _jsonschemaForm,
+                          createArrayItemAs: CreateArrayItemAs.dialog,
+                          suffixFormDataMapper: (current, old) {
+                            if (current is Map &&
+                                current.containsKey('jobsiteImages') &&
+                                old != null) {
+                              for (int i = 0;
+                                  i < (current['jobsiteImages'].length);
+                                  i++) {
+                                var currentImage = current['jobsiteImages'][i];
+                                var oldImage = old['jobsiteImages'][i];
+
+                                // If the file in current is a URL (starts with "http" or "https"), replace it with the "id" from old
+                                if (currentImage['file']
+                                    .toString()
+                                    .startsWith('http')) {
+                                  // Replace the URL with the id from the old image
+                                  currentImage['file'] =
+                                      "s3file:${oldImage['file']['id']}";
+                                }
+                              }
+                            }
+                            return current;
+                          },
+                          prefixFormDataMapper: (key, data) {
+                            if (key == 'file' && data is Map) {
+                              return data['getUrl'];
+                            }
+                            return data;
+                          }),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
@@ -157,6 +184,7 @@ class _FormState extends State<_Form> {
                             _jsonschemaFormKey.currentState?.submit();
 
                         if (clearedFormData != null) {
+                          _decodedFormData = clearedFormData;
                           log(clearedFormData.toString());
                         }
                       },

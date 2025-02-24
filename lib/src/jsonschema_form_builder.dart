@@ -32,10 +32,10 @@ part 'widgets/custom_form_field_validator.dart';
 part 'widgets/custom_phone_form_field.dart';
 part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_text_form_field.dart';
-part 'widgets/one_of_form.dart';
-part 'widgets/ui_widget.dart';
 part 'widgets/form_section.dart';
 part 'widgets/hybrid_widget.dart';
+part 'widgets/one_of_form.dart';
+part 'widgets/ui_widget.dart';
 
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
@@ -61,7 +61,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
 
   /// A function used to map or transform data before adding it to the form.
   ///
-  /// This function is typically used to process or modify form data before it 
+  /// This function is typically used to process or modify form data before it
   /// is added to the form submission. It takes a `String` as the key and
   /// `dynamic` data as the value and returns a transformed value.
   final dynamic Function(String, dynamic)? prefixFormDataMapper;
@@ -73,7 +73,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
   ///  parameters (the existing value and the new value) and returns
   /// a transformed value.
   final dynamic Function(dynamic, dynamic)? suffixFormDataMapper;
-
 
   /// Useful if the user needs to see the whole form in read only, so none field
   /// will be editable. This can be useful if you don't want to provide a
@@ -177,6 +176,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           null,
           widget.jsonSchemaForm.uiSchema,
           widget.jsonSchemaForm.formData,
+          prefixFormDataMapper: widget.prefixFormDataMapper,
         ),
       ),
     );
@@ -193,6 +193,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? jsonKey,
     UiSchema? uiSchema,
     dynamic formData, {
+    dynamic Function(String, dynamic)? prefixFormDataMapper,
     JsonSchema? previousSchema,
     String? previousJsonKey,
     UiSchema? previousUiSchema,
@@ -207,7 +208,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           jsonKey,
           uiSchema,
           formData,
-          prefixFormDataMapper: widget.prefixFormDataMapper,
+          prefixFormDataMapper: prefixFormDataMapper,
           buildJsonschemaForm: _buildJsonschemaForm,
           previousSchema: previousSchema,
           previousJsonKey: previousJsonKey,
