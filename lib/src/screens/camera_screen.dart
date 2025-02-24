@@ -284,8 +284,27 @@ class _CameraScreenState extends State<_CameraScreen>
     super.dispose();
   }
 }
-
+/// Extension for converting [CameraResolution] to [ResolutionPreset].
+///
+/// This extension provides a way to convert a [CameraResolution] value into
+/// its corresponding [ResolutionPreset] value. It is useful when you need to
+/// map different camera resolutions to preset values that 
+/// the camera API can use.
+///
+/// Example usage:
+/// ```dart
+/// CameraResolution resolution = CameraResolution.high;
+/// ResolutionPreset preset = resolution.resolutionPreset;
+/// ```
 extension CameraResolutionExt on CameraResolution {
+  /// Converts the [CameraResolution] to the corresponding [ResolutionPreset].
+  ///
+  /// This method maps the different camera resolution levels 
+  /// (low, medium, high, etc.) to the corresponding preset values available 
+  /// in the [ResolutionPreset] enum.
+  ///
+  /// Returns the appropriate [ResolutionPreset] 
+  /// based on the current [CameraResolution].
   ResolutionPreset get resolutionPreset {
     switch (this) {
       case CameraResolution.low:
