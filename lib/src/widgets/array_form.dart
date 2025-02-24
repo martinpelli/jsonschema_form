@@ -317,15 +317,15 @@ class _ArrayFormState extends State<_ArrayForm> {
       _arrayItems.length,
     );
 
-    final dynamic addedFormData;
+    final bool? isFormDataAdded;
 
     final addButon = TextButton(
-      onPressed: () => Navigator.of(context).pop(newFormData),
+      onPressed: () => Navigator.of(context).pop(true),
       child: const Text('Add'),
     );
 
     if (isDialog) {
-      addedFormData = await showDialog<dynamic>(
+      isFormDataAdded = await showDialog<bool?>(
         context: context,
         builder: (_) => AlertDialog(
           scrollable: true,
@@ -334,7 +334,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         ),
       );
     } else {
-      addedFormData = await Navigator.of(context).push<dynamic>(
+      isFormDataAdded = await Navigator.of(context).push<bool?>(
         MaterialPageRoute(
           builder: (context) => Scaffold(
             appBar: AppBar(),
@@ -350,13 +350,12 @@ class _ArrayFormState extends State<_ArrayForm> {
       );
     }
 
-    if (addedFormData != null) {
+    if (isFormDataAdded != null && isFormDataAdded) {
       _addArrayItem(newJsonSchema);
       return false;
     } else {
-      if (widget.formData is List) {
-        (widget.formData as List)
-            .removeAt(_arrayItems.length + _initialItems.length);
+      if (newFormData is List) {
+        newFormData.removeAt(_arrayItems.length + _initialItems.length);
       }
       return true;
     }
@@ -384,13 +383,13 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     return widget.buildJsonschemaForm(
       newJsonSchema,
-      listOfMapsCastedFormData != null ? widget.jsonKey : null,
+      listOfMapsCastedFormData != null ? null : widget.jsonKey,
       uiSchema,
       newFormData,
       arrayIndex: index + _initialItems.length,
       previousSchema: widget.jsonSchema,
       previousJsonKey:
-          listOfMapsCastedFormData != null ? widget.previousJsonKey : null,
+          listOfMapsCastedFormData != null ? null : widget.previousJsonKey,
       previousUiSchema: previousUiSchema,
     );
   }
