@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -38,7 +39,7 @@ class _Form extends StatefulWidget {
 }
 
 class _FormState extends State<_Form> {
-  final _jsonschemaForm = JsonschemaForm();
+  JsonschemaForm _jsonschemaForm = JsonschemaForm(schemaJson: {}, uiJson: {});
 
   bool _isLoading = false;
 
@@ -79,8 +80,11 @@ class _FormState extends State<_Form> {
     super.initState();
 
     selectedFileName = _fileNames.first;
-
-    _loadJson();
+    try {
+      _loadJson();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   Future<void> _loadJson() async {
@@ -99,11 +103,15 @@ class _FormState extends State<_Form> {
     final jsonString = await rootBundle.loadString(relativePath);
     final decodedJson = jsonDecode(jsonString) as Map<String, dynamic>;
 
-    _jsonschemaForm.initFromDecodedJson(decodedJson);
-
     _decodedJsonSchema = decodedJson["jsonSchema"] as Map<String, dynamic>?;
     _decodedUiSchema = decodedJson["uiSchema"] as Map<String, dynamic>?;
     _decodedFormData = decodedJson["formData"] as Map<String, dynamic>?;
+
+    _jsonschemaForm = JsonschemaForm(
+      schemaJson: _decodedJsonSchema ?? {},
+      uiJson: _decodedUiSchema ?? {},
+      dataJson: _decodedFormData ?? {},
+    );
 
     setState(() {
       _isLoading = false;
@@ -148,8 +156,7 @@ class _FormState extends State<_Form> {
                         final clearedFormData =
                             _jsonschemaFormKey.currentState?.submit();
 
-                        if (clearedFormData != null &&
-                            _jsonschemaForm.formData != null) {
+                        if (clearedFormData != null) {
                           log(clearedFormData.toString());
                         }
                       },

@@ -6,6 +6,7 @@ class _FormSection extends StatelessWidget {
     this.jsonKey,
     this.uiSchema,
     this.formData, {
+    required this.prefixFormDataMapper,
     required this.buildJsonschemaForm,
     required this.previousSchema,
     required this.previousJsonKey,
@@ -25,6 +26,7 @@ class _FormSection extends StatelessWidget {
   final String? jsonKey;
   final UiSchema? uiSchema;
   final dynamic formData;
+  final dynamic Function(String, dynamic)? prefixFormDataMapper;
   final BuildJsonschemaForm buildJsonschemaForm;
   final JsonSchema? previousSchema;
   final String? previousJsonKey;
@@ -455,7 +457,10 @@ class _FormSection extends StatelessWidget {
 
     if (formData is Map) {
       if (formData.containsKey(jsonKey)) {
-        return formData[jsonKey]?.toString() ?? jsonSchema.defaultValue;
+        final value = prefixFormDataMapper?.call(jsonKey!, formData[jsonKey]) ??
+            formData[jsonKey]?.toString() ??
+            jsonSchema.defaultValue;
+        return value;
       } else {
         return jsonSchema.defaultValue;
       }

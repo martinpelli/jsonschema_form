@@ -23,8 +23,22 @@ enum CameraResolution {
   max,
 }
 
+/// Extension on `String?` to map a string value to a [CameraResolution] enum.
 extension CameraStringExt on String? {
-// Function to map the string to CameraResolution
+  /// Maps a string value (e.g. 'low', 'medium', 'high', etc.)
+  /// to a corresponding [CameraResolution] enum.
+  ///
+  /// This getter tries to match the string to one of the defined
+  /// [CameraResolution] values. It converts the string to lowercase for
+  /// a case-insensitive comparison. If a matching enum  value is found,
+  /// it returns the corresponding [CameraResolution]. If no match is found,
+  /// it returns `null`.
+  ///
+  /// Example:
+  /// ```dart
+  /// 'low'.cameraResolution;  // Returns CameraResolution.low
+  /// 'HIGH'.cameraResolution;  // Returns CameraResolution.high (case-insensitive)
+  /// ```
   CameraResolution? get cameraResolution {
     // Try to match the string with an enum value
     final value = this?.toLowerCase() ?? '';
