@@ -61,7 +61,7 @@ class JsonschemaFormBuilder extends StatefulWidget {
 
   /// A function used to map or transform data before adding it to the form.
   ///
-  /// This function is typically used to process or modify form data before it 
+  /// This function is typically used to process or modify form data before it
   /// is added to the form submission. It takes a `String` as the key and
   /// `dynamic` data as the value and returns a transformed value.
   final dynamic Function(String, dynamic)? prefixFormDataMapper;
@@ -73,7 +73,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
   ///  parameters (the existing value and the new value) and returns
   /// a transformed value.
   final dynamic Function(dynamic, dynamic)? suffixFormDataMapper;
-
 
   /// Useful if the user needs to see the whole form in read only, so none field
   /// will be editable. This can be useful if you don't want to provide a
@@ -128,12 +127,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
 class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// Used for validating all fields when the form is submitted
   final _formKey = GlobalKey<FormState>();
-
-  /// Used for holding a reference to the state of those widgets that have a
-  /// dependency.
-  /// When a value is changed and that value changes other fields this keys will
-  /// be used to rebuild those fields
-  final _formSectionKeys = <GlobalKey<_StatefulWrapperState>>[];
 
   /// Used for holding a reference to the state of those widgets that have a
   /// FormFieldState.
@@ -226,13 +219,14 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         );
 
     if (hasDependencies) {
-      final formSectionKey = GlobalKey<_StatefulWrapperState>();
+      // final formSectionKey = GlobalKey<_StatefulWrapperState>();
 
-      _formSectionKeys.add(formSectionKey);
+      // _formSectionKeys.add(formSectionKey);
+
+      // print("adding a form section key");
+      // print("form keys: ${_formSectionKeys.length}");
 
       return _HybridWidget.stateful(
-        stateKey: formSectionKey,
-        stateKeys: _formSectionKeys,
         jsonKey: jsonKey,
         buildFormSection: buildFormSection,
       );
@@ -246,14 +240,8 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// Rebuilds a form dependency section. For example: when a nested field
   /// changes and this field has a dependency, this will only rebuild the
   /// dependency so it gets updated accordingly
-  void rebuildDependencies(String? jsonKeyDependency) {
-    for (final formSectionKey in _formSectionKeys) {
-      if (formSectionKey.currentState != null) {
-        if (formSectionKey.currentState!.widget.jsonKey == jsonKeyDependency) {
-          formSectionKey.currentState!.rebuildFormSection();
-        }
-      }
-    }
+  void rebuildDependencies(BuildContext context, String? jsonKeyDependency) {
+    _HybridWidget.rebuildFormSection(context, jsonKeyDependency);
   }
 
   /// If isScrollable and scrollToBottom are true and if the form is
