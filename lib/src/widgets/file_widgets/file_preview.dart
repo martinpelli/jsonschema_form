@@ -135,6 +135,7 @@ class FilePreview extends StatelessWidget {
             border: Border.all(color: Colors.grey),
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             spacing: 16,
             children: [
               Expanded(

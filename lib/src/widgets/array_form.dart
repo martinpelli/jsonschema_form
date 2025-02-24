@@ -14,7 +14,9 @@ class _ArrayForm extends StatefulWidget {
     required this.getIsRequired,
     required this.onItemAdded,
     required this.onItemRemoved,
+    required this.createArrayItemAs,
     required this.scrollToBottom,
+    required this.formFieldKeys,
   });
 
   final JsonSchema jsonSchema;
@@ -24,28 +26,21 @@ class _ArrayForm extends StatefulWidget {
   final String? previousJsonKey;
   final JsonSchema? previousSchema;
   final UiSchema? previousUiSchema;
-  final Widget Function(
-    JsonSchema jsonSchema,
-    String? jsonKey,
-    UiSchema? uiSchema,
-    dynamic formData, {
-    JsonSchema? previousSchema,
-    String? previousJsonKey,
-    UiSchema? previousUiSchema,
-    int? arrayIndex,
-  }) buildJsonschemaForm;
+  final BuildJsonschemaForm buildJsonschemaForm;
   final bool Function() getReadOnly;
   final bool Function() getIsRequired;
   final void Function(JsonSchema)? onItemAdded;
   final void Function()? onItemRemoved;
-  final void Function() scrollToBottom;
+  final CreateArrayItemAs createArrayItemAs;
+  final void Function()? scrollToBottom;
+  final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
 
   @override
   State<_ArrayForm> createState() => _ArrayFormState();
 }
 
 class _ArrayFormState extends State<_ArrayForm> {
-  final _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+  late final GlobalKey<FormFieldState<dynamic>>? _formFieldKey;
 
   final List<JsonSchema> _arrayItems = [];
 
@@ -55,15 +50,20 @@ class _ArrayFormState extends State<_ArrayForm> {
   void initState() {
     super.initState();
 
+    if (widget.formFieldKeys != null) {
+      _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+      widget.formFieldKeys!.add(_formFieldKey!);
+    } else {
+      _formFieldKey = null;
+    }
+
     _initItems();
   }
 
   @override
-  void didUpdateWidget(covariant _ArrayForm oldWidget) {
-    _arrayItems.clear();
-    _initialItems.clear();
-    _initItems();
-    super.didUpdateWidget(oldWidget);
+  void dispose() {
+    widget.formFieldKeys?.removeLast();
+    super.dispose();
   }
 
   void _initItems() {
@@ -208,37 +208,21 @@ class _ArrayFormState extends State<_ArrayForm> {
         }
       });
 
-      final castedListOfMaps = DynamicUtils.tryParseListOfMaps(widget.formData);
+      final listOfMapsCastedFormData =
+          DynamicUtils.tryParseListOfMaps(widget.formData);
 
-      final newFormData =
-          castedListOfMaps != null ? castedListOfMaps[i] : widget.formData;
+      final newFormData = listOfMapsCastedFormData != null
+          ? listOfMapsCastedFormData[i]
+          : widget.formData;
 
-      final uiSchema = castedListOfMaps != null
-          ? (widget.uiSchema?.children != null &&
-                  widget.uiSchema!.children!.containsKey('items'))
-              ? widget.uiSchema!.children!['items']
-              : null
-          : widget.uiSchema;
-
-      final previousUiSchema = castedListOfMaps != null
-          ? (widget.uiSchema?.children != null &&
-                  widget.uiSchema!.children!.containsKey('items'))
-              ? widget.uiSchema
-              : null
-          : widget.previousUiSchema;
-
-      items.add(
-        widget.buildJsonschemaForm(
-          _arrayItems[i],
-          castedListOfMaps != null ? null : widget.jsonKey,
-          uiSchema,
-          newFormData,
-          arrayIndex: i + _initialItems.length,
-          previousSchema: widget.jsonSchema,
-          previousJsonKey: castedListOfMaps != null ? widget.jsonKey : null,
-          previousUiSchema: previousUiSchema,
-        ),
+      final newFormWidget = _createNewFormWidget(
+        listOfMapsCastedFormData,
+        _arrayItems[i],
+        newFormData,
+        i,
       );
+
+      items.add(newFormWidget);
     }
 
     /// The (+) button is added by default unless [addable] is
@@ -262,20 +246,36 @@ class _ArrayFormState extends State<_ArrayForm> {
         child: IconButton(
           onPressed: widget.getReadOnly()
               ? null
-              : () {
-                  _modifyFormData();
-
+              : () async {
                   final hasAdditionalItems =
                       widget.jsonSchema.additionalItems != null;
 
-                  final JsonSchema newItem;
+                  final JsonSchema newJsonSchema;
                   if (hasAdditionalItems) {
-                    newItem = widget.jsonSchema.additionalItems!;
+                    newJsonSchema = widget.jsonSchema.additionalItems!;
                   } else {
-                    newItem = widget.jsonSchema.items as JsonSchema;
+                    newJsonSchema = widget.jsonSchema.items as JsonSchema;
                   }
 
-                  _addArrayItem(newItem);
+                  var isItemNotAdded = false;
+
+                  switch (widget.createArrayItemAs) {
+                    case CreateArrayItemAs.inside:
+                      _modifyFormData();
+                      _addArrayItem(newJsonSchema);
+
+                    case CreateArrayItemAs.dialog:
+                      isItemNotAdded =
+                          await _createNewView(newJsonSchema, isDialog: true);
+
+                    case CreateArrayItemAs.screen:
+                      isItemNotAdded =
+                          await _createNewView(newJsonSchema, isDialog: false);
+                  }
+
+                  if (isItemNotAdded) {
+                    return;
+                  }
 
                   /// If the array has a required validator, then when there is
                   /// an item added by the user, we will let the validator known
@@ -284,8 +284,8 @@ class _ArrayFormState extends State<_ArrayForm> {
                     field?.didChange(true);
                   }
 
-                  widget.onItemAdded?.call(newItem);
-                  widget.scrollToBottom.call();
+                  widget.onItemAdded?.call(newJsonSchema);
+                  widget.scrollToBottom?.call();
                 },
           icon: const Icon(Icons.add),
         ),
@@ -295,6 +295,104 @@ class _ArrayFormState extends State<_ArrayForm> {
     }
 
     return items;
+  }
+
+  Future<bool> _createNewView(
+    JsonSchema newJsonSchema, {
+    required bool isDialog,
+  }) async {
+    final listOfMapsCastedFormData =
+        DynamicUtils.tryParseListOfMaps(widget.formData);
+
+    _modifyFormData();
+
+    final newFormData = listOfMapsCastedFormData != null
+        ? listOfMapsCastedFormData[_arrayItems.length]
+        : widget.formData;
+
+    final newFormWidget = _createNewFormWidget(
+      listOfMapsCastedFormData,
+      newJsonSchema,
+      newFormData,
+      _arrayItems.length,
+    );
+
+    final dynamic addedFormData;
+
+    final addButon = TextButton(
+      onPressed: () => Navigator.of(context).pop(newFormData),
+      child: const Text('Add'),
+    );
+
+    if (isDialog) {
+      addedFormData = await showDialog<dynamic>(
+        context: context,
+        builder: (_) => AlertDialog(
+          scrollable: true,
+          content: newFormWidget,
+          actions: [addButon],
+        ),
+      );
+    } else {
+      addedFormData = await Navigator.of(context).push<dynamic>(
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: newFormWidget,
+              ),
+            ),
+            bottomNavigationBar: addButon,
+          ),
+        ),
+      );
+    }
+
+    if (addedFormData != null) {
+      _addArrayItem(newJsonSchema);
+      return false;
+    } else {
+      if (widget.formData is List) {
+        (widget.formData as List)
+            .removeAt(_arrayItems.length + _initialItems.length);
+      }
+      return true;
+    }
+  }
+
+  Widget _createNewFormWidget(
+    List<Map<String, dynamic>>? listOfMapsCastedFormData,
+    JsonSchema newJsonSchema,
+    dynamic newFormData,
+    int index,
+  ) {
+    final uiSchema = listOfMapsCastedFormData != null
+        ? (widget.uiSchema?.children != null &&
+                widget.uiSchema!.children!.containsKey('items'))
+            ? widget.uiSchema!.children!['items']
+            : null
+        : widget.uiSchema;
+
+    final previousUiSchema = listOfMapsCastedFormData != null
+        ? (widget.uiSchema?.children != null &&
+                widget.uiSchema!.children!.containsKey('items'))
+            ? widget.uiSchema
+            : null
+        : widget.previousUiSchema;
+
+    return widget.buildJsonschemaForm(
+      newJsonSchema,
+      listOfMapsCastedFormData != null ? widget.jsonKey : null,
+      uiSchema,
+      newFormData,
+      arrayIndex: index + _initialItems.length,
+      previousSchema: widget.jsonSchema,
+      previousJsonKey:
+          listOfMapsCastedFormData != null ? widget.previousJsonKey : null,
+      previousUiSchema: previousUiSchema,
+    );
   }
 
   void _modifyFormData() {

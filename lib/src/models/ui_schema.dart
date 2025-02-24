@@ -29,6 +29,8 @@ class UiSchema extends Equatable {
     this.options,
     this.readonly,
     this.order,
+    this.showArrayTitles,
+    this.maxLines,
   });
 
   /// Deserializes the given [JsonMap] into a [UiSchema].
@@ -72,6 +74,8 @@ class UiSchema extends Equatable {
       order: json['ui:order'] == null
           ? null
           : List<String>.from(json['ui:order']! as List<dynamic>),
+      showArrayTitles: json['ui:showArrayTitles'] as bool?,
+      maxLines: json['ui:maxLines'] as int?,
       options: options,
       children: parsedChildren,
     );
@@ -116,6 +120,17 @@ class UiSchema extends Equatable {
 
   /// Defines the order in which fields should be displayed
   final List<String>? order;
+
+  /// If the jsonSchema type is array, this property is true by default. Pass
+  /// false if you want to avoid a title with a divider on each array item
+  final bool? showArrayTitles;
+
+  /// Indicates the maximum amount of lines that a TextFormField can have, this
+  /// is only useful when [widget] is text.
+  /// If this value is null then 1 is used as default.
+  /// If 0 is provided this value is infinite, which means that user can add as
+  /// much lines as he wants
+  final int? maxLines;
 
   @override
   List<Object?> get props => [

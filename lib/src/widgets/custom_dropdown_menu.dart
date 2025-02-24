@@ -38,52 +38,45 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 5),
-      child: LayoutBuilder(
-        builder: (context, contraints) {
-          return DropdownMenu<T>(
-            inputDecorationTheme: InputDecorationTheme(
-              filled: widget.readOnly,
-              fillColor: widget.readOnly
-                  ? Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.1)
-                  : null,
-            ),
-            enabled: !widget.readOnly,
-            width: contraints.maxWidth,
-            enableSearch: false,
-            requestFocusOnTap: true,
-            label: widget.label == null ? null : Text(widget.label!),
-            initialSelection: _selectedItem,
-            onSelected: (T? item) {
-              if (item != null) {
-                if (item == _selectedItem) {
-                  return;
-                }
+      child: DropdownMenu<T>(
+        expandedInsets: EdgeInsets.zero,
+        inputDecorationTheme: InputDecorationTheme(
+          filled: widget.readOnly,
+          fillColor: widget.readOnly
+              ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)
+              : null,
+        ),
+        enabled: !widget.readOnly,
+        enableSearch: false,
+        requestFocusOnTap: true,
+        label: widget.label == null ? null : Text(widget.label!),
+        initialSelection: _selectedItem,
+        onSelected: (T? item) {
+          if (item != null) {
+            if (item == _selectedItem) {
+              return;
+            }
 
-                widget.onDropdownValueSelected(item);
-              }
+            widget.onDropdownValueSelected(item);
+          }
 
-              setState(() {
-                _selectedItem = item;
-              });
-            },
-            dropdownMenuEntries: widget.items
-                .mapIndexed<DropdownMenuEntry<T>>((int index, T item) {
-              return DropdownMenuEntry<T>(
-                enabled: !widget.readOnly,
-                value: item,
-                label: widget.itemLabel(index, item),
-                labelWidget: Text(
-                  widget.itemLabel(index, item),
-                  style: widget.labelStyle,
-                ),
-                style: MenuItemButton.styleFrom(alignment: Alignment.center),
-              );
-            }).toList(),
-          );
+          setState(() {
+            _selectedItem = item;
+          });
         },
+        dropdownMenuEntries:
+            widget.items.mapIndexed<DropdownMenuEntry<T>>((int index, T item) {
+          return DropdownMenuEntry<T>(
+            enabled: !widget.readOnly,
+            value: item,
+            label: widget.itemLabel(index, item),
+            labelWidget: Text(
+              widget.itemLabel(index, item),
+              style: widget.labelStyle,
+            ),
+            style: MenuItemButton.styleFrom(alignment: Alignment.center),
+          );
+        }).toList(),
       ),
     );
   }

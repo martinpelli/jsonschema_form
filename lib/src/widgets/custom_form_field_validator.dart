@@ -9,7 +9,7 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
     this.isEmpty,
   });
 
-  final GlobalKey<FormFieldState<dynamic>> formFieldKey;
+  final GlobalKey<FormFieldState<dynamic>>? formFieldKey;
   final Widget Function(FormFieldState<T>?) childFormBuilder;
   final T? initialValue;
   final bool isEnabled;

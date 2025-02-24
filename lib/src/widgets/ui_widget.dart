@@ -6,8 +6,8 @@ class _UiWidget extends StatefulWidget {
     this.jsonKey,
     this.uiSchema,
     this.formData, {
-    required this.rebuildForm,
     required this.previousSchema,
+    required this.previousJsonKey,
     required this.previousFormData,
     required this.arrayIndex,
     required this.getTitle,
@@ -16,41 +16,49 @@ class _UiWidget extends StatefulWidget {
     required this.getIsRequired,
     required this.getReadOnly,
     required this.formFieldKeys,
-    this.resolution = CameraResolution.max,
+    this.cameraResolution = CameraResolution.max,
+    this.rebuildDependencies,
   });
 
   final JsonSchema jsonSchema;
   final String? jsonKey;
   final UiSchema? uiSchema;
   final dynamic formData;
-  final void Function() rebuildForm;
   final JsonSchema? previousSchema;
+  final String? previousJsonKey;
   final dynamic previousFormData;
   final int? arrayIndex;
-  final CameraResolution resolution;
   final String? Function() getTitle;
   final String? Function() getDescription;
   final dynamic Function() getDefaultValue;
   final bool Function() getIsRequired;
   final bool Function() getReadOnly;
-  final List<GlobalKey<FormFieldState<dynamic>>> formFieldKeys;
+  final CameraResolution cameraResolution;
+  final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
+  final void Function(String?)? rebuildDependencies;
 
   @override
   State<_UiWidget> createState() => _UiWidgetState();
 }
 
 class _UiWidgetState extends State<_UiWidget> {
-  final _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+  late final GlobalKey<FormFieldState<dynamic>>? _formFieldKey;
 
   @override
   void initState() {
     super.initState();
-    widget.formFieldKeys.add(_formFieldKey);
+
+    if (widget.formFieldKeys != null) {
+      _formFieldKey = GlobalKey<FormFieldState<dynamic>>();
+      widget.formFieldKeys!.add(_formFieldKey!);
+    } else {
+      _formFieldKey = null;
+    }
   }
 
   @override
   void dispose() {
-    widget.formFieldKeys.removeLast();
+    widget.formFieldKeys?.removeLast();
     super.dispose();
   }
 
@@ -69,14 +77,15 @@ class _UiWidgetState extends State<_UiWidget> {
     } else if (_isRadioGroup()) {
       return _buildRadioGroup(initialStringValue);
     } else if (_isRadio()) {
-      final initialValue = widget.getDefaultValue is String
-          ? bool.tryParse(widget.getDefaultValue as String)
-          : null;
+      final initialValue = defaultValue is bool
+          ? defaultValue
+          : defaultValue is String
+              ? bool.tryParse(defaultValue)
+              : null;
       return _buildRadio(initialValue);
     } else if (_isCheckbox()) {
-      final initialValue = widget.getDefaultValue is String
-          ? [bool.tryParse(widget.getDefaultValue as String)!]
-          : null;
+      final initialValue =
+          defaultValue is String ? [bool.tryParse(defaultValue)!] : null;
       return _buildCheckbox(initialValue);
     } else if (_isCheckboxGroup()) {
       final initialValues = (widget.formData as List).cast<String>();
@@ -129,6 +138,8 @@ class _UiWidgetState extends State<_UiWidget> {
       (widget.uiSchema?.widget == null && widget.jsonSchema.enumValue != null);
 
   Widget _buildDropdown(String? initialValue) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: _CustomFormFieldValidator<String>(
@@ -139,7 +150,9 @@ class _UiWidgetState extends State<_UiWidget> {
         childFormBuilder: (field) {
           return _CustomDropdownMenu<String>(
             readOnly: widget.getReadOnly(),
-            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            label: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             labelStyle: widget.getIsRequired()
                 ? const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -163,6 +176,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildRadioGroup(
     String? initialValue,
   ) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<String>(
@@ -173,7 +188,9 @@ class _UiWidgetState extends State<_UiWidget> {
         childFormBuilder: (field) {
           return _CustomRadioGroup<String>(
             readOnly: widget.getReadOnly(),
-            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            label: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             labelStyle: widget.getIsRequired()
                 ? const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -200,6 +217,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildRadio(
     bool? initialValue,
   ) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<bool>(
@@ -209,7 +228,9 @@ class _UiWidgetState extends State<_UiWidget> {
         childFormBuilder: (field) {
           return _CustomRadioGroup<bool>(
             readOnly: widget.getReadOnly(),
-            label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            label: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             labelStyle: widget.getIsRequired()
                 ? const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -236,6 +257,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildCheckbox(
     List<bool>? initialValue,
   ) {
+    final title = widget.getTitle();
+
     return _CustomFormFieldValidator<bool>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
@@ -244,7 +267,7 @@ class _UiWidgetState extends State<_UiWidget> {
         return _CustomCheckboxGroup<bool>(
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+          label: null,
           labelStyle: widget.getIsRequired()
               ? const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -252,7 +275,9 @@ class _UiWidgetState extends State<_UiWidget> {
                 )
               : null,
           sublabel: widget.getDescription(),
-          itemLabel: (_, item) => item ? 'Yes' : 'No',
+          itemLabel: (_, item) => title != null
+              ? "$title${widget.getIsRequired() ? '*' : ''}"
+              : (item ? 'Yes' : 'No'),
           items: const [true],
           initialItems: initialValue,
           onCheckboxValuesSelected: (value) {
@@ -271,6 +296,8 @@ class _UiWidgetState extends State<_UiWidget> {
   Widget _buildCheckboxGroup(
     List<String> initialValues,
   ) {
+    final title = widget.getTitle();
+
     return _CustomFormFieldValidator<List<String>>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
@@ -280,7 +307,9 @@ class _UiWidgetState extends State<_UiWidget> {
         return _CustomCheckboxGroup<String>(
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
-          label: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+          label: title != null
+              ? "$title${widget.getIsRequired() ? '*' : ''}"
+              : null,
           labelStyle: widget.getIsRequired()
               ? const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -309,6 +338,9 @@ class _UiWidgetState extends State<_UiWidget> {
     _addMinLengthValidator(validators);
 
     _addMaxLengthValidator(validators);
+
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -316,7 +348,8 @@ class _UiWidgetState extends State<_UiWidget> {
         readOnly: widget.getReadOnly(),
         onChanged: _onFieldChanged,
         hasRequiredValidator: widget.getIsRequired(),
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         minLines: 4,
         maxLines: null,
         defaultValue: initialValue,
@@ -342,6 +375,8 @@ class _UiWidgetState extends State<_UiWidget> {
   bool _isUpDown() => widget.uiSchema?.widget == UiType.updown;
 
   Widget _buildUpDown(String? initialValue) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -349,7 +384,8 @@ class _UiWidgetState extends State<_UiWidget> {
         readOnly: widget.getReadOnly(),
         onChanged: _onFieldChanged,
         hasRequiredValidator: widget.getIsRequired(),
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         defaultValue: initialValue,
@@ -403,7 +439,9 @@ class _UiWidgetState extends State<_UiWidget> {
             ) ??
             false)
         ? (widget.uiSchema?.options?['resolution'] as String?).cameraResolution
-        : widget.resolution;
+        : widget.cameraResolution;
+
+    final title = widget.getTitle();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -420,14 +458,16 @@ class _UiWidgetState extends State<_UiWidget> {
             acceptedExtensions: acceptedExtensions,
             hasFilePicker: hasFilePicker,
             hasCameraButton: hasCameraButton,
-            title: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+            title: title != null
+                ? "$title${widget.getIsRequired() ? '*' : ''}"
+                : null,
             onFileChosen: (value) async {
               await _onFieldChangedWithValidator<String?>(field, value);
             },
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
             fileData: initialValue,
-            resolution: resolution ?? widget.resolution,
+            resolution: resolution ?? widget.cameraResolution,
           );
         },
       ),
@@ -441,12 +481,17 @@ class _UiWidgetState extends State<_UiWidget> {
     String? initialValue,
   ) {
     final isReadOnly = widget.getReadOnly();
+
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
         formFieldKey: _formFieldKey,
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText: title != null
+            ? "$title${widget.getIsRequired() ? '*' : ''}"
+            : title,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -485,12 +530,16 @@ class _UiWidgetState extends State<_UiWidget> {
     String? initialValue,
   ) {
     final isReadOnly = widget.getReadOnly();
+
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
         formFieldKey: _formFieldKey,
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -528,13 +577,16 @@ class _UiWidgetState extends State<_UiWidget> {
       widget.uiSchema!.options![UiOptions.inputType.name] == InputType.tel;
 
   Widget _buildPhoneText(String? initialValue) {
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomPhoneFormField(
         formFieldKey: _formFieldKey,
         enabled: !widget.getReadOnly(),
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
         placeholder: widget.uiSchema?.placeholder,
@@ -570,18 +622,23 @@ class _UiWidgetState extends State<_UiWidget> {
 
     _addMaxLengthValidator(validators);
 
+    final title = widget.getTitle();
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
         formFieldKey: _formFieldKey,
         readOnly: widget.getReadOnly(),
         onChanged: _onFieldChanged,
-        labelText: "${widget.getTitle()}${widget.getIsRequired() ? '*' : ''}",
+        labelText:
+            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
         defaultValue: initialValue,
         emptyValue: widget.uiSchema?.emptyValue,
-        placeholder: widget.uiSchema?.placeholder,
         helperText: widget.uiSchema?.help,
         autofocus: widget.uiSchema?.autofocus,
+        maxLines: widget.uiSchema?.maxLines == 0
+            ? null
+            : widget.uiSchema?.maxLines ?? 1,
         inputFormatters: isNumberTextFormFiled
             ? [FilteringTextInputFormatter.digitsOnly]
             : null,
@@ -608,7 +665,7 @@ class _UiWidgetState extends State<_UiWidget> {
 
   Future<void> _onFieldChanged<T>(T value) async {
     await _setValueInFormData(value);
-    _rebuildFormIfHasDependants();
+    _rebuildFormIfHasOneOfDependencies<T>(value);
   }
 
   FutureOr<void> _onFieldChangedWithValidator<T>(
@@ -646,22 +703,12 @@ class _UiWidgetState extends State<_UiWidget> {
     }
   }
 
-  /// Property dependencies: unidirectional and bidirectional
-  void _rebuildFormIfHasDependants() {
-    if (_hasDependants()) {
-      widget.rebuildForm();
-    }
-  }
+  void _rebuildFormIfHasOneOfDependencies<T>(T value) {
+    final hasDependencies = widget.previousSchema?.dependencies != null &&
+        widget.previousSchema!.dependencies!.keys.contains(widget.jsonKey);
 
-  /// Property dependencies: unidirectional and bidirectional
-  /// If a field has dependants, it means that when the field is changed, the
-  /// whole form will be rebuilt so that the dependants fields are required or
-  /// not, depending if the value is valid or not
-  bool _hasDependants() {
-    if (widget.previousSchema?.dependencies != null &&
-        widget.previousSchema!.dependencies!.keys.contains(widget.jsonKey)) {
-      return true;
+    if (hasDependencies) {
+      widget.rebuildDependencies?.call(widget.previousJsonKey);
     }
-    return false;
   }
 }

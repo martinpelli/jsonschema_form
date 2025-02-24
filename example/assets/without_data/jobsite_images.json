@@ -31,6 +31,7 @@
   "uiSchema": {
     "jobsiteImages": {
       "items": {
+        "ui:showArrayTitles": false,
         "file": {
           "ui:title": "Upload file",
           "ui:widget": "file",
