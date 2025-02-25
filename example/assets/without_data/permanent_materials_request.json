@@ -1,157 +1,150 @@
 {
     "jsonSchema":{
-        "description": "Do you need anything to complete this job? If so, please use the form below to make your request.",
-        "properties": {
-          "items": {
-            "items": {
-              "dependencies": {
-                "acquireMethod": {
-                  "oneOf": [
-                    {
-                      "properties": {
-                        "acquireMethod": {
-                          "enum": [
-                            "Need it delivered"
-                          ]
-                        },
-                        "deliveryAddress": {
-                          "default": "",
-                          "title": "Where do you need it delivered?",
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "deliveryAddress"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "acquireMethod": {
-                          "enum": [
-                            "I have it on-hand",
-                            "I can pick it up"
-                          ]
-                        }
-                      }
-                    }
-                  ]
-                }
-              },
-              "properties": {
-                "acquireMethod": {
-                  "enum": [
-                    "I have it on-hand",
-                    "I can pick it up",
-                    "Need it delivered"
-                  ],
-                  "title": "How will you acquire it?",
-                  "type": "string"
-                },
-                "cost": {
-                  "default": 0,
-                  "minimum": 0,
-                  "title": "Cost",
-                  "type": "number"
-                },
-                "description": {
-                  "default": "",
-                  "title": "Description",
-                  "type": "string"
-                },
-                "quantity": {
-                  "default": 0,
-                  "minimum": 0,
-                  "title": "Quantity",
-                  "type": "integer"
-                },
-                "type": {
-                  "enum": [
-                    "Parts",
-                    "Materials",
-                    "Equipment",
-                    "Additional Fees",
-                    "Units",
-                    "Tools",
-                    "Consumables"
-                  ],
-                  "title": "Type",
-                  "type": "string"
-                }
-              },
-              "required": [
-                "type",
-                "description",
-                "quantity",
-                "cost",
-                "acquireMethod"
-              ],
-              "type": "object"
-            },
-            "title": "Items",
-            "type": "array"
-          }
-        },
-        "title": "Parts, Materials & Equipment",
-        "type": "object"
-      },
-    "uiSchema": {
+      "type": "object",
+      "properties": {
         "items": {
+          "type": "array",
           "items": {
-            "acquireMethod": {
-              "ui:options": {
-                "inline": false
-              },
-              "ui:widget": "radio"
-            },
-            "cost": {
-              "ui:classNames": "w-1/2 pl-2",
-              "ui:column": true,
-              "ui:options": {
-                "prefix": "$"
-              },
-              "ui:placeholder": "0.00",
-              "ui:widget": "updown"
-            },
-            "deliveryAddress": {
-              "ui:options": {
-                "rows": 2
-              },
-              "ui:placeholder": "Enter address (Street, City, State, ZIP)",
-              "ui:widget": "textarea"
-            },
-            "description": {
-              "ui:options": {
-                "rows": 2
-              },
-              "ui:placeholder": "Enter value",
-              "ui:widget": "textarea"
-            },
-            "quantity": {
-              "ui:classNames": "w-1/2 pr-2",
-              "ui:column": true,
-              "ui:placeholder": "0",
-              "ui:widget": "updown"
-            },
-            "type": {
-              "ui:placeholder": "Select an option",
-              "ui:widget": "select"
-            },
-            "ui:field": "QuantityCostField",
-            "ui:order": [
+            "type": "object",
+            "required": [
               "type",
               "description",
-              "*",
-              "acquireMethod",
-              "deliveryAddress"
-            ]
+              "quantity",
+              "cost",
+              "acquireMethod"
+            ],
+            "properties": {
+              "cost": {
+                "type": "number",
+                "title": "Cost",
+                "default": 0,
+                "minimum": 0
+              },
+              "type": {
+                "enum": [
+                  "Parts",
+                  "Materials",
+                  "Equipment",
+                  "Additional Fees",
+                  "Units",
+                  "Tools",
+                  "Consumables"
+                ],
+                "type": "string",
+                "title": "Type"
+              },
+              "quantity": {
+                "type": "integer",
+                "title": "Quantity",
+                "default": 0,
+                "minimum": 0
+              },
+              "description": {
+                "type": "string",
+                "title": "Description",
+                "default": ""
+              },
+              "acquireMethod": {
+                "enum": [
+                  "I have it on-hand",
+                  "I can pick it up",
+                  "Need it delivered"
+                ],
+                "type": "string",
+                "title": "How will you acquire it?"
+              }
+            },
+            "dependencies": {
+              "acquireMethod": {
+                "oneOf": [
+                  {
+                    "required": [
+                      "deliveryAddress"
+                    ],
+                    "properties": {
+                      "acquireMethod": {
+                        "enum": [
+                          "Need it delivered"
+                        ]
+                      },
+                      "deliveryAddress": {
+                        "type": "string",
+                        "title": "Where do you need it delivered?",
+                        "default": ""
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "acquireMethod": {
+                        "enum": [
+                          "I have it on-hand",
+                          "I can pick it up"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
           },
-          "ui:options": {
-            "addText": "+ Add Item Request",
-            "addable": true,
-            "removable": true
-          }
+          "title": "Items"
         }
       },
+      "description": "Do you need anything to complete this job? If so, please use the form below to make your request."
+    },
+    "uiSchema": {
+      "items": {
+        "items": {
+          "cost": {
+            "ui:column": true,
+            "ui:widget": "updown",
+            "ui:options": {
+              "prefix": "$"
+            },
+            "ui:classNames": "w-1/2 pl-2",
+            "ui:placeholder": "0.00"
+          },
+          "type": {
+            "ui:widget": "select",
+            "ui:placeholder": "Select an option"
+          },
+          "quantity": {
+            "ui:column": true,
+            "ui:widget": "updown",
+            "ui:classNames": "w-1/2 pr-2",
+            "ui:placeholder": "0"
+          },
+          "ui:field": "QuantityCostField",
+          "ui:order": [
+            "type",
+            "description",
+            "*",
+            "acquireMethod",
+            "deliveryAddress"
+          ],
+          "description": {
+            "ui:widget": "text",
+            "ui:placeholder": "Enter value"
+          },
+          "acquireMethod": {
+            "ui:widget": "radio",
+            "ui:options": {
+              "inline": false
+            }
+          },
+          "deliveryAddress": {
+            "ui:widget": "text",
+            "ui:placeholder": "Enter address (Street, City, State, ZIP)"
+          }
+        },
+        "ui:options": {
+          "addText": "+ Add Item Request",
+          "addable": true,
+          "removable": true
+        }
+      }
+    },
     "formData":{
 
     }

@@ -6,32 +6,33 @@ class _HybridWidget extends StatelessWidget {
   const _HybridWidget.stateful({
     required this.buildFormSection,
     required this.jsonKey,
-    required this.stateKey,
-    required this.stateKeys,
   })  : isStateful = true,
         formSection = null;
 
   const _HybridWidget.stateless({
     required this.formSection,
   })  : isStateful = false,
-        stateKey = null,
         jsonKey = null,
-        buildFormSection = null,
-        stateKeys = null;
+        buildFormSection = null;
 
   final bool isStateful;
   final _FormSection? formSection;
   final Widget Function()? buildFormSection;
   final String? jsonKey;
-  final GlobalKey<_StatefulWrapperState>? stateKey;
-  final List<GlobalKey<_StatefulWrapperState>>? stateKeys;
+
+  static void rebuildFormSection(BuildContext context, String? jsonKey) {
+    final provider =
+        context.dependOnInheritedWidgetOfExactType<_InheritedProvider>();
+
+    final state = provider?.data?.getState(jsonKey);
+
+    state?.rebuildFormSection();
+  }
 
   @override
   Widget build(BuildContext context) {
     return isStateful
         ? _StatefulWrapper(
-            key: stateKey,
-            stateKeys: stateKeys!,
             buildFormSection: buildFormSection!,
             jsonKey: jsonKey,
           )
@@ -41,13 +42,10 @@ class _HybridWidget extends StatelessWidget {
 
 class _StatefulWrapper extends StatefulWidget {
   const _StatefulWrapper({
-    required this.stateKeys,
     required this.buildFormSection,
     required this.jsonKey,
-    super.key,
   });
 
-  final List<GlobalKey<_StatefulWrapperState>> stateKeys;
   final Widget Function() buildFormSection;
   final String? jsonKey;
 
@@ -56,19 +54,42 @@ class _StatefulWrapper extends StatefulWidget {
 }
 
 class _StatefulWrapperState extends State<_StatefulWrapper> {
+  static final Map<String, _StatefulWrapperState> _instances = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _instances[widget.jsonKey.toString()] = this;
+  }
+
   @override
   void dispose() {
-    widget.stateKeys.removeWhere((stateKey) => stateKey.currentState == this);
-
+    _instances.remove(widget.jsonKey);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.buildFormSection();
+    return _InheritedProvider(data: this, child: widget.buildFormSection());
   }
 
   void rebuildFormSection() {
     setState(() {});
   }
+
+  _StatefulWrapperState? getState(String? jsonKey) {
+    return _instances[jsonKey.toString()];
+  }
+}
+
+class _InheritedProvider extends InheritedWidget {
+  const _InheritedProvider({
+    required super.child,
+    required this.data,
+  });
+
+  final _StatefulWrapperState? data;
+
+  @override
+  bool updateShouldNotify(_InheritedProvider oldWidget) => true;
 }

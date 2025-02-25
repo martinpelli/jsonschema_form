@@ -35,7 +35,7 @@ class _FormSection extends StatelessWidget {
   final CreateArrayItemAs createArrayItemAs;
   final void Function()? onArrayItemRemoved;
   final void Function(JsonSchema)? onArrayItemAdded;
-  final void Function(String?)? rebuildDependencies;
+  final void Function(BuildContext contest, String?)? rebuildDependencies;
   final bool isWholeFormReadOnly;
   final CameraResolution cameraResolution;
   final void Function()? scrollToBottom;

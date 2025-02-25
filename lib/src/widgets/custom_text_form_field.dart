@@ -61,18 +61,13 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
 
   @override
   void didUpdateWidget(covariant _CustomTextFormField oldWidget) {
-    // TODO(martinpelli): this cause issues while rebuilding the form but right
-    // now is the only workaround to clear new fields appearing as dependencies
-
-    // if (widget.defaultValue == null) {
-    //   /// When oneOf has changed, it will rebuild the whole form so that all
-    //   /// controllers get cleared
-    //   WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear()
-    // } else {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     _controller.text = widget.defaultValue!;
-    //   });
-    // }
+    if (widget.defaultValue == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _controller.clear());
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.text = widget.defaultValue!;
+      });
+    }
 
     super.didUpdateWidget(oldWidget);
   }
@@ -134,6 +129,7 @@ class _CustomTextFormFieldState extends State<_CustomTextFormField> {
   @override
   void dispose() {
     _controller.dispose();
+
     super.dispose();
   }
 }

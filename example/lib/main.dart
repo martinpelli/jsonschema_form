@@ -110,7 +110,7 @@ class _FormState extends State<_Form> {
     _jsonschemaForm = JsonschemaForm(
       schemaJson: _decodedJsonSchema ?? {},
       uiJson: _decodedUiSchema ?? {},
-      dataJson: _decodedFormData ?? {},
+      formData: _decodedFormData ?? {},
     );
 
     setState(() {

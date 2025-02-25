@@ -43,70 +43,73 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.label != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(widget.label!, style: widget.labelStyle),
-          ),
-        if (widget.sublabel != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              widget.sublabel!,
-              style: const TextStyle(fontSize: 12),
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.label != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(widget.label!, style: widget.labelStyle),
             ),
+          if (widget.sublabel != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                widget.sublabel!,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+          Wrap(
+            children: widget.items
+                .mapIndexed(
+                  (index, item) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Checkbox(
+                        splashRadius: 0,
+                        value: _selectedItems.contains(item),
+                        fillColor: WidgetStateColor.resolveWith((states) {
+                          if (states.contains(WidgetState.disabled)) {
+                            return Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.1);
+                          }
+
+                          if (states.contains(WidgetState.selected)) {
+                            return Theme.of(context).colorScheme.secondary;
+                          }
+                          return Colors.transparent;
+                        }),
+                        onChanged: widget.readOnly
+                            ? null
+                            : (value) {
+                                if (value ?? false) {
+                                  _selectedItems.add(item);
+                                } else {
+                                  _selectedItems.removeWhere(
+                                      (element) => element == item);
+                                }
+
+                                widget.onCheckboxValuesSelected(
+                                  _selectedItems,
+                                );
+
+                                setState(() {});
+                              },
+                      ),
+                      Text(widget.itemLabel(index, item)),
+                    ],
+                  ),
+                )
+                .toList(),
           ),
-        Wrap(
-          children: widget.items
-              .mapIndexed(
-                (index, item) => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Checkbox(
-                      splashRadius: 0,
-                      value: _selectedItems.contains(item),
-                      fillColor: WidgetStateColor.resolveWith((states) {
-                        if (states.contains(WidgetState.disabled)) {
-                          return Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withValues(alpha: 0.1);
-                        }
-
-                        if (states.contains(WidgetState.selected)) {
-                          return Theme.of(context).colorScheme.secondary;
-                        }
-                        return Colors.transparent;
-                      }),
-                      onChanged: widget.readOnly
-                          ? null
-                          : (value) {
-                              if (value ?? false) {
-                                _selectedItems.add(item);
-                              } else {
-                                _selectedItems
-                                    .removeWhere((element) => element == item);
-                              }
-
-                              widget.onCheckboxValuesSelected(
-                                _selectedItems,
-                              );
-
-                              setState(() {});
-                            },
-                    ),
-                    Text(widget.itemLabel(index, item)),
-                  ],
-                ),
-              )
-              .toList(),
-        ),
-        const SizedBox(height: 10),
-      ],
+          const SizedBox(height: 10),
+        ],
+      ),
     );
   }
 }
