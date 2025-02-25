@@ -137,6 +137,7 @@ class _ArrayFormState extends State<_ArrayForm> {
       if (data.length < minItems) {
         data.add(null);
       }
+
       _initialItems.add(
         widget.buildJsonschemaForm(
           widget.jsonSchema.items as JsonSchema,

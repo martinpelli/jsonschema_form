@@ -129,12 +129,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   final _formKey = GlobalKey<FormState>();
 
   /// Used for holding a reference to the state of those widgets that have a
-  /// dependency.
-  /// When a value is changed and that value changes other fields this keys will
-  /// be used to rebuild those fields
-  final _formSectionKeys = <GlobalKey<_StatefulWrapperState>>[];
-
-  /// Used for holding a reference to the state of those widgets that have a
   /// FormFieldState.
   /// This is only used when isScrollable and scrollToFirstError is true in
   /// order to find the first field with an error
@@ -227,13 +221,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         );
 
     if (hasDependencies) {
-      final formSectionKey = GlobalKey<_StatefulWrapperState>();
-
-      _formSectionKeys.add(formSectionKey);
-
       return _HybridWidget.stateful(
-        stateKey: formSectionKey,
-        stateKeys: _formSectionKeys,
         jsonKey: jsonKey,
         buildFormSection: buildFormSection,
       );
@@ -247,14 +235,8 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// Rebuilds a form dependency section. For example: when a nested field
   /// changes and this field has a dependency, this will only rebuild the
   /// dependency so it gets updated accordingly
-  void rebuildDependencies(String? jsonKeyDependency) {
-    for (final formSectionKey in _formSectionKeys) {
-      if (formSectionKey.currentState != null) {
-        if (formSectionKey.currentState!.widget.jsonKey == jsonKeyDependency) {
-          formSectionKey.currentState!.rebuildFormSection();
-        }
-      }
-    }
+  void rebuildDependencies(BuildContext context, String? jsonKeyDependency) {
+    _HybridWidget.rebuildFormSection(context, jsonKeyDependency);
   }
 
   /// If isScrollable and scrollToBottom are true and if the form is
@@ -329,10 +311,10 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     final formData = Map<String, dynamic>.from(
       widget.jsonSchemaForm.formData,
     ).removeEmptySubmaps();
-    final dataJson = widget.jsonSchemaForm.dataJson;
+    final initialFormData = widget.jsonSchemaForm.initialFormData;
     return (widget.suffixFormDataMapper?.call(
           formData,
-          dataJson,
+          initialFormData,
         ) as Map<String, dynamic>?) ??
         formData;
   }

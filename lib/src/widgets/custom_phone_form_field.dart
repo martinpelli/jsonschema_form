@@ -48,11 +48,13 @@ class _CustomPhoneFormFieldState extends State<_CustomPhoneFormField> {
   @override
   void didUpdateWidget(covariant _CustomPhoneFormField oldWidget) {
     if (widget.defaultValue == null) {
-      /// When oneOf has changed, it will rebuild the whole form so that all
-      /// controllers get cleared
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => widget.formFieldKey?.currentState?.reset(),
       );
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.value = PhoneNumber.parse(widget.defaultValue!);
+      });
     }
 
     super.didUpdateWidget(oldWidget);
