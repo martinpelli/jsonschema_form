@@ -1,6 +1,6 @@
+import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/json_schema.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
-import 'package:jsonschema_form/src/utils/map_extension.dart';
 
 /// A form widget that manages a JSON schema, UI schema, and form data.
 ///
@@ -22,11 +22,11 @@ class JsonschemaForm {
   JsonschemaForm({
     required this.schemaJson,
     required this.uiJson,
-    this.dataJson = const {},
+    this.formData = const {},
   }) {
     jsonSchema = JsonSchema.fromJson(schemaJson);
     uiSchema = UiSchema.fromJson(uiJson);
-    formData = dataJson.deepCopy();
+    initialFormData = formData.deepCopy();
   }
 
   /// The JSON schema of the form, which defines the structure and validation
@@ -37,16 +37,15 @@ class JsonschemaForm {
   /// the form will be displayed.
   final Map<String, dynamic> uiJson;
 
-  /// The data representing the current state of the form (optional, defaults
-  /// to an empty map).
-  final Map<String, dynamic> dataJson;
-
-  /// Private variable holding the parsed [JsonSchema] object.
+  /// Variable holding the parsed [JsonSchema] object.
   late JsonSchema jsonSchema;
 
-  /// Private variable holding the parsed [UiSchema] object.
+  /// Variable holding the parsed [UiSchema] object.
   late UiSchema uiSchema;
 
-  /// Private variable holding the form data as a [Map<String, dynamic>].
+  /// Variable holding the form data as a [Map<String, dynamic>].
   late Map<String, dynamic> formData;
+
+  /// Variable holding the initial form data as a [Map<String, dynamic>].
+  late Map<String, dynamic> initialFormData;
 }

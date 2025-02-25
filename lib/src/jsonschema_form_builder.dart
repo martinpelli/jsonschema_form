@@ -219,13 +219,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
         );
 
     if (hasDependencies) {
-      // final formSectionKey = GlobalKey<_StatefulWrapperState>();
-
-      // _formSectionKeys.add(formSectionKey);
-
-      // print("adding a form section key");
-      // print("form keys: ${_formSectionKeys.length}");
-
       return _HybridWidget.stateful(
         jsonKey: jsonKey,
         buildFormSection: buildFormSection,
@@ -316,10 +309,10 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     final formData = Map<String, dynamic>.from(
       widget.jsonSchemaForm.formData,
     ).removeEmptySubmaps();
-    final dataJson = widget.jsonSchemaForm.dataJson;
+    final initialFormData = widget.jsonSchemaForm.initialFormData;
     return (widget.suffixFormDataMapper?.call(
           formData,
-          dataJson,
+          initialFormData,
         ) as Map<String, dynamic>?) ??
         formData;
   }
