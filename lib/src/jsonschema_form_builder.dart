@@ -32,10 +32,10 @@ part 'widgets/custom_form_field_validator.dart';
 part 'widgets/custom_phone_form_field.dart';
 part 'widgets/custom_radio_group.dart';
 part 'widgets/custom_text_form_field.dart';
-part 'widgets/one_of_form.dart';
-part 'widgets/ui_widget.dart';
 part 'widgets/form_section.dart';
 part 'widgets/hybrid_widget.dart';
+part 'widgets/one_of_form.dart';
+part 'widgets/ui_widget.dart';
 
 /// Builds a Form by decoding a Json Schema
 class JsonschemaFormBuilder extends StatefulWidget {
@@ -170,6 +170,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           null,
           widget.jsonSchemaForm.uiSchema,
           widget.jsonSchemaForm.formData,
+          prefixFormDataMapper: widget.prefixFormDataMapper,
         ),
       ),
     );
@@ -186,6 +187,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? jsonKey,
     UiSchema? uiSchema,
     dynamic formData, {
+    dynamic Function(String, dynamic)? prefixFormDataMapper,
     JsonSchema? previousSchema,
     String? previousJsonKey,
     UiSchema? previousUiSchema,
@@ -200,7 +202,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           jsonKey,
           uiSchema,
           formData,
-          prefixFormDataMapper: widget.prefixFormDataMapper,
+          prefixFormDataMapper: prefixFormDataMapper,
           buildJsonschemaForm: _buildJsonschemaForm,
           previousSchema: previousSchema,
           previousJsonKey: previousJsonKey,
