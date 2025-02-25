@@ -48,5 +48,10 @@ enum UiOptions {
   resolution,
 
   /// Used for building specific inputs, for now only tel is supported.
-  inputType;
+  inputType,
+
+  /// Used for indicating if widget should align children vertically or
+  /// horizontally.
+  /// This only applies when ui:widget is radio or checkbox
+  inline;
 }

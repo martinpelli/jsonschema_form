@@ -11,6 +11,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
     required this.initialItems,
     required this.onCheckboxValuesSelected,
     required this.readOnly,
+    required this.isVertical,
   });
 
   final String? label;
@@ -22,6 +23,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   final void Function(List<T>) onCheckboxValuesSelected;
   final String jsonKey;
   final bool readOnly;
+  final bool isVertical;
 
   @override
   State<_CustomCheckboxGroup<T>> createState() => _CustomCheckboxGroupState();
@@ -43,6 +45,8 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final items = _getItems();
+
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -62,54 +66,61 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                 style: const TextStyle(fontSize: 12),
               ),
             ),
-          Wrap(
-            children: widget.items
-                .mapIndexed(
-                  (index, item) => Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        splashRadius: 0,
-                        value: _selectedItems.contains(item),
-                        fillColor: WidgetStateColor.resolveWith((states) {
-                          if (states.contains(WidgetState.disabled)) {
-                            return Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.1);
-                          }
-
-                          if (states.contains(WidgetState.selected)) {
-                            return Theme.of(context).colorScheme.secondary;
-                          }
-                          return Colors.transparent;
-                        }),
-                        onChanged: widget.readOnly
-                            ? null
-                            : (value) {
-                                if (value ?? false) {
-                                  _selectedItems.add(item);
-                                } else {
-                                  _selectedItems.removeWhere(
-                                      (element) => element == item);
-                                }
-
-                                widget.onCheckboxValuesSelected(
-                                  _selectedItems,
-                                );
-
-                                setState(() {});
-                              },
-                      ),
-                      Text(widget.itemLabel(index, item)),
-                    ],
-                  ),
-                )
-                .toList(),
-          ),
+          if (widget.isVertical)
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: items,
+            )
+          else
+            Wrap(children: items),
           const SizedBox(height: 10),
         ],
       ),
     );
   }
+
+  List<Widget> _getItems() => widget.items
+      .mapIndexed(
+        (index, item) => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Checkbox(
+              splashRadius: 0,
+              value: _selectedItems.contains(item),
+              fillColor: WidgetStateColor.resolveWith((states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.1);
+                }
+
+                if (states.contains(WidgetState.selected)) {
+                  return Theme.of(context).colorScheme.secondary;
+                }
+                return Colors.transparent;
+              }),
+              onChanged: widget.readOnly
+                  ? null
+                  : (value) {
+                      if (value ?? false) {
+                        _selectedItems.add(item);
+                      } else {
+                        _selectedItems
+                            .removeWhere((element) => element == item);
+                      }
+
+                      widget.onCheckboxValuesSelected(
+                        _selectedItems,
+                      );
+
+                      setState(() {});
+                    },
+            ),
+            Text(widget.itemLabel(index, item)),
+          ],
+        ),
+      )
+      .toList();
 }

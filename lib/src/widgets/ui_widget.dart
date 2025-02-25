@@ -178,6 +178,9 @@ class _UiWidgetState extends State<_UiWidget> {
   ) {
     final title = widget.getTitle();
 
+    final isVertical =
+        (widget.uiSchema?.options?[UiOptions.inline.name] as bool?) ?? false;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<String>(
@@ -187,6 +190,7 @@ class _UiWidgetState extends State<_UiWidget> {
         isEmpty: (value) => value.isEmpty,
         childFormBuilder: (field) {
           return _CustomRadioGroup<String>(
+            isVertical: isVertical,
             readOnly: widget.getReadOnly(),
             label: title != null
                 ? "$title${widget.getIsRequired() ? '*' : ''}"
@@ -219,6 +223,9 @@ class _UiWidgetState extends State<_UiWidget> {
   ) {
     final title = widget.getTitle();
 
+    final isVertical =
+        (widget.uiSchema?.options?[UiOptions.inline.name] as bool?) ?? false;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<bool>(
@@ -227,6 +234,7 @@ class _UiWidgetState extends State<_UiWidget> {
         initialValue: initialValue,
         childFormBuilder: (field) {
           return _CustomRadioGroup<bool>(
+            isVertical: isVertical,
             readOnly: widget.getReadOnly(),
             label: title != null
                 ? "$title${widget.getIsRequired() ? '*' : ''}"
@@ -259,12 +267,16 @@ class _UiWidgetState extends State<_UiWidget> {
   ) {
     final title = widget.getTitle();
 
+    final isVertical =
+        (widget.uiSchema?.options?[UiOptions.inline.name] as bool?) ?? false;
+
     return _CustomFormFieldValidator<bool>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
       initialValue: initialValue?.first,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<bool>(
+          isVertical: isVertical,
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
           label: null,
@@ -298,6 +310,9 @@ class _UiWidgetState extends State<_UiWidget> {
   ) {
     final title = widget.getTitle();
 
+    final isVertical =
+        (widget.uiSchema?.options?[UiOptions.inline.name] as bool?) ?? false;
+
     return _CustomFormFieldValidator<List<String>>(
       formFieldKey: _formFieldKey,
       isEnabled: widget.getIsRequired(),
@@ -305,6 +320,7 @@ class _UiWidgetState extends State<_UiWidget> {
       isEmpty: (value) => value.isEmpty,
       childFormBuilder: (field) {
         return _CustomCheckboxGroup<String>(
+          isVertical: isVertical,
           readOnly: widget.getReadOnly(),
           jsonKey: widget.jsonKey!,
           label: title != null

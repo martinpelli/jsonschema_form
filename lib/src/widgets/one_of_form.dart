@@ -155,7 +155,11 @@ class _OneOfFormState extends State<_OneOfForm> {
         onDropdownValueSelected: onValueSelected,
       );
     } else {
+      final isVertical =
+          (widget.uiSchema?.options?[UiOptions.inline.name] as bool?) ?? false;
+
       return _CustomRadioGroup<JsonSchema>(
+        isVertical: isVertical,
         readOnly: widget.uiSchema?.readonly ?? widget.getReadOnly(),
         label: widget.getTitle(),
         labelStyle: null,
