@@ -30,7 +30,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
 }
 
 class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
-  late final List<T> _selectedItems;
+  List<T> _selectedItems = [];
 
   @override
   void initState() {
