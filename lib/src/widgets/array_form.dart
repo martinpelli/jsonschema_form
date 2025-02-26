@@ -9,6 +9,7 @@ class _ArrayForm extends StatefulWidget {
     required this.previousSchema,
     required this.previousJsonKey,
     required this.previousUiSchema,
+    required this.isNewRoute,
     required this.buildJsonschemaForm,
     required this.getReadOnly,
     required this.getIsRequired,
@@ -26,6 +27,7 @@ class _ArrayForm extends StatefulWidget {
   final String? previousJsonKey;
   final JsonSchema? previousSchema;
   final UiSchema? previousUiSchema;
+  final bool isNewRoute;
   final BuildJsonschemaForm buildJsonschemaForm;
   final bool Function() getReadOnly;
   final bool Function() getIsRequired;
@@ -91,10 +93,11 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.jsonKey,
             widget.uiSchema,
             widget.formData,
-            arrayIndex: i + initialItemsLength,
             previousSchema: widget.previousSchema,
             previousJsonKey: widget.previousJsonKey,
             previousUiSchema: widget.previousUiSchema,
+            arrayIndex: i + initialItemsLength,
+            isNewRoute: widget.isNewRoute,
           ),
         );
       }
@@ -117,10 +120,11 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.jsonKey,
             widget.uiSchema,
             widget.formData,
-            arrayIndex: initialItemsLength,
             previousSchema: widget.previousSchema,
             previousJsonKey: widget.previousJsonKey,
             previousUiSchema: widget.previousUiSchema,
+            arrayIndex: initialItemsLength,
+            isNewRoute: widget.isNewRoute,
           ),
         );
       }
@@ -144,10 +148,11 @@ class _ArrayFormState extends State<_ArrayForm> {
           widget.jsonKey,
           widget.uiSchema,
           widget.formData,
-          arrayIndex: i + initialItemsLength,
           previousSchema: widget.previousSchema,
           previousJsonKey: widget.previousJsonKey,
           previousUiSchema: widget.previousUiSchema,
+          arrayIndex: i + initialItemsLength,
+          isNewRoute: widget.isNewRoute,
         ),
       );
     }
@@ -194,7 +199,11 @@ class _ArrayFormState extends State<_ArrayForm> {
     /// They can be removed if [removable] is not present or is set to false
     /// in the corresponding [uiSchema] property
     for (var i = 0; i < _arrayItems.length; i++) {
-      _addRemoveButtonIfNeeded(items, () {
+      final isExpandable = (widget.uiSchema?.children?['items']
+              ?.options?[UiOptions.expandable.name] as bool?) ??
+          false;
+
+      void onRemovePressed() {
         if (widget.formData is List) {
           (widget.formData as List).removeAt(i + _initialItems.length);
         }
@@ -207,7 +216,17 @@ class _ArrayFormState extends State<_ArrayForm> {
         if (_arrayItems.length == _initialItems.length) {
           field?.didChange(null);
         }
-      });
+
+        setState(() {});
+
+        widget.onItemRemoved?.call();
+      }
+
+      _addRemoveButtonIfNeeded(
+        items,
+        onRemovePressed,
+        isExpandable,
+      );
 
       final listOfMapsCastedFormData =
           DynamicUtils.tryParseListOfMaps(widget.formData);
@@ -217,13 +236,72 @@ class _ArrayFormState extends State<_ArrayForm> {
           : widget.formData;
 
       final newFormWidget = _createNewFormWidget(
-        listOfMapsCastedFormData,
         _arrayItems[i],
         newFormData,
         i,
+        false,
       );
 
-      items.add(newFormWidget);
+      if (isExpandable) {
+        Future<void> onEditPressed() async {
+          final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
+
+          final JsonSchema newJsonSchema;
+          if (hasAdditionalItems) {
+            newJsonSchema = widget.jsonSchema.additionalItems!;
+          } else {
+            newJsonSchema = widget.jsonSchema.items as JsonSchema;
+          }
+
+          final listOfMapsCastedFormData =
+              DynamicUtils.tryParseListOfMaps(widget.formData);
+
+          dynamic oldFormData;
+
+          if (listOfMapsCastedFormData != null) {
+            oldFormData = listOfMapsCastedFormData[i].deepCopy();
+          } else {
+            oldFormData = widget.formData;
+          }
+
+          var isItemEdited = false;
+
+          if (widget.createArrayItemAs == CreateArrayItemAs.dialog) {
+            isItemEdited = await _createNewRoute(
+              newJsonSchema,
+              newFormData,
+              isDialog: true,
+            );
+          } else {
+            isItemEdited = await _createNewRoute(
+              newJsonSchema,
+              newFormData,
+              isDialog: false,
+            );
+          }
+
+          if (!isItemEdited) {
+            if (listOfMapsCastedFormData != null) {
+              (widget.formData as List<Map<String, dynamic>>)[i] =
+                  oldFormData as Map<String, dynamic>;
+            } else {
+              oldFormData = widget.formData;
+            }
+          }
+          setState(() {});
+        }
+
+        final expandedNewFormWidget = _buildExpansionTile(
+          '${widget.jsonSchema.title}-${i + 1}',
+          newFormWidget,
+          onEditPressed,
+          onRemovePressed,
+        );
+
+        items.add(expandedNewFormWidget);
+      } else {
+        items.add(newFormWidget);
+      }
     }
 
     /// The (+) button is added by default unless [addable] is
@@ -258,35 +336,62 @@ class _ArrayFormState extends State<_ArrayForm> {
                     newJsonSchema = widget.jsonSchema.items as JsonSchema;
                   }
 
-                  var isItemNotAdded = false;
+                  final listOfMapsCastedFormData =
+                      DynamicUtils.tryParseListOfMaps(widget.formData);
+
+                  if (listOfMapsCastedFormData != null) {
+                    listOfMapsCastedFormData.add(<String, dynamic>{});
+                  } else if (widget.formData is List) {
+                    (widget.formData as List).add(
+                      DynamicUtils.isListOfMaps(widget.jsonSchema.items)
+                          ? <String, dynamic>{}
+                          : null,
+                    );
+                  }
+
+                  final newFormData = listOfMapsCastedFormData != null
+                      ? listOfMapsCastedFormData[_arrayItems.length]
+                      : widget.formData;
+
+                  var isItemAdded = false;
 
                   switch (widget.createArrayItemAs) {
                     case CreateArrayItemAs.inside:
-                      _modifyFormData();
                       _addArrayItem(newJsonSchema);
 
                     case CreateArrayItemAs.dialog:
-                      isItemNotAdded =
-                          await _createNewView(newJsonSchema, isDialog: true);
+                      isItemAdded = await _createNewRoute(
+                        newJsonSchema,
+                        newFormData,
+                        isDialog: true,
+                      );
 
                     case CreateArrayItemAs.screen:
-                      isItemNotAdded =
-                          await _createNewView(newJsonSchema, isDialog: false);
+                      isItemAdded = await _createNewRoute(
+                        newJsonSchema,
+                        newFormData,
+                        isDialog: false,
+                      );
                   }
 
-                  if (isItemNotAdded) {
-                    return;
-                  }
+                  if (isItemAdded) {
+                    _addArrayItem(newJsonSchema);
 
-                  /// If the array has a required validator, then when there is
-                  /// an item added by the user, we will let the validator known
-                  /// that is valid because user added an item
-                  if (_arrayItems.length > _initialItems.length) {
-                    field?.didChange(true);
-                  }
+                    /// If the array has a required validator, then when there
+                    /// is an item added by the user, we will let the validator
+                    /// known that is valid because user added an item
+                    if (_arrayItems.length > _initialItems.length) {
+                      field?.didChange(true);
+                    }
 
-                  widget.onItemAdded?.call(newJsonSchema);
-                  widget.scrollToBottom?.call();
+                    widget.onItemAdded?.call(newJsonSchema);
+                    widget.scrollToBottom?.call();
+                  } else {
+                    if (newFormData is List) {
+                      newFormData
+                          .removeAt(_arrayItems.length + _initialItems.length);
+                    }
+                  }
                 },
           icon: const Icon(Icons.add),
         ),
@@ -298,31 +403,23 @@ class _ArrayFormState extends State<_ArrayForm> {
     return items;
   }
 
-  Future<bool> _createNewView(
-    JsonSchema newJsonSchema, {
+  Future<bool> _createNewRoute(
+    JsonSchema newJsonSchema,
+    dynamic newFormData, {
     required bool isDialog,
   }) async {
-    final listOfMapsCastedFormData =
-        DynamicUtils.tryParseListOfMaps(widget.formData);
-
-    _modifyFormData();
-
-    final newFormData = listOfMapsCastedFormData != null
-        ? listOfMapsCastedFormData[_arrayItems.length]
-        : widget.formData;
-
     final newFormWidget = _createNewFormWidget(
-      listOfMapsCastedFormData,
       newJsonSchema,
       newFormData,
       _arrayItems.length,
+      true,
     );
 
     final bool? isFormDataAdded;
 
     final addButon = TextButton(
       onPressed: () => Navigator.of(context).pop(true),
-      child: const Text('Add'),
+      child: const Text('Confirm'),
     );
 
     if (isDialog) {
@@ -351,23 +448,18 @@ class _ArrayFormState extends State<_ArrayForm> {
       );
     }
 
-    if (isFormDataAdded != null && isFormDataAdded) {
-      _addArrayItem(newJsonSchema);
-      return false;
-    } else {
-      if (newFormData is List) {
-        newFormData.removeAt(_arrayItems.length + _initialItems.length);
-      }
-      return true;
-    }
+    return isFormDataAdded != null && isFormDataAdded;
   }
 
   Widget _createNewFormWidget(
-    List<Map<String, dynamic>>? listOfMapsCastedFormData,
     JsonSchema newJsonSchema,
     dynamic newFormData,
     int index,
+    bool isNewRoute,
   ) {
+    final listOfMapsCastedFormData =
+        DynamicUtils.tryParseListOfMaps(widget.formData);
+
     final uiSchema = listOfMapsCastedFormData != null
         ? (widget.uiSchema?.children != null &&
                 widget.uiSchema!.children!.containsKey('items'))
@@ -384,38 +476,27 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     return widget.buildJsonschemaForm(
       newJsonSchema,
-      listOfMapsCastedFormData != null ? null : widget.jsonKey,
+      widget.jsonKey,
       uiSchema,
       newFormData,
       arrayIndex: index + _initialItems.length,
       previousSchema: widget.jsonSchema,
-      previousJsonKey:
-          listOfMapsCastedFormData != null ? null : widget.previousJsonKey,
+      previousJsonKey: widget.previousJsonKey,
       previousUiSchema: previousUiSchema,
+      isNewRoute: isNewRoute,
     );
-  }
-
-  void _modifyFormData() {
-    final castedListOfMaps = DynamicUtils.tryParseListOfMaps(widget.formData);
-    if (castedListOfMaps != null) {
-      castedListOfMaps.add(<String, dynamic>{});
-    } else if (widget.formData is List) {
-      (widget.formData as List).add(
-        DynamicUtils.isListOfMaps(widget.jsonSchema.items)
-            ? <String, dynamic>{}
-            : null,
-      );
-    }
   }
 
   void _addRemoveButtonIfNeeded(
     List<Widget> items,
     VoidCallback onRemovePressed,
+    bool isExpandable,
   ) {
-    final hasRemoveButton = widget.uiSchema?.options == null ||
-        (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
-            widget.uiSchema!.options![UiOptions.removable.name] is bool &&
-            (widget.uiSchema!.options![UiOptions.removable.name] as bool));
+    final hasRemoveButton = !isExpandable &&
+        (widget.uiSchema?.options == null ||
+            (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
+                widget.uiSchema!.options![UiOptions.removable.name] is bool &&
+                (widget.uiSchema!.options![UiOptions.removable.name] as bool)));
 
     if (hasRemoveButton) {
       final removeButton = Align(
@@ -423,13 +504,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         child: widget.getReadOnly()
             ? null
             : IconButton(
-                onPressed: () {
-                  onRemovePressed();
-
-                  setState(() {});
-
-                  widget.onItemRemoved?.call();
-                },
+                onPressed: onRemovePressed,
                 icon: const Icon(Icons.remove),
               ),
       );
@@ -440,5 +515,40 @@ class _ArrayFormState extends State<_ArrayForm> {
   void _addArrayItem(JsonSchema jsonSchema) {
     _arrayItems.add(jsonSchema);
     setState(() {});
+  }
+
+  Widget _buildExpansionTile(
+    String title,
+    Widget newFormWidget,
+    void Function() onEditPressed,
+    void Function() onRemovePressed,
+  ) {
+    return ExpansionTile(
+      shape: const OutlineInputBorder(borderSide: BorderSide.none),
+      tilePadding: EdgeInsets.zero,
+      childrenPadding: EdgeInsets.zero,
+      trailing: PopupMenuButton(
+        icon: const Icon(Icons.more_vert_outlined),
+        padding: EdgeInsets.zero,
+        menuPadding: EdgeInsets.zero,
+        itemBuilder: (context) {
+          return [
+            PopupMenuItem<int>(
+              onTap: onEditPressed,
+              child: const Text('Edit'),
+            ),
+            PopupMenuItem<int>(
+              onTap: onRemovePressed,
+              child: const Text('Delete'),
+            ),
+          ];
+        },
+      ),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      children: [const Divider(), newFormWidget],
+    );
   }
 }

@@ -170,7 +170,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           null,
           widget.jsonSchemaForm.uiSchema,
           widget.jsonSchemaForm.formData,
-          prefixFormDataMapper: widget.prefixFormDataMapper,
         ),
       ),
     );
@@ -187,11 +186,11 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? jsonKey,
     UiSchema? uiSchema,
     dynamic formData, {
-    dynamic Function(String, dynamic)? prefixFormDataMapper,
     JsonSchema? previousSchema,
     String? previousJsonKey,
     UiSchema? previousUiSchema,
     int? arrayIndex,
+    bool isNewRoute = false,
   }) {
     final hasDependencies = jsonSchema.dependencies != null ||
         (jsonSchema.items is JsonSchema &&
@@ -202,7 +201,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           jsonKey,
           uiSchema,
           formData,
-          prefixFormDataMapper: prefixFormDataMapper,
+          prefixFormDataMapper: widget.prefixFormDataMapper,
           buildJsonschemaForm: _buildJsonschemaForm,
           previousSchema: previousSchema,
           previousJsonKey: previousJsonKey,
@@ -218,6 +217,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
               ? _scrollToBottom
               : null,
           formFieldKeys: _formFieldKeys,
+          isNewRoute: isNewRoute,
         );
 
     if (hasDependencies) {

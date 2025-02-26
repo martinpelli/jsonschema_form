@@ -5,14 +5,22 @@
 /// and file uploads.
 enum UiOptions {
   /// If either `items` or `additionalItems` contains a schema object, an "add"
-  /// button for adding new items is shown by default. You can turn this off
-  /// with the `addable` option in the `uiSchema`.
+  /// button for adding new items is shown by default.
+  /// You can turn this off with the `addable` option set to false in the
+  /// `uiSchema`.
   addable,
 
-  /// A "remove" button is shown by default for an item if `items` contains
-  /// a schema object, or the item is an `additionalItems` instance.
-  /// You can turn this off with the `removable` option in the `uiSchema`.
+  /// If either `items` or `additionalItems` contains a schema object, a
+  /// "remove" button is shown by default.
+  /// You can turn this off with the `removable` option set to false in the
+  /// `uiSchema`.
   removable,
+
+  /// If either `items` or `additionalItems` contains a schema object, you can
+  /// wrap array items in an ExpansionTile so they don't take too much space
+  /// You can turn this on with the `expandable` option set to true in the
+  /// `uiSchema`.
+  expandable,
 
   /// Used for file inputs when the `format` is specified in the `jsonSchema`.
   /// This option  can be used to specify particular file extensions to accept.

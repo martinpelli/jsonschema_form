@@ -6,13 +6,15 @@ class _OneOfForm extends StatefulWidget {
     this.jsonKey,
     this.uiSchema,
     this.formData, {
+    required this.previousSchema,
+    required this.previousJsonKey,
+    required this.previousUiSchema,
+    required this.arrayIndex,
+    required this.isNewRoute,
     required this.buildJsonschemaForm,
     required this.getTitle,
     required this.getDescription,
     required this.getReadOnly,
-    this.previousSchema,
-    this.previousJsonKey,
-    this.previousUiSchema,
   });
 
   final JsonSchema jsonSchema;
@@ -22,10 +24,12 @@ class _OneOfForm extends StatefulWidget {
   final JsonSchema? previousSchema;
   final String? previousJsonKey;
   final UiSchema? previousUiSchema;
+  final int? arrayIndex;
+  final bool isNewRoute;
   final BuildJsonschemaForm buildJsonschemaForm;
-  final bool Function() getReadOnly;
   final String? Function() getTitle;
   final String? Function() getDescription;
+  final bool Function() getReadOnly;
 
   @override
   State<_OneOfForm> createState() => _OneOfFormState();
@@ -108,6 +112,8 @@ class _OneOfFormState extends State<_OneOfForm> {
           previousSchema: widget.previousSchema,
           previousJsonKey: widget.previousJsonKey,
           previousUiSchema: widget.previousUiSchema,
+          arrayIndex: widget.arrayIndex,
+          isNewRoute: widget.isNewRoute,
         ),
       ],
     );
@@ -208,6 +214,8 @@ class _OneOfFormState extends State<_OneOfForm> {
             previousSchema: widget.jsonSchema,
             previousJsonKey: widget.jsonKey,
             previousUiSchema: widget.uiSchema,
+            arrayIndex: widget.arrayIndex,
+            isNewRoute: widget.isNewRoute,
           ),
         );
       }

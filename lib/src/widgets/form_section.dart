@@ -20,6 +20,7 @@ class _FormSection extends StatelessWidget {
     required this.cameraResolution,
     required this.scrollToBottom,
     required this.formFieldKeys,
+    required this.isNewRoute,
   });
 
   final JsonSchema jsonSchema;
@@ -35,11 +36,12 @@ class _FormSection extends StatelessWidget {
   final CreateArrayItemAs createArrayItemAs;
   final void Function()? onArrayItemRemoved;
   final void Function(JsonSchema)? onArrayItemAdded;
-  final void Function(BuildContext contest, String?)? rebuildDependencies;
+  final void Function(BuildContext contest, String)? rebuildDependencies;
   final bool isWholeFormReadOnly;
   final CameraResolution cameraResolution;
   final void Function()? scrollToBottom;
   final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
+  final bool isNewRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +68,7 @@ class _FormSection extends StatelessWidget {
               mergedJsonSchema,
               uiSchema,
               previousSchema,
+              previousUiSchema,
               arrayIndex,
             );
 
@@ -116,6 +119,7 @@ class _FormSection extends StatelessWidget {
                 mergedJsonSchema,
                 uiSchema,
                 arrayIndex,
+                isNewRoute,
                 newFormData,
               )
           else
@@ -124,6 +128,7 @@ class _FormSection extends StatelessWidget {
               mergedJsonSchema,
               uiSchema,
               arrayIndex,
+              isNewRoute,
               newFormData,
             ),
           if (mergedJsonSchema.oneOf != null)
@@ -136,11 +141,14 @@ class _FormSection extends StatelessWidget {
               previousJsonKey: previousJsonKey,
               previousUiSchema: previousUiSchema,
               buildJsonschemaForm: buildJsonschemaForm,
+              arrayIndex: arrayIndex,
+              isNewRoute: isNewRoute,
               getTitle: () => _getTitle(
                 jsonKey,
                 mergedJsonSchema,
                 uiSchema,
                 previousSchema,
+                previousUiSchema,
                 arrayIndex,
               ),
               getDescription: () => _getDescription(
@@ -152,6 +160,7 @@ class _FormSection extends StatelessWidget {
                 jsonKey,
                 mergedJsonSchema,
                 uiSchema,
+                previousUiSchema,
               ),
             ),
         ] else if (mergedJsonSchema.type == JsonType.array)
@@ -163,9 +172,14 @@ class _FormSection extends StatelessWidget {
             previousJsonKey: previousJsonKey,
             previousSchema: previousSchema,
             previousUiSchema: previousUiSchema,
+            isNewRoute: isNewRoute,
             buildJsonschemaForm: buildJsonschemaForm,
-            getReadOnly: () =>
-                _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
+            getReadOnly: () => _getReadOnly(
+              jsonKey,
+              mergedJsonSchema,
+              uiSchema,
+              previousUiSchema,
+            ),
             getIsRequired: () => _getIsRequired(
               jsonKey,
               previousSchema,
@@ -194,6 +208,7 @@ class _FormSection extends StatelessWidget {
               mergedJsonSchema,
               uiSchema,
               previousSchema,
+              previousUiSchema,
               arrayIndex,
             ),
             getDescription: () => _getDescription(
@@ -214,8 +229,12 @@ class _FormSection extends StatelessWidget {
               arrayIndex,
               previousFormData,
             ),
-            getReadOnly: () =>
-                _getReadOnly(jsonKey, mergedJsonSchema, uiSchema),
+            getReadOnly: () => _getReadOnly(
+              jsonKey,
+              mergedJsonSchema,
+              uiSchema,
+              previousUiSchema,
+            ),
             cameraResolution: cameraResolution,
             formFieldKeys: formFieldKeys,
           ),
@@ -331,6 +350,7 @@ class _FormSection extends StatelessWidget {
     JsonSchema jsonSchema,
     UiSchema? uiSchema,
     int? arrayIndex,
+    bool isNewRoute,
     dynamic newFormData,
   ) {
     return [
@@ -344,6 +364,7 @@ class _FormSection extends StatelessWidget {
         previousJsonKey: jsonKey,
         previousUiSchema: uiSchema,
         arrayIndex: arrayIndex,
+        isNewRoute: isNewRoute,
       ),
 
       /// Build Schema dependencies, widgets that will be added
@@ -363,6 +384,7 @@ class _FormSection extends StatelessWidget {
           previousJsonKey: jsonKey,
           previousUiSchema: uiSchema,
           arrayIndex: arrayIndex,
+          isNewRoute: isNewRoute,
         ),
     ];
   }
@@ -401,6 +423,7 @@ class _FormSection extends StatelessWidget {
     JsonSchema jsonSchema,
     UiSchema? uiSchema,
     int? arrayIndex,
+    bool isNewRoute,
     dynamic newFormData,
   ) {
     final widgets = <Widget>[];
@@ -419,6 +442,7 @@ class _FormSection extends StatelessWidget {
             jsonSchema,
             uiSchema,
             arrayIndex,
+            isNewRoute,
             newFormData,
           ),
         );
@@ -483,8 +507,15 @@ class _FormSection extends StatelessWidget {
     JsonSchema jsonSchema,
     UiSchema? uiSchema,
     JsonSchema? previousSchema,
+    UiSchema? previousUiSchema,
     int? arrayIndex,
   ) {
+    final isExpandable =
+        (uiSchema?.options?[UiOptions.expandable.name] as bool?) ?? false;
+    if (isExpandable) {
+      return null;
+    }
+
     if (uiSchema?.title != null && uiSchema!.title!.isNotEmpty) {
       return uiSchema.title;
     }
@@ -497,7 +528,12 @@ class _FormSection extends StatelessWidget {
       if (previousSchema?.uniqueItems ?? false) {
         return previousSchema?.title;
       } else if (uiSchema?.showArrayTitles ?? true) {
-        return '${previousSchema?.title}-${arrayIndex + 1}';
+        final isExpandable =
+            (previousUiSchema?.options?[UiOptions.expandable.name] as bool?) ??
+                false;
+        if (!isExpandable) {
+          return '${previousSchema?.title}-${arrayIndex + 1}';
+        }
       }
     }
 
@@ -523,8 +559,13 @@ class _FormSection extends StatelessWidget {
     String? jsonKey,
     JsonSchema jsonSchema,
     UiSchema? uiSchema,
+    UiSchema? previousUiSchema,
   ) {
-    if (isWholeFormReadOnly) {
+    final isExpandable =
+        (previousUiSchema?.options?[UiOptions.expandable.name] as bool?) ??
+            false;
+
+    if (isWholeFormReadOnly || (isExpandable && !isNewRoute)) {
       return true;
     }
 
