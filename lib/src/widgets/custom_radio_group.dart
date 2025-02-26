@@ -6,7 +6,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
     required this.sublabel,
     required this.labelStyle,
     required this.items,
-    required this.initialItem,
+    required this.selectedItem,
     required this.itemLabel,
     required this.onRadioValueSelected,
     required this.readOnly,
@@ -17,7 +17,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   final String? sublabel;
   final TextStyle? labelStyle;
   final List<T> items;
-  final T? initialItem;
+  final T? selectedItem;
   final String Function(int index, T item) itemLabel;
   final void Function(T) onRadioValueSelected;
   final bool readOnly;
@@ -34,13 +34,12 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
   void initState() {
     super.initState();
 
-    _selectedItem = widget.initialItem;
+    _selectedItem = widget.selectedItem;
   }
 
   @override
   void didUpdateWidget(covariant _CustomRadioGroup<T> oldWidget) {
-    _selectedItem = widget.initialItem;
-
+    _selectedItem = widget.selectedItem;
     super.didUpdateWidget(oldWidget);
   }
 
@@ -101,7 +100,6 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                   : (_) {
                       _selectedItem = item;
                       widget.onRadioValueSelected(item);
-                      setState(() {});
                     },
             ),
             Text(widget.itemLabel(index, item)),

@@ -8,7 +8,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
     required this.labelStyle,
     required this.items,
     required this.itemLabel,
-    required this.initialItems,
+    required this.selectedItems,
     required this.onCheckboxValuesSelected,
     required this.readOnly,
     required this.isVertical,
@@ -19,7 +19,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   final TextStyle? labelStyle;
   final List<T> items;
   final String Function(int index, T item) itemLabel;
-  final List<T>? initialItems;
+  final List<T>? selectedItems;
   final void Function(List<T>) onCheckboxValuesSelected;
   final String jsonKey;
   final bool readOnly;
@@ -36,8 +36,8 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
   void initState() {
     super.initState();
 
-    if (widget.initialItems != null) {
-      _selectedItems = List<T>.from(widget.initialItems!);
+    if (widget.selectedItems != null) {
+      _selectedItems = List<T>.from(widget.selectedItems!);
     } else {
       _selectedItems = [];
     }
@@ -45,8 +45,7 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
 
   @override
   void didUpdateWidget(covariant _CustomCheckboxGroup<T> oldWidget) {
-    _selectedItems = widget.initialItems ?? [];
-
+    _selectedItems = widget.selectedItems ?? [];
     super.didUpdateWidget(oldWidget);
   }
 
@@ -118,11 +117,7 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                             .removeWhere((element) => element == item);
                       }
 
-                      widget.onCheckboxValuesSelected(
-                        _selectedItems,
-                      );
-
-                      setState(() {});
+                      widget.onCheckboxValuesSelected(_selectedItems);
                     },
             ),
             Text(widget.itemLabel(index, item)),

@@ -37,7 +37,6 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
   @override
   void didUpdateWidget(covariant _CustomDropdownMenu<T> oldWidget) {
     _selectedItem = widget.selectedItem;
-
     super.didUpdateWidget(oldWidget);
   }
 
@@ -64,12 +63,9 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
               return;
             }
 
+            _selectedItem = item;
             widget.onDropdownValueSelected(item);
           }
-
-          setState(() {
-            _selectedItem = item;
-          });
         },
         dropdownMenuEntries:
             widget.items.mapIndexed<DropdownMenuEntry<T>>((int index, T item) {

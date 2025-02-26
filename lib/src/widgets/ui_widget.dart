@@ -159,7 +159,7 @@ class _UiWidgetState extends State<_UiWidget> {
                 : null,
             itemLabel: (_, item) => item,
             items: widget.jsonSchema.enumValue!,
-            selectedItem: initialValue,
+            selectedItem: field?.value ?? initialValue,
             onDropdownValueSelected: (value) {
               _onFieldChangedWithValidator<String>(field, value);
             },
@@ -202,7 +202,7 @@ class _UiWidgetState extends State<_UiWidget> {
             sublabel: widget.getDescription(),
             itemLabel: (_, item) => item,
             items: widget.jsonSchema.enumValue!,
-            initialItem: initialValue,
+            selectedItem: field?.value ?? initialValue,
             onRadioValueSelected: (value) {
               _onFieldChangedWithValidator<String>(field, value);
             },
@@ -246,7 +246,7 @@ class _UiWidgetState extends State<_UiWidget> {
             sublabel: widget.getDescription(),
             itemLabel: (_, item) => item ? 'Yes' : 'No',
             items: const [false, true],
-            initialItem: initialValue,
+            selectedItem: field?.value ?? initialValue,
             onRadioValueSelected: (value) {
               _onFieldChangedWithValidator<bool>(field, value);
             },
@@ -289,7 +289,7 @@ class _UiWidgetState extends State<_UiWidget> {
               ? "$title${widget.getIsRequired() ? '*' : ''}"
               : (item ? 'Yes' : 'No'),
           items: const [true],
-          initialItems: initialValue,
+          selectedItems: field?.value != null ? [field!.value!] : initialValue,
           onCheckboxValuesSelected: (value) {
             _onFieldChangedWithValidator<bool>(
               field,
@@ -333,7 +333,7 @@ class _UiWidgetState extends State<_UiWidget> {
           sublabel: widget.getDescription(),
           items: widget.jsonSchema.enumValue!,
           itemLabel: (_, item) => item,
-          initialItems: initialValues,
+          selectedItems: field?.value ?? initialValues,
           onCheckboxValuesSelected: (value) {
             _onFieldChangedWithValidator<List<String>>(field, value);
           },
@@ -480,7 +480,7 @@ class _UiWidgetState extends State<_UiWidget> {
             },
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
-            fileData: initialValue,
+            fileData: field?.value ?? initialValue,
             resolution: resolution,
           );
         },
