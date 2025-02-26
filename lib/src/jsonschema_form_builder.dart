@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:camera/camera.dart';
 import 'package:collection/collection.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_camera/flutter_camera.dart';
 import 'package:intl/intl.dart';
 import 'package:jsonschema_form/jsonschema_form.dart';
 import 'package:jsonschema_form/src/models/input_type.dart';
@@ -15,7 +15,6 @@ import 'package:jsonschema_form/src/models/json_type.dart';
 import 'package:jsonschema_form/src/models/ui_options.dart';
 import 'package:jsonschema_form/src/models/ui_schema.dart';
 import 'package:jsonschema_form/src/models/ui_type.dart';
-import 'package:jsonschema_form/src/screens/camera_resolution.dart';
 import 'package:jsonschema_form/src/typedefs/typedefs.dart';
 import 'package:jsonschema_form/src/utils/dynamic_utils.dart';
 import 'package:jsonschema_form/src/utils/xfile_extension.dart';
@@ -23,7 +22,6 @@ import 'package:jsonschema_form/src/widgets/file_widgets/file_preview.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 
-part 'screens/camera_screen.dart';
 part 'widgets/array_form.dart';
 part 'widgets/custom_checkbox_group.dart';
 part 'widgets/custom_dropdown_menu.dart';
@@ -45,7 +43,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
     this.prefixFormDataMapper,
     this.suffixFormDataMapper,
     this.readOnly = false,
-    this.cameraResolution = CameraResolution.max,
     this.isScrollable = true,
     this.scrollToBottom = true,
     this.scrollToFirstError = true,
@@ -78,10 +75,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
   /// will be editable. This can be useful if you don't want to provide a
   /// ui:readonly key to each field.
   final bool readOnly;
-
-  /// [CameraResolution] affects the quality of video recording and image
-  /// capture.
-  final CameraResolution cameraResolution;
 
   /// If the form overflows the screen it will be automatically scrollable.
   /// Default set to true.
@@ -213,7 +206,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           createArrayItemAs: widget.createArrayItemAs,
           rebuildDependencies: rebuildDependencies,
           isWholeFormReadOnly: widget.readOnly,
-          cameraResolution: widget.cameraResolution,
           scrollToBottom: widget.isScrollable && widget.scrollToBottom
               ? _scrollToBottom
               : null,
