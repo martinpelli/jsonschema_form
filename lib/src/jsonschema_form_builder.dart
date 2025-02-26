@@ -222,7 +222,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
 
     if (hasDependencies) {
       return _HybridWidget.stateful(
-        jsonKey: jsonKey,
+        id: "$jsonKey${arrayIndex ?? ''}",
         buildFormSection: buildFormSection,
       );
     } else {
@@ -235,8 +235,8 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// Rebuilds a form dependency section. For example: when a nested field
   /// changes and this field has a dependency, this will only rebuild the
   /// dependency so it gets updated accordingly
-  void rebuildDependencies(BuildContext context, String? jsonKeyDependency) {
-    _HybridWidget.rebuildFormSection(context, jsonKeyDependency);
+  void rebuildDependencies(BuildContext context, String id) {
+    _HybridWidget.rebuildFormSection(context, id);
   }
 
   /// If isScrollable and scrollToBottom are true and if the form is
