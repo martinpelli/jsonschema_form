@@ -11,7 +11,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.onFileChosen,
     required this.readOnly,
     this.fileData,
-    this.resolution = CameraResolution.max,
+    this.resolution,
   });
 
   final bool hasFilePicker;
@@ -23,7 +23,7 @@ class _CustomFileUpload extends StatefulWidget {
   final void Function(String? value) onFileChosen;
   final bool readOnly;
   final String? fileData;
-  final CameraResolution resolution;
+  final String? resolution;
 
   @override
   State<_CustomFileUpload> createState() => _CustomFileUploadState();
@@ -164,10 +164,16 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
     final file = await Navigator.of(context).push<XFile?>(
       MaterialPageRoute(
         builder: (context) {
-          return _CameraScreen(
-            isPhotoAllowed: widget.isPhotoAllowed,
-            isVideoAllowed: widget.isVideoAllowed,
-            resolution: widget.resolution,
+          final mediaTypes = <CameraMediaType>[];
+          if (widget.isPhotoAllowed) {
+            mediaTypes.add(CameraMediaType.photo);
+          }
+          if (widget.isVideoAllowed) {
+            mediaTypes.add(CameraMediaType.video);
+          }
+          return CameraScreen(
+            mediaTypes: mediaTypes,
+            resolution: widget.resolution.cameraResolution,
           );
         },
       ),

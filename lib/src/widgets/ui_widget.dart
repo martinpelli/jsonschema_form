@@ -16,7 +16,6 @@ class _UiWidget extends StatefulWidget {
     required this.getIsRequired,
     required this.getReadOnly,
     required this.formFieldKeys,
-    this.cameraResolution = CameraResolution.max,
     this.rebuildDependencies,
   });
 
@@ -33,7 +32,6 @@ class _UiWidget extends StatefulWidget {
   final dynamic Function() getDefaultValue;
   final bool Function() getIsRequired;
   final bool Function() getReadOnly;
-  final CameraResolution cameraResolution;
   final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
   final void Function(BuildContext, String?)? rebuildDependencies;
 
@@ -438,8 +436,8 @@ class _UiWidgetState extends State<_UiWidget> {
               UiOptions.resolution.name,
             ) ??
             false)
-        ? (widget.uiSchema?.options?['resolution'] as String?).cameraResolution
-        : widget.cameraResolution;
+        ? (widget.uiSchema?.options?['resolution'] as String?)
+        : null;
 
     final title = widget.getTitle();
 
@@ -467,7 +465,7 @@ class _UiWidgetState extends State<_UiWidget> {
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
             fileData: initialValue,
-            resolution: resolution ?? widget.cameraResolution,
+            resolution: resolution,
           );
         },
       ),
