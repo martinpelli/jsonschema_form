@@ -44,6 +44,13 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
   }
 
   @override
+  void didUpdateWidget(covariant _CustomCheckboxGroup<T> oldWidget) {
+    _selectedItems = widget.initialItems ?? [];
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final items = _getItems();
 

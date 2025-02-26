@@ -35,7 +35,7 @@ class _UiWidget extends StatefulWidget {
   final bool Function() getReadOnly;
   final CameraResolution cameraResolution;
   final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
-  final void Function(BuildContext, String?)? rebuildDependencies;
+  final void Function(BuildContext, String)? rebuildDependencies;
 
   @override
   State<_UiWidget> createState() => _UiWidgetState();
@@ -724,7 +724,8 @@ class _UiWidgetState extends State<_UiWidget> {
         widget.previousSchema!.dependencies!.keys.contains(widget.jsonKey);
 
     if (hasDependencies) {
-      widget.rebuildDependencies?.call(context, widget.previousJsonKey);
+      final widgetId = "${widget.previousJsonKey}${widget.arrayIndex ?? ''}";
+      widget.rebuildDependencies?.call(context, widgetId);
     }
   }
 }

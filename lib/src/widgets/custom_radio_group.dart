@@ -38,6 +38,13 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
   }
 
   @override
+  void didUpdateWidget(covariant _CustomRadioGroup<T> oldWidget) {
+    _selectedItem = widget.initialItem;
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final items = _getItems();
 

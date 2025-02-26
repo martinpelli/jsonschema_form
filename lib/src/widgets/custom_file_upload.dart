@@ -44,6 +44,14 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
   }
 
   @override
+  void didUpdateWidget(covariant _CustomFileUpload oldWidget) {
+    _file = widget.fileData;
+    _fileName = null;
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
