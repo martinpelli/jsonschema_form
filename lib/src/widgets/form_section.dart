@@ -17,7 +17,6 @@ class _FormSection extends StatelessWidget {
     required this.createArrayItemAs,
     required this.rebuildDependencies,
     required this.isWholeFormReadOnly,
-    required this.cameraResolution,
     required this.scrollToBottom,
     required this.formFieldKeys,
     required this.isNewRoute,
@@ -38,7 +37,6 @@ class _FormSection extends StatelessWidget {
   final void Function(JsonSchema)? onArrayItemAdded;
   final void Function(BuildContext contest, String)? rebuildDependencies;
   final bool isWholeFormReadOnly;
-  final CameraResolution cameraResolution;
   final void Function()? scrollToBottom;
   final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
   final bool isNewRoute;
@@ -235,7 +233,6 @@ class _FormSection extends StatelessWidget {
               uiSchema,
               previousUiSchema,
             ),
-            cameraResolution: cameraResolution,
             formFieldKeys: formFieldKeys,
           ),
       ],
