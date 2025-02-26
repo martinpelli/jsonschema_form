@@ -20,7 +20,28 @@ enum UiOptions {
   /// wrap array items in an ExpansionTile so they don't take too much space
   /// You can turn this on with the `expandable` option set to true in the
   /// `uiSchema`.
+  ///
+  /// This property must be provided inside 'items' property in UiSchema in
+  /// order to work
   expandable,
+
+  /// If either `items` or `additionalItems` contains a schema object, this can
+  /// be used to change the way an array item is created. Posible options are
+  /// 'dialog', 'screen' and 'inner'. Default to inner.
+  ///
+  /// This property must be provided inside 'items' property in UiSchema in
+  /// order to work
+  createArrayItemAs,
+
+  /// If either `items` or `additionalItems` contains a schema object, this can
+  /// be used to change the way an array item is edited. Posible options are
+  /// 'dialog', 'screen' and 'inner'. Default to dialog if expandable is true.
+  ///
+  /// This property only has effect if expandable is true.
+  ///
+  /// This property must be provided inside 'items' property in UiSchema in
+  /// order to work
+  editArrayItemAs,
 
   /// Used for file inputs when the `format` is specified in the `jsonSchema`.
   /// This option  can be used to specify particular file extensions to accept.

@@ -48,7 +48,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
     this.scrollToFirstError = true,
     this.onArrayItemAdded,
     this.onArrayItemRemoved,
-    this.createArrayItemAs = CreateArrayItemAs.inside,
     this.padding,
     super.key,
   });
@@ -99,10 +98,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
 
   /// Function called when an item is removed from an array
   final void Function()? onArrayItemRemoved;
-
-  /// Change the way that a new array item is created, see [CreateArrayItemAs]
-  /// for all options available
-  final CreateArrayItemAs createArrayItemAs;
 
   /// For adding padding to the form. Useful if you have [isScrollable] set to
   /// Padding applied to the widget or component.
@@ -202,7 +197,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           arrayIndex: arrayIndex,
           onArrayItemAdded: widget.onArrayItemAdded,
           onArrayItemRemoved: widget.onArrayItemRemoved,
-          createArrayItemAs: widget.createArrayItemAs,
           rebuildDependencies: rebuildDependencies,
           isWholeFormReadOnly: widget.readOnly,
           scrollToBottom: widget.isScrollable && widget.scrollToBottom

@@ -14,7 +14,6 @@ class _FormSection extends StatelessWidget {
     required this.arrayIndex,
     required this.onArrayItemAdded,
     required this.onArrayItemRemoved,
-    required this.createArrayItemAs,
     required this.rebuildDependencies,
     required this.isWholeFormReadOnly,
     required this.scrollToBottom,
@@ -32,7 +31,6 @@ class _FormSection extends StatelessWidget {
   final String? previousJsonKey;
   final UiSchema? previousUiSchema;
   final int? arrayIndex;
-  final CreateArrayItemAs createArrayItemAs;
   final void Function()? onArrayItemRemoved;
   final void Function(JsonSchema)? onArrayItemAdded;
   final void Function(BuildContext contest, String)? rebuildDependencies;
@@ -186,7 +184,6 @@ class _FormSection extends StatelessWidget {
             ),
             onItemAdded: onArrayItemAdded,
             onItemRemoved: onArrayItemRemoved,
-            createArrayItemAs: createArrayItemAs,
             scrollToBottom: scrollToBottom,
             formFieldKeys: formFieldKeys,
           )
@@ -562,7 +559,12 @@ class _FormSection extends StatelessWidget {
         (previousUiSchema?.options?[UiOptions.expandable.name] as bool?) ??
             false;
 
-    if (isWholeFormReadOnly || (isExpandable && !isNewRoute)) {
+    final isInnerEdit = ((previousUiSchema
+                ?.options?[UiOptions.editArrayItemAs.name] as String?) ??
+            ArrayItemAs.dialog) ==
+        ArrayItemAs.inner;
+
+    if (isWholeFormReadOnly || (isExpandable && !isInnerEdit && !isNewRoute)) {
       return true;
     }
 

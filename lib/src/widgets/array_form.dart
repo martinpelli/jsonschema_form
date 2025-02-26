@@ -15,7 +15,6 @@ class _ArrayForm extends StatefulWidget {
     required this.getIsRequired,
     required this.onItemAdded,
     required this.onItemRemoved,
-    required this.createArrayItemAs,
     required this.scrollToBottom,
     required this.formFieldKeys,
   });
@@ -33,7 +32,6 @@ class _ArrayForm extends StatefulWidget {
   final bool Function() getIsRequired;
   final void Function(JsonSchema)? onItemAdded;
   final void Function()? onItemRemoved;
-  final CreateArrayItemAs createArrayItemAs;
   final void Function()? scrollToBottom;
   final List<GlobalKey<FormFieldState<dynamic>>>? formFieldKeys;
 
@@ -243,6 +241,10 @@ class _ArrayFormState extends State<_ArrayForm> {
       );
 
       if (isExpandable) {
+        final editArrayItemAs = (widget.uiSchema?.children?['items']
+                ?.options?[UiOptions.editArrayItemAs.name] as String?) ??
+            ArrayItemAs.dialog.name;
+
         Future<void> onEditPressed() async {
           final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
 
@@ -266,7 +268,7 @@ class _ArrayFormState extends State<_ArrayForm> {
 
           var isItemEdited = false;
 
-          if (widget.createArrayItemAs == CreateArrayItemAs.dialog) {
+          if (editArrayItemAs == ArrayItemAs.dialog.name) {
             isItemEdited = await _createNewRoute(
               newJsonSchema,
               newFormData,
@@ -294,7 +296,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         final expandedNewFormWidget = _buildExpansionTile(
           '${widget.jsonSchema.title}-${i + 1}',
           newFormWidget,
-          onEditPressed,
+          editArrayItemAs == ArrayItemAs.inner.name ? null : onEditPressed,
           onRemovePressed,
         );
 
@@ -353,25 +355,27 @@ class _ArrayFormState extends State<_ArrayForm> {
                       ? listOfMapsCastedFormData[_arrayItems.length]
                       : widget.formData;
 
+                  final createArrayItemAs = (widget.uiSchema?.children?['items']
+                              ?.options?[UiOptions.createArrayItemAs.name]
+                          as String?) ??
+                      ArrayItemAs.inner.name;
+
                   var isItemAdded = false;
 
-                  switch (widget.createArrayItemAs) {
-                    case CreateArrayItemAs.inside:
-                      _addArrayItem(newJsonSchema);
-
-                    case CreateArrayItemAs.dialog:
-                      isItemAdded = await _createNewRoute(
-                        newJsonSchema,
-                        newFormData,
-                        isDialog: true,
-                      );
-
-                    case CreateArrayItemAs.screen:
-                      isItemAdded = await _createNewRoute(
-                        newJsonSchema,
-                        newFormData,
-                        isDialog: false,
-                      );
+                  if (createArrayItemAs == ArrayItemAs.inner.name) {
+                    _addArrayItem(newJsonSchema);
+                  } else if (createArrayItemAs == ArrayItemAs.dialog.name) {
+                    isItemAdded = await _createNewRoute(
+                      newJsonSchema,
+                      newFormData,
+                      isDialog: true,
+                    );
+                  } else if (createArrayItemAs == ArrayItemAs.screen.name) {
+                    isItemAdded = await _createNewRoute(
+                      newJsonSchema,
+                      newFormData,
+                      isDialog: false,
+                    );
                   }
 
                   if (isItemAdded) {
@@ -520,7 +524,7 @@ class _ArrayFormState extends State<_ArrayForm> {
   Widget _buildExpansionTile(
     String title,
     Widget newFormWidget,
-    void Function() onEditPressed,
+    void Function()? onEditPressed,
     void Function() onRemovePressed,
   ) {
     return ExpansionTile(
@@ -533,10 +537,11 @@ class _ArrayFormState extends State<_ArrayForm> {
         menuPadding: EdgeInsets.zero,
         itemBuilder: (context) {
           return [
-            PopupMenuItem<int>(
-              onTap: onEditPressed,
-              child: const Text('Edit'),
-            ),
+            if (onEditPressed != null)
+              PopupMenuItem<int>(
+                onTap: onEditPressed,
+                child: const Text('Edit'),
+              ),
             PopupMenuItem<int>(
               onTap: onRemovePressed,
               child: const Text('Delete'),

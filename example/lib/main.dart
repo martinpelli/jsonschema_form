@@ -147,7 +147,6 @@ class _FormState extends State<_Form> {
                       child: JsonschemaFormBuilder(
                           key: _jsonschemaFormKey,
                           jsonSchemaForm: _jsonschemaForm,
-                          createArrayItemAs: CreateArrayItemAs.dialog,
                           suffixFormDataMapper: (current, old) {
                             if (current is Map &&
                                 current.containsKey('jobsiteImages') &&

@@ -324,7 +324,9 @@
               "contactDetails"
             ],
             "ui:options": {
-              "expandable": true
+              "expandable": true,
+              "createArrayItemAs": "dialog",
+              "editArrayItemAs": "dialog"
             },
             "workDayType": {
               "ui:options": {
