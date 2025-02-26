@@ -8,9 +8,9 @@ typedef BuildJsonschemaForm = Widget Function(
   String? jsonKey,
   UiSchema? uiSchema,
   dynamic formData, {
-  dynamic Function(String, dynamic)? prefixFormDataMapper,
   JsonSchema? previousSchema,
   String? previousJsonKey,
   UiSchema? previousUiSchema,
   int? arrayIndex,
+  bool isNewRoute,
 });

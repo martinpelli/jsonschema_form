@@ -48,7 +48,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
     this.scrollToFirstError = true,
     this.onArrayItemAdded,
     this.onArrayItemRemoved,
-    this.createArrayItemAs = CreateArrayItemAs.inside,
     this.padding,
     super.key,
   });
@@ -99,10 +98,6 @@ class JsonschemaFormBuilder extends StatefulWidget {
 
   /// Function called when an item is removed from an array
   final void Function()? onArrayItemRemoved;
-
-  /// Change the way that a new array item is created, see [CreateArrayItemAs]
-  /// for all options available
-  final CreateArrayItemAs createArrayItemAs;
 
   /// For adding padding to the form. Useful if you have [isScrollable] set to
   /// Padding applied to the widget or component.
@@ -163,7 +158,6 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           null,
           widget.jsonSchemaForm.uiSchema,
           widget.jsonSchemaForm.formData,
-          prefixFormDataMapper: widget.prefixFormDataMapper,
         ),
       ),
     );
@@ -180,11 +174,11 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
     String? jsonKey,
     UiSchema? uiSchema,
     dynamic formData, {
-    dynamic Function(String, dynamic)? prefixFormDataMapper,
     JsonSchema? previousSchema,
     String? previousJsonKey,
     UiSchema? previousUiSchema,
     int? arrayIndex,
+    bool isNewRoute = false,
   }) {
     final hasDependencies = jsonSchema.dependencies != null ||
         (jsonSchema.items is JsonSchema &&
@@ -195,7 +189,7 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           jsonKey,
           uiSchema,
           formData,
-          prefixFormDataMapper: prefixFormDataMapper,
+          prefixFormDataMapper: widget.prefixFormDataMapper,
           buildJsonschemaForm: _buildJsonschemaForm,
           previousSchema: previousSchema,
           previousJsonKey: previousJsonKey,
@@ -203,18 +197,18 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
           arrayIndex: arrayIndex,
           onArrayItemAdded: widget.onArrayItemAdded,
           onArrayItemRemoved: widget.onArrayItemRemoved,
-          createArrayItemAs: widget.createArrayItemAs,
           rebuildDependencies: rebuildDependencies,
           isWholeFormReadOnly: widget.readOnly,
           scrollToBottom: widget.isScrollable && widget.scrollToBottom
               ? _scrollToBottom
               : null,
           formFieldKeys: _formFieldKeys,
+          isNewRoute: isNewRoute,
         );
 
     if (hasDependencies) {
       return _HybridWidget.stateful(
-        jsonKey: jsonKey,
+        id: "$jsonKey${arrayIndex ?? ''}",
         buildFormSection: buildFormSection,
       );
     } else {
@@ -227,8 +221,8 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
   /// Rebuilds a form dependency section. For example: when a nested field
   /// changes and this field has a dependency, this will only rebuild the
   /// dependency so it gets updated accordingly
-  void rebuildDependencies(BuildContext context, String? jsonKeyDependency) {
-    _HybridWidget.rebuildFormSection(context, jsonKeyDependency);
+  void rebuildDependencies(BuildContext context, String id) {
+    _HybridWidget.rebuildFormSection(context, id);
   }
 
   /// If isScrollable and scrollToBottom are true and if the form is
