@@ -363,7 +363,7 @@ class _ArrayFormState extends State<_ArrayForm> {
                   var isItemAdded = false;
 
                   if (createArrayItemAs == ArrayItemAs.inner.name) {
-                    _addArrayItem(newJsonSchema);
+                    isItemAdded = true;
                   } else if (createArrayItemAs == ArrayItemAs.dialog.name) {
                     isItemAdded = await _createNewRoute(
                       newJsonSchema,
