@@ -323,6 +323,11 @@
               "sourcing",
               "contactDetails"
             ],
+            "ui:options": {
+              "expandable": true,
+              "createArrayItemAs": "dialog",
+              "editArrayItemAs": "dialog"
+            },
             "workDayType": {
               "ui:options": {
                 "inline": false

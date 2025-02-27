@@ -44,6 +44,14 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
   }
 
   @override
+  void didUpdateWidget(covariant _CustomFileUpload oldWidget) {
+    _file = widget.fileData;
+    _fileName = null;
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -67,7 +75,6 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                     : () {
                         _file = null;
                         widget.onFileChosen(null);
-                        setState(() {});
                       },
                 icon: const Icon(Icons.delete),
               ),
@@ -103,7 +110,6 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                           : () {
                               _file = null;
                               widget.onFileChosen(null);
-                              setState(() {});
                             },
                       icon: const Icon(Icons.delete),
                     ),
@@ -140,16 +146,11 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
       if (mounted) setState(() => _isLoading = true);
 
       try {
-        widget.onFileChosen(
-          // ignore: lines_longer_than_80_chars
-          base64,
-        );
         if (mounted) {
-          setState(() {
-            _file = base64;
-            _fileName = selectedFile.name;
-          });
+          _file = base64;
+          _fileName = selectedFile.name;
         }
+        widget.onFileChosen(base64);
       } catch (e) {
         if (kDebugMode) {
           print('Error during file encoding: $e');
@@ -181,16 +182,12 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
 
     if (file != null) {
       final base64 = await file.getBase64();
-      widget.onFileChosen(
-        // ignore: lines_longer_than_80_chars
-        base64,
-      );
 
-      setState(() {
-        _file = base64;
-        _fileName =
-            file.name.isEmpty ? DateTime.now().toIso8601String() : file.name;
-      });
+      _file = base64;
+      _fileName =
+          file.name.isEmpty ? DateTime.now().toIso8601String() : file.name;
+
+      widget.onFileChosen(base64);
     }
   }
 }

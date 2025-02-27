@@ -58,6 +58,10 @@ class UiSchema extends Equatable {
           return MapEntry(key, $InputTypeFromJson[value]);
         }
 
+        if (key == 'inline') {
+          return MapEntry(key, value as bool);
+        }
+
         return MapEntry(key, value as dynamic);
       });
     }

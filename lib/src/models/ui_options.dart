@@ -5,14 +5,43 @@
 /// and file uploads.
 enum UiOptions {
   /// If either `items` or `additionalItems` contains a schema object, an "add"
-  /// button for adding new items is shown by default. You can turn this off
-  /// with the `addable` option in the `uiSchema`.
+  /// button for adding new items is shown by default.
+  /// You can turn this off with the `addable` option set to false in the
+  /// `uiSchema`.
   addable,
 
-  /// A "remove" button is shown by default for an item if `items` contains
-  /// a schema object, or the item is an `additionalItems` instance.
-  /// You can turn this off with the `removable` option in the `uiSchema`.
+  /// If either `items` or `additionalItems` contains a schema object, a
+  /// "remove" button is shown by default.
+  /// You can turn this off with the `removable` option set to false in the
+  /// `uiSchema`.
   removable,
+
+  /// If either `items` or `additionalItems` contains a schema object, you can
+  /// wrap array items in an ExpansionTile so they don't take too much space
+  /// You can turn this on with the `expandable` option set to true in the
+  /// `uiSchema`.
+  ///
+  /// This property must be provided inside 'items' property in UiSchema in
+  /// order to work
+  expandable,
+
+  /// If either `items` or `additionalItems` contains a schema object, this can
+  /// be used to change the way an array item is created. Posible options are
+  /// 'dialog', 'screen' and 'inner'. Default to inner.
+  ///
+  /// This property must be provided inside 'items' property in UiSchema in
+  /// order to work
+  createArrayItemAs,
+
+  /// If either `items` or `additionalItems` contains a schema object, this can
+  /// be used to change the way an array item is edited. Posible options are
+  /// 'dialog', 'screen' and 'inner'. Default to dialog if expandable is true.
+  ///
+  /// This property only has effect if expandable is true.
+  ///
+  /// This property must be provided inside 'items' property in UiSchema in
+  /// order to work
+  editArrayItemAs,
 
   /// Used for file inputs when the `format` is specified in the `jsonSchema`.
   /// This option  can be used to specify particular file extensions to accept.
@@ -48,5 +77,10 @@ enum UiOptions {
   resolution,
 
   /// Used for building specific inputs, for now only tel is supported.
-  inputType;
+  inputType,
+
+  /// Used for indicating if widget should align children vertically or
+  /// horizontally.
+  /// This only applies when ui:widget is radio or checkbox
+  inline;
 }

@@ -5,26 +5,26 @@ part of '../jsonschema_form_builder.dart';
 class _HybridWidget extends StatelessWidget {
   const _HybridWidget.stateful({
     required this.buildFormSection,
-    required this.jsonKey,
+    required this.id,
   })  : isStateful = true,
         formSection = null;
 
   const _HybridWidget.stateless({
     required this.formSection,
   })  : isStateful = false,
-        jsonKey = null,
+        id = null,
         buildFormSection = null;
 
   final bool isStateful;
   final _FormSection? formSection;
   final Widget Function()? buildFormSection;
-  final String? jsonKey;
+  final String? id;
 
-  static void rebuildFormSection(BuildContext context, String? jsonKey) {
+  static void rebuildFormSection(BuildContext context, String id) {
     final provider =
         context.dependOnInheritedWidgetOfExactType<_InheritedProvider>();
 
-    final state = provider?.data?.getState(jsonKey);
+    final state = provider?.data?.getState(id);
 
     state?.rebuildFormSection();
   }
@@ -34,7 +34,7 @@ class _HybridWidget extends StatelessWidget {
     return isStateful
         ? _StatefulWrapper(
             buildFormSection: buildFormSection!,
-            jsonKey: jsonKey,
+            id: id!,
           )
         : formSection!;
   }
@@ -43,11 +43,11 @@ class _HybridWidget extends StatelessWidget {
 class _StatefulWrapper extends StatefulWidget {
   const _StatefulWrapper({
     required this.buildFormSection,
-    required this.jsonKey,
+    required this.id,
   });
 
   final Widget Function() buildFormSection;
-  final String? jsonKey;
+  final String id;
 
   @override
   State<_StatefulWrapper> createState() => _StatefulWrapperState();
@@ -59,12 +59,12 @@ class _StatefulWrapperState extends State<_StatefulWrapper> {
   @override
   void initState() {
     super.initState();
-    _instances[widget.jsonKey.toString()] = this;
+    _instances[widget.id] = this;
   }
 
   @override
   void dispose() {
-    _instances.remove(widget.jsonKey);
+    _instances.remove(widget.id);
     super.dispose();
   }
 
@@ -77,8 +77,8 @@ class _StatefulWrapperState extends State<_StatefulWrapper> {
     setState(() {});
   }
 
-  _StatefulWrapperState? getState(String? jsonKey) {
-    return _instances[jsonKey.toString()];
+  _StatefulWrapperState? getState(String id) {
+    return _instances[id];
   }
 }
 
