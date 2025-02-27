@@ -379,7 +379,7 @@ class _ArrayFormState extends State<_ArrayForm> {
                   }
 
                   if (isItemAdded) {
-                    _addArrayItem(newJsonSchema);
+                    _arrayItems.add(newJsonSchema);
 
                     /// If the array has a required validator, then when there
                     /// is an item added by the user, we will let the validator
@@ -387,6 +387,8 @@ class _ArrayFormState extends State<_ArrayForm> {
                     if (_arrayItems.length > _initialItems.length) {
                       field?.didChange(true);
                     }
+
+                    setState(() {});
 
                     widget.onItemAdded?.call(newJsonSchema);
                     widget.scrollToBottom?.call();
@@ -412,17 +414,27 @@ class _ArrayFormState extends State<_ArrayForm> {
     dynamic newFormData, {
     required bool isDialog,
   }) async {
-    final newFormWidget = _createNewFormWidget(
-      newJsonSchema,
-      newFormData,
-      _arrayItems.length,
-      true,
+    final formKey = GlobalKey<FormState>();
+    final newFormWidget = Form(
+      key: formKey,
+      child: _createNewFormWidget(
+        newJsonSchema,
+        newFormData,
+        _arrayItems.length,
+        true,
+      ),
     );
 
     final bool? isFormDataAdded;
 
     final addButon = TextButton(
-      onPressed: () => Navigator.of(context).pop(true),
+      onPressed: () {
+        final isFormValid = formKey.currentState?.validate() ?? false;
+
+        if (isFormValid) {
+          Navigator.of(context).pop(true);
+        }
+      },
       child: const Text('Confirm'),
     );
 
@@ -514,11 +526,6 @@ class _ArrayFormState extends State<_ArrayForm> {
       );
       items.add(removeButton);
     }
-  }
-
-  void _addArrayItem(JsonSchema jsonSchema) {
-    _arrayItems.add(jsonSchema);
-    setState(() {});
   }
 
   Widget _buildExpansionTile(
