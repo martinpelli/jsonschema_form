@@ -1,18 +1,20 @@
 # Jsonschema Form
 
-`jsonschema_form` is a Flutter package designed for developers to dynamically build forms using JSON Schema and UI Schema. It simplifies decoding schemas pre-populating forms and building them dynamically.
+`jsonschema_form` is a Flutter package designed for developers to dynamically build forms using jsonSchema, uiSchema and formData. These three objects are needed to build the form and they are tipically provided by backend. It simplifies decoding schemas pre-populating forms and building them dynamically.
 
 ## Features ✨
-- **Dynamic Form Creation**: Automatically generate forms from JSON Schema.
-- **Customizable UI**: Use UI Schema for tailored form styling.
+- **Dynamic Form Creation**: Automatically generate forms from a JSON schema.
+- **Customizable UI**: Use a UI schema for tailored form styling.
 - **Pre-Populated Data**: Initialize forms with pre-existing data and update as needed.
-- **Flexible Input Sources**: Load schema and data from assets, strings, or decoded JSON objects.
+- **Dependencies**: Build fields that depends on values from others. For exampe show an input if a radio button is marked as true.
+- **File support**: Allows the user to select a file from storage or take a photo/video
+- **Array support**: Allows arrays with items that can be added or removed dynamically by user
 
 ## Current Package Status ⚠️
 
 This package is currently under development in a very early development stage. The plan is to publish it on [pub.dev](https://pub.dev/).
 - **JsonSchema** is a model class that tells the form how it should be built. The currently *json* supported properties for now are:
-    - **title**: A human-readable name or label for a particular schema or field. It’s often displayed as the label or header when generating forms based on the schema. Can be empty.
+    - **title**: A human-readable name or label for a particular schema or field. It’s often displayed as the label or header when generating forms based on the schema.
     - **description**: Is shown above each field if is not null, providing neccessary information if needed.
     - **default**: Is the default value that this field takes. If there is data present on the corresponding formData property, this is ignored.
     - **type**: Defines the data type of a field or schema element. Possible types include "string", "number", "integer", "boolean", "array" and "object". It tells the UI what kind of input widget needs to be rendered.
@@ -30,6 +32,7 @@ This package is currently under development in a very early development stage. T
     - **format**: Allows to define specific format for some scenarios. If format is data-url a file upload form is built. If format is email, the TextFormField is adapted to an email input.
     - **minLength**: When the type is string this will be used as the minimum length user can enter in a TextFormField.
     - **maxLength**: When the type is string this will be used as the maximum length user can enter in a TextFormField.
+    - **readOnly**: If it is true then this field can't be modified. This is an alternative to readonly from uiSchema.
 
 - **UiSchema** is a model class that tells the form how it should looks like. The currently *json* supported properties for now are:
     - **ui:widget**: Defines the type of widget to be used for the given key.
@@ -40,16 +43,16 @@ This package is currently under development in a very early development stage. T
     - **ui:description**: Sometimes it's convenient to change the description of a field. This will be shown as a Text widget above the field.
     - **ui:help**: Provides a brief description under the field for helping de user.
     - **ui:readonly**: If the field is an input and readonly is true then the input can't be modified.
-    - **ui:options**: Defines options to be used for the given key, for instance: if options is { removable: false } then this indicates user can't delete items from array.
+    - **ui:options**: Defines options to be used for the given key, for instance: if options is { removable: false } then this indicates user can't delete items from array. See [UiOptons] enum class to see all available options.
+    - **ui:maxLines**: Indicates the maximum amount of lines that a TextFormField can have, this is only useful when [ui:widget] is text. If this value is null then 1 is used as default. If 0 is provided this value is infinite, which means that user can add as much lines as he wants
+    - **ui:order**: Defines the order in which fields should be displayed
+    - **ui:showArrayTitles**: If the jsonSchema type is array, this property is true by default. Pass false if you want to avoid a title with a divider on each array item.
  
 ### TODOs:
 - Add AllOf and AnyOff support to Json Schema
 - Widgets need to be reused in OneOf
 - Support referencing for reusable form definitions
 - Localize error messages
-- Improve Camera. There is a bug when building a preview.
-- Don’t rebuild the whole form when using dependencies but instead rebuild the specific field.
-- Default values may be replacing formData default values
 - upDown widget is not correctly implemented yet
 - Live Demo to showcase the package
 
@@ -61,7 +64,7 @@ As is not yet published at [pub.dev](https://pub.dev/). Install modifying your *
   jsonschema_form:
     git:
       url: https://github.com/martinpelli/jsonschema_form.git
-      ref: dev
+      ref: stable
 ```
 
 ---
@@ -76,36 +79,14 @@ import 'package:jsonschema_form/jsonschema_form.dart';
 
 ### Initializing a JsonSchemaForm class 🎬
 
-#### From a JSON Asset
-
-```sh
-final form = JsonschemaForm();
-await form.initFromJsonAsset('assets/form.json');
-```
-
-#### From a JSON String
-
-```sh
-final form = JsonschemaForm();
-form.initFromJsonString('{"jsonSchema": {...}, "uiSchema": {...}, "formData": {...}}');
-```
-
 #### From Decoded JSON
 
 ```sh
-final form = JsonschemaForm();
-form.initFromDecodedJson({
-  "jsonSchema": {...},
-  "uiSchema": {...},
-  "formData": {...},
-});
-```
-
-#### From Separate JSON Strings
-
-```sh
-final form = JsonschemaForm();
-form.initFromJsonsString('{...}', '{...}', '{...}')
+final form = JsonschemaForm(
+ "jsonSchema": {...}, // your jsonSchema coming from API
+  "uiSchema": {...},  // your uiSchema coming from API
+  "formData": {...},  // your formData coming from API
+);
 ```
 
 ### Build the form 🚀
@@ -113,11 +94,6 @@ form.initFromJsonsString('{...}', '{...}', '{...}')
 ```sh
 JsonschemaFormBuilder(
       jsonSchemaForm: jsonschemaForm, //Previously initialized JsonschemaForm class
-      onFormSubmitted: (formData) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(formData.toString()),
-          backgroundColor: Colors.green,
-        ));
       },
     );
 ```
