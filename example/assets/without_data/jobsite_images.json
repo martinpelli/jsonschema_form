@@ -30,10 +30,11 @@
   },
   "uiSchema": {
     "jobsiteImages": {
+      "ui:action": "Add Photo/Video",
+      "ui:alignment": "center",
       "items": {
         "ui:showArrayTitles": false,
         "file": {
-          "ui:title": "Upload file",
           "ui:widget": "file",
           "ui:options": {
             "camera": true,

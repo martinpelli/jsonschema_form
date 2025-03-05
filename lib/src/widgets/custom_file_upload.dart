@@ -93,7 +93,9 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
               if (widget.hasCameraButton) ...[
                 ElevatedButton(
                   onPressed: widget.readOnly ? null : _openCamera,
-                  child: Text(_getCameraButtonText()),
+                  child: const Text(
+                    'Open Camera',
+                  ),
                 ),
                 const SizedBox(width: 20),
               ],
@@ -122,16 +124,6 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
         const SizedBox(height: 10),
       ],
     );
-  }
-
-  String _getCameraButtonText() {
-    if (widget.isPhotoAllowed && widget.isVideoAllowed) {
-      return 'Take Photo/Video';
-    } else if (widget.isVideoAllowed) {
-      return 'Take Video';
-    } else {
-      return 'Take Photo';
-    }
   }
 
   Future<void> _openSingleFile() async {

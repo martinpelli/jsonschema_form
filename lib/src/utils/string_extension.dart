@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jsonschema_form/src/utils/file_type.dart';
 import 'package:mime/mime.dart';
@@ -79,7 +80,7 @@ extension StringExt on String {
   /// Returns `true` if the string is a valid URL with
   /// an `http` or `https` scheme.
   ///
-  /// This is a simple check using a regular expression to verify that 
+  /// This is a simple check using a regular expression to verify that
   /// the string starts with `http://` or `https://`,
   /// followed by a domain and other URL components.
   ///
@@ -104,7 +105,7 @@ extension StringExt on String {
   /// - `FileType.video` for video files (e.g., MP4, AVI, MKV)
   /// - `FileType.unknown` for unsupported or unknown file types.
   ///
-  /// The method compares the file extension or MIME type in the URL 
+  /// The method compares the file extension or MIME type in the URL
   /// to known image and video formats to return the correct `FileType`.
   ///
   /// Example:
@@ -168,7 +169,7 @@ extension StringExt on String {
     }
   }
 
-/// Fetches the media from the URL and returns an `XFile` with the media data.
+  /// Fetches the media from the URL and returns an `XFile` with the media data.
   ///
   /// This method performs an HTTP GET request to the provided URL,
   /// retrieves the media file (such as an image or video), and returns
@@ -203,6 +204,31 @@ extension StringExt on String {
       );
     } else {
       return null;
+    }
+  }
+
+  Alignment getAlignment() {
+    switch (this) {
+      case 'topLeft':
+        return Alignment.topLeft;
+      case 'topCenter':
+        return Alignment.topCenter;
+      case 'topRight':
+        return Alignment.topRight;
+      case 'centerLeft':
+        return Alignment.centerLeft;
+      case 'center':
+        return Alignment.center;
+      case 'centerRight':
+        return Alignment.centerRight;
+      case 'bottomLeft':
+        return Alignment.bottomLeft;
+      case 'bottomCenter':
+        return Alignment.bottomCenter;
+      case 'bottomRight':
+        return Alignment.bottomRight;
+      default:
+        return Alignment.center;
     }
   }
 }
