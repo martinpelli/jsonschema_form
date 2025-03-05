@@ -561,8 +561,8 @@ class _FormSection extends StatelessWidget {
 
     final isInnerEdit = ((previousUiSchema
                 ?.options?[UiOptions.editArrayItemAs.name] as String?) ??
-            ArrayItemAs.dialog) ==
-        ArrayItemAs.inner;
+            ArrayItemAs.dialog.name) ==
+        ArrayItemAs.inner.name;
 
     if (isWholeFormReadOnly || (isExpandable && !isInnerEdit && !isNewRoute)) {
       return true;
