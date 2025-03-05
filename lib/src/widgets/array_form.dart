@@ -492,12 +492,13 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     return widget.buildJsonschemaForm(
       newJsonSchema,
-      widget.jsonKey,
+      listOfMapsCastedFormData != null ? null : widget.jsonKey,
       uiSchema,
       newFormData,
       arrayIndex: index + _initialItems.length,
       previousSchema: widget.jsonSchema,
-      previousJsonKey: widget.previousJsonKey,
+      previousJsonKey:
+          listOfMapsCastedFormData != null ? null : widget.previousJsonKey,
       previousUiSchema: previousUiSchema,
       isNewRoute: isNewRoute,
     );
