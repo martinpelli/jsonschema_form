@@ -443,6 +443,20 @@ class _ArrayFormState extends State<_ArrayForm> {
         context: context,
         builder: (_) => AlertDialog(
           scrollable: true,
+          icon: Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              style: const ButtonStyle(
+                padding: WidgetStatePropertyAll(EdgeInsets.zero),
+              ),
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          iconPadding: const EdgeInsets.only(right: 10, top: 10),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           content: newFormWidget,
           actions: [addButon],
         ),
