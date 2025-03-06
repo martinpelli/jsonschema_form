@@ -326,7 +326,7 @@
             "ui:options": {
               "expandable": true,
               "createArrayItemAs": "dialog",
-              "editArrayItemAs": "dialog"
+              "editArrayItemAs": "inner"
             },
             "workDayType": {
               "ui:options": {

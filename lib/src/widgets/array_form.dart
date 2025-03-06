@@ -553,24 +553,28 @@ class _ArrayFormState extends State<_ArrayForm> {
       shape: const OutlineInputBorder(borderSide: BorderSide.none),
       tilePadding: EdgeInsets.zero,
       childrenPadding: EdgeInsets.zero,
-      trailing: PopupMenuButton(
-        icon: const Icon(Icons.more_vert_outlined),
-        padding: EdgeInsets.zero,
-        menuPadding: EdgeInsets.zero,
-        itemBuilder: (context) {
-          return [
-            if (onEditPressed != null)
-              PopupMenuItem<int>(
-                onTap: onEditPressed,
-                child: const Text('Edit'),
-              ),
-            PopupMenuItem<int>(
-              onTap: onRemovePressed,
-              child: const Text('Delete'),
+      trailing: (onEditPressed == null)
+          ? IconButton(
+              onPressed: onRemovePressed,
+              icon: const Icon(Icons.delete),
+            )
+          : PopupMenuButton(
+              icon: const Icon(Icons.more_vert_outlined),
+              padding: EdgeInsets.zero,
+              menuPadding: EdgeInsets.zero,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem<int>(
+                    onTap: onEditPressed,
+                    child: const Text('Edit'),
+                  ),
+                  PopupMenuItem<int>(
+                    onTap: onRemovePressed,
+                    child: const Text('Delete'),
+                  ),
+                ];
+              },
             ),
-          ];
-        },
-      ),
       title: Text(
         title,
         style: Theme.of(context).textTheme.headlineSmall,
