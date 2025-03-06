@@ -457,6 +457,8 @@ class _UiWidgetState extends State<_UiWidget> {
 
     final title = widget.getTitle();
 
+    final enableDeleteBtn = widget.arrayIndex == null;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: _CustomFormFieldValidator<String?>(
@@ -475,6 +477,7 @@ class _UiWidgetState extends State<_UiWidget> {
             title: title != null
                 ? "$title${widget.getIsRequired() ? '*' : ''}"
                 : null,
+            enableDeleteBtn: enableDeleteBtn,
             onFileChosen: (value) async {
               await _onFieldChangedWithValidator<String?>(field, value);
             },

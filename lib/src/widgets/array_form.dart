@@ -220,12 +220,6 @@ class _ArrayFormState extends State<_ArrayForm> {
         widget.onItemRemoved?.call();
       }
 
-      _addRemoveButtonIfNeeded(
-        items,
-        onRemovePressed,
-        isExpandable,
-      );
-
       final listOfMapsCastedFormData =
           DynamicUtils.tryParseListOfMaps(widget.formData);
 
@@ -233,11 +227,35 @@ class _ArrayFormState extends State<_ArrayForm> {
           ? listOfMapsCastedFormData[i]
           : widget.formData;
 
-      final newFormWidget = _createNewFormWidget(
-        _arrayItems[i],
-        newFormData,
-        i,
-        false,
+      final hasRemoveButton = !isExpandable &&
+          (widget.uiSchema?.options == null ||
+              (widget.uiSchema!.options!
+                      .containsKey(UiOptions.removable.name) &&
+                  widget.uiSchema!.options![UiOptions.removable.name] is bool &&
+                  (widget.uiSchema!.options![UiOptions.removable.name]
+                      as bool)));
+      //TODO:- This Row can be Stack so the items can take full width.
+      final newFormWidget = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: _createNewFormWidget(
+              _arrayItems[i],
+              newFormData,
+              i,
+              false,
+            ),
+          ),
+          if (hasRemoveButton)
+            SizedBox(
+              child: widget.getReadOnly()
+                  ? null
+                  : IconButton(
+                      onPressed: onRemovePressed,
+                      icon: const Icon(Icons.delete),
+                    ),
+            ),
+        ],
       );
 
       if (isExpandable) {
@@ -317,13 +335,15 @@ class _ArrayFormState extends State<_ArrayForm> {
         _arrayItems.length + minItems >= widget.jsonSchema.maxItems!;
 
     final hasAddButton = widget.uiSchema?.options == null ||
-        (widget.uiSchema!.options!.containsKey(UiOptions.addable.name) &&
+        (widget.uiSchema!.options!.containsKey(
+              UiOptions.addable.name,
+            ) &&
             widget.uiSchema!.options![UiOptions.addable.name] is bool &&
             (widget.uiSchema!.options![UiOptions.addable.name] as bool));
 
     final actionTitle = widget.uiSchema?.action;
-    final alignment = widget.uiSchema?.alignment ?? 'center';
-    
+    final alignment = widget.uiSchema?.alignment ?? 'centerRight';
+
     if (hasAddButton && !isMaxReached) {
       final addButton = Align(
         alignment: alignment.getAlignment(),
@@ -530,31 +550,6 @@ class _ArrayFormState extends State<_ArrayForm> {
       previousUiSchema: previousUiSchema,
       isNewRoute: isNewRoute,
     );
-  }
-
-  void _addRemoveButtonIfNeeded(
-    List<Widget> items,
-    VoidCallback onRemovePressed,
-    bool isExpandable,
-  ) {
-    final hasRemoveButton = !isExpandable &&
-        (widget.uiSchema?.options == null ||
-            (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
-                widget.uiSchema!.options![UiOptions.removable.name] is bool &&
-                (widget.uiSchema!.options![UiOptions.removable.name] as bool)));
-
-    if (hasRemoveButton) {
-      final removeButton = Align(
-        alignment: Alignment.centerRight,
-        child: widget.getReadOnly()
-            ? null
-            : IconButton(
-                onPressed: onRemovePressed,
-                icon: const Icon(Icons.remove),
-              ),
-      );
-      items.add(removeButton);
-    }
   }
 
   Widget _buildExpansionTile(

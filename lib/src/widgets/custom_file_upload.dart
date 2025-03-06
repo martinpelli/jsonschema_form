@@ -10,6 +10,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.title,
     required this.onFileChosen,
     required this.readOnly,
+    required this.enableDeleteBtn,
     this.fileData,
     this.resolution,
   });
@@ -22,6 +23,7 @@ class _CustomFileUpload extends StatefulWidget {
   final String? title;
   final void Function(String? value) onFileChosen;
   final bool readOnly;
+  final bool enableDeleteBtn;
   final String? fileData;
   final String? resolution;
 
@@ -64,20 +66,21 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
           ),
         if (_file != null)
           Row(
+            spacing: 10,
             children: [
               FilePreview(
                 fileData: _file!,
               ),
-              const SizedBox(width: 10),
-              IconButton(
-                onPressed: widget.readOnly
-                    ? null
-                    : () {
-                        _file = null;
-                        widget.onFileChosen(null);
-                      },
-                icon: const Icon(Icons.delete),
-              ),
+              if (widget.enableDeleteBtn)
+                IconButton(
+                  onPressed: widget.readOnly
+                      ? null
+                      : () {
+                          _file = null;
+                          widget.onFileChosen(null);
+                        },
+                  icon: const Icon(Icons.delete),
+                ),
             ],
           )
         else
