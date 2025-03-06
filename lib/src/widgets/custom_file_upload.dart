@@ -71,15 +71,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                 fileData: _file!,
               ),
               const SizedBox(width: 10),
-              IconButton(
-                onPressed: widget.readOnly
-                    ? null
-                    : () {
-                        _file = null;
-                        widget.onFileChosen(null);
-                      },
-                icon: const Icon(Icons.delete),
-              ),
+              _buildDeleteButton(),
             ],
           )
         else
@@ -106,22 +98,7 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                   children: [
                     Text(_fileName!),
                     const SizedBox(width: 10),
-                    IconButton(
-                      onPressed: widget.readOnly
-                          ? null
-                          : () {
-                              _file = null;
-                              widget.onFileChosen(null);
-
-                              ///If this widget is wrapped into a
-                              ///CustomFormFieldValidator then the rebuild will be
-                              ///trigger by the validator and setState is not needed
-                              if (!widget.hasValidator) {
-                                setState(() {});
-                              }
-                            },
-                      icon: const Icon(Icons.delete),
-                    ),
+                    _buildDeleteButton(),
                   ],
                 )
               else if (widget.hasFilePicker)
@@ -199,4 +176,21 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
       widget.onFileChosen(base64);
     }
   }
+
+  Widget _buildDeleteButton() => IconButton(
+        onPressed: widget.readOnly
+            ? null
+            : () {
+                _file = null;
+                widget.onFileChosen(null);
+
+                ///If this widget is wrapped into a
+                ///CustomFormFieldValidator then the rebuild will be
+                ///trigger by the validator and setState is not needed
+                if (!widget.hasValidator) {
+                  setState(() {});
+                }
+              },
+        icon: const Icon(Icons.delete),
+      );
 }
