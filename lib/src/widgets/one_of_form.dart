@@ -159,6 +159,7 @@ class _OneOfFormState extends State<_OneOfForm> {
         items: widget.jsonSchema.oneOf!,
         selectedItem: selectedOneOfJsonSchema,
         onDropdownValueSelected: onValueSelected,
+        hasValidator: false,
       );
     } else {
       final isVertical =
@@ -174,6 +175,7 @@ class _OneOfFormState extends State<_OneOfForm> {
         items: widget.jsonSchema.oneOf!,
         selectedItem: selectedOneOfJsonSchema,
         onRadioValueSelected: onValueSelected,
+        hasValidator: false,
       );
     }
   }

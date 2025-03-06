@@ -10,6 +10,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.title,
     required this.onFileChosen,
     required this.readOnly,
+    required this.hasValidator,
     this.fileData,
     this.resolution,
   });
@@ -22,6 +23,7 @@ class _CustomFileUpload extends StatefulWidget {
   final String? title;
   final void Function(String? value) onFileChosen;
   final bool readOnly;
+  final bool hasValidator;
   final String? fileData;
   final String? resolution;
 
@@ -110,6 +112,13 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                           : () {
                               _file = null;
                               widget.onFileChosen(null);
+
+                              ///If this widget is wrapped into a
+                              ///CustomFormFieldValidator then the rebuild will be
+                              ///trigger by the validator and setState is not needed
+                              if (!widget.hasValidator) {
+                                setState(() {});
+                              }
                             },
                       icon: const Icon(Icons.delete),
                     ),

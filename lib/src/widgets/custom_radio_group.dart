@@ -11,6 +11,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
     required this.onRadioValueSelected,
     required this.readOnly,
     required this.isVertical,
+    required this.hasValidator,
   });
 
   final String? label;
@@ -22,6 +23,7 @@ class _CustomRadioGroup<T> extends StatefulWidget {
   final void Function(T) onRadioValueSelected;
   final bool readOnly;
   final bool isVertical;
+  final bool hasValidator;
 
   @override
   State<_CustomRadioGroup<T>> createState() => _CustomRadioGroupState<T>();
@@ -100,6 +102,13 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
                   : (_) {
                       _selectedItem = item;
                       widget.onRadioValueSelected(item);
+
+                      ///If this widget is wrapped into a
+                      ///CustomFormFieldValidator then the rebuild will be
+                      ///trigger by the validator and setState is not needed
+                      if (!widget.hasValidator) {
+                        setState(() {});
+                      }
                     },
             ),
             Text(widget.itemLabel(index, item)),

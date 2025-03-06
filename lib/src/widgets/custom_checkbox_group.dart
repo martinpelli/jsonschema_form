@@ -12,6 +12,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
     required this.onCheckboxValuesSelected,
     required this.readOnly,
     required this.isVertical,
+    required this.hasValidator,
   });
 
   final String? label;
@@ -24,6 +25,7 @@ class _CustomCheckboxGroup<T> extends StatefulWidget {
   final String jsonKey;
   final bool readOnly;
   final bool isVertical;
+  final bool hasValidator;
 
   @override
   State<_CustomCheckboxGroup<T>> createState() => _CustomCheckboxGroupState();
@@ -118,6 +120,13 @@ class _CustomCheckboxGroupState<T> extends State<_CustomCheckboxGroup<T>> {
                       }
 
                       widget.onCheckboxValuesSelected(_selectedItems);
+
+                      ///If this widget is wrapped into a
+                      ///CustomFormFieldValidator then the rebuild will be
+                      ///trigger by the validator and setState is not needed
+                      if (!widget.hasValidator) {
+                        setState(() {});
+                      }
                     },
             ),
             Text(widget.itemLabel(index, item)),
