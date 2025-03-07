@@ -29,6 +29,7 @@ class UiSchema extends Equatable {
     this.options,
     this.readonly,
     this.order,
+    this.showArrayTitle,
     this.showArrayTitles,
     this.maxLines,
   });
@@ -78,6 +79,7 @@ class UiSchema extends Equatable {
       order: json['ui:order'] == null
           ? null
           : List<String>.from(json['ui:order']! as List<dynamic>),
+      showArrayTitle: json['ui:showArrayTitle'] as bool?,
       showArrayTitles: json['ui:showArrayTitles'] as bool?,
       maxLines: json['ui:maxLines'] as int?,
       options: options,
@@ -126,6 +128,10 @@ class UiSchema extends Equatable {
   final List<String>? order;
 
   /// If the jsonSchema type is array, this property is true by default. Pass
+  /// false if you want to avoid a general title for array items
+  final bool? showArrayTitle;
+
+  /// If the jsonSchema type is array, this property is true by default. Pass
   /// false if you want to avoid a title with a divider on each array item
   final bool? showArrayTitles;
 
@@ -138,7 +144,20 @@ class UiSchema extends Equatable {
 
   @override
   List<Object?> get props => [
+        children,
         widget,
+        autofocus,
+        emptyValue,
+        placeholder,
+        title,
+        description,
+        help,
+        options,
+        readonly,
+        order,
+        showArrayTitle,
+        showArrayTitles,
+        maxLines,
       ];
 }
 

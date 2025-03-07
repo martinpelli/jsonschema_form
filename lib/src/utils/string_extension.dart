@@ -211,14 +211,14 @@ extension StringExt on String {
 /// An extension on `String?` that provides a convenient method to convert
 /// a nullable string into an [Alignment] based on the string's value.
 ///
-/// This extension allows nullable string values to be mapped to 
+/// This extension allows nullable string values to be mapped to
 /// specific [Alignment] values, such as 'topLeft', 'center', 'bottomRight',
 /// etc. If the string is `null` or doesn't match any of the expected values,
 /// it defaults to [Alignment.center].
 extension OptionalStringExt on String? {
   /// Converts a nullable String into an [Alignment] based on its value.
   ///
-  /// If the string value is one of the predefined options 
+  /// If the string value is one of the predefined options
   /// (like 'topLeft', 'center', etc.), it will return the corresponding
   /// [Alignment]. If the value is null or not a recognized
   /// option, it will return [Alignment.center] by default.
@@ -243,9 +243,7 @@ extension OptionalStringExt on String? {
       case 'bottomRight':
         return Alignment.bottomRight;
       default:
-        // Returns a default value of Alignment.center
-        // if the string is not recognized or is null.
-        return Alignment.center;
+        return Alignment.centerRight;
     }
   }
 }
