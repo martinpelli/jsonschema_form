@@ -504,6 +504,10 @@ class _FormSection extends StatelessWidget {
     UiSchema? previousUiSchema,
     int? arrayIndex,
   ) {
+    if (!(uiSchema?.showArrayTitle ?? true)) {
+      return null;
+    }
+
     final isExpandable =
         (uiSchema?.options?[UiOptions.expandable.name] as bool?) ?? false;
     if (isExpandable) {
@@ -522,9 +526,6 @@ class _FormSection extends StatelessWidget {
       if (previousSchema?.uniqueItems ?? false) {
         return previousSchema?.title;
       } else if (uiSchema?.showArrayTitles ?? true) {
-        final isExpandable =
-            (previousUiSchema?.options?[UiOptions.expandable.name] as bool?) ??
-                false;
         if (!isExpandable) {
           return '${previousSchema?.title}-${arrayIndex + 1}';
         }

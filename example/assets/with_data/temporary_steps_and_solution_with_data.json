@@ -227,6 +227,7 @@
     },
       "uiSchema": {
         "helpers": {
+          "ui:showArrayTitle": false,
           "items": {
             "sourcing": {
               "ui:widget": "radio",
