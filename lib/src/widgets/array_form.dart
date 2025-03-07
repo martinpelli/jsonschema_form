@@ -348,7 +348,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         ? (widget.uiSchema!.options![UiOptions.addableText.name] as String)
         : null;
 
-    final alignment = (widget.uiSchema?.options?.containsKey(
+    final actionAlignment = (widget.uiSchema?.options?.containsKey(
               UiOptions.addableAlignment.name,
             ) ??
             false)
@@ -356,22 +356,25 @@ class _ArrayFormState extends State<_ArrayForm> {
         : null;
 
     if (hasAddButton && !isMaxReached) {
-      final addButton = Align(
-        alignment: alignment.getAlignment(),
-        child: actionTitle != null
-            ? ElevatedButton(
-                onPressed:
-                    widget.getReadOnly() ? null : () => onAddPressed(field),
-                child: Text(actionTitle),
-              )
-            : IconButton(
-                onPressed: widget.getReadOnly()
-                    ? null
-                    : () => onAddPressed(
-                          field,
-                        ),
-                icon: const Icon(Icons.add),
-              ),
+      final addButton = Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Align(
+          alignment: actionAlignment.getAlignment(),
+          child: actionTitle != null
+              ? ElevatedButton(
+                  onPressed:
+                      widget.getReadOnly() ? null : () => onAddPressed(field),
+                  child: Text(actionTitle),
+                )
+              : IconButton(
+                  onPressed: widget.getReadOnly()
+                      ? null
+                      : () => onAddPressed(
+                            field,
+                          ),
+                  icon: const Icon(Icons.add),
+                ),
+        ),
       );
 
       items.add(addButton);

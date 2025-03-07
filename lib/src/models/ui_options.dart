@@ -10,6 +10,17 @@ enum UiOptions {
   /// `uiSchema`.
   addable,
 
+  /// Used for adding custom text to the "addable" functionality.
+  /// This option allows for customization of the button or message text
+  /// that appears when adding new items in the UI.
+  addableText,
+
+  /// Used for aligning the "addable" UI feature.
+  /// This option controls the alignment of the "add" button or the added items,
+  /// allowing customization of the layout, such as whether it should align
+  /// to the left, center, or right. Defaults to centerRight
+  addableAlignment,
+
   /// If either `items` or `additionalItems` contains a schema object, a
   /// "remove" button is shown by default.
   /// You can turn this off with the `removable` option set to false in the
@@ -82,16 +93,5 @@ enum UiOptions {
   /// Used for indicating if widget should align children vertically or
   /// horizontally.
   /// This only applies when ui:widget is radio or checkbox.
-  inline,
-
-  /// Used for adding custom text to the "addable" functionality.
-  /// This option allows for customization of the button or message text
-  /// that appears when adding new items in the UI.
-  addableText,
-
-  /// Used for aligning the "addable" UI feature.
-  /// This option controls the alignment of the "add" button or the added items,
-  /// allowing customization of the layout, such as whether it should align
-  /// to the left, center, or right.
-  addableAlignment;
+  inline;
 }
