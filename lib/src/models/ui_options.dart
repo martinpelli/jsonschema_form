@@ -26,16 +26,16 @@ enum UiOptions {
   expandable,
 
   /// If either `items` or `additionalItems` contains a schema object, this can
-  /// be used to change the way an array item is created. Posible options are
-  /// 'dialog', 'screen' and 'inner'. Default to inner.
+  /// be used to change the way an array item is created. Possible options are
+  /// 'dialog', 'screen' and 'inner'. Defaults to 'inner'.
   ///
   /// This property must be provided inside 'items' property in UiSchema in
   /// order to work
   createArrayItemAs,
 
   /// If either `items` or `additionalItems` contains a schema object, this can
-  /// be used to change the way an array item is edited. Posible options are
-  /// 'dialog', 'screen' and 'inner'. Default to dialog if expandable is true.
+  /// be used to change the way an array item is edited. Possible options are
+  /// 'dialog', 'screen' and 'inner'. Defaults to 'dialog' if expandable is true
   ///
   /// This property only has effect if expandable is true.
   ///
@@ -44,7 +44,7 @@ enum UiOptions {
   editArrayItemAs,
 
   /// Used for file inputs when the `format` is specified in the `jsonSchema`.
-  /// This option  can be used to specify particular file extensions to accept.
+  /// This option can be used to specify particular file extensions to accept.
   /// Multiple extensions can be provided, separated by commas.
   /// For example, `.pdf,.mp4`.
   accept,
@@ -68,7 +68,7 @@ enum UiOptions {
 
   /// Used for file inputs when the `format` is specified in the `jsonSchema`.
   /// If `video` is set to true, the [camera] option will allow users to
-  /// take videos. If this option is not provided, it will default  to false.
+  /// take videos. If this option is not provided, it will default to false.
   video,
 
   /// Specifies the resolution option for media files (photos and videos).
@@ -81,6 +81,17 @@ enum UiOptions {
 
   /// Used for indicating if widget should align children vertically or
   /// horizontally.
-  /// This only applies when ui:widget is radio or checkbox
-  inline;
+  /// This only applies when ui:widget is radio or checkbox.
+  inline,
+
+  /// Used for adding custom text to the "addable" functionality.
+  /// This option allows for customization of the button or message text
+  /// that appears when adding new items in the UI.
+  addableText,
+
+  /// Used for aligning the "addable" UI feature.
+  /// This option controls the alignment of the "add" button or the added items,
+  /// allowing customization of the layout, such as whether it should align
+  /// to the left, center, or right.
+  addableAlignment;
 }

@@ -10,6 +10,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.title,
     required this.onFileChosen,
     required this.readOnly,
+    required this.enableDeleteBtn,
     required this.hasValidator,
     this.fileData,
     this.resolution,
@@ -23,6 +24,7 @@ class _CustomFileUpload extends StatefulWidget {
   final String? title;
   final void Function(String? value) onFileChosen;
   final bool readOnly;
+  final bool enableDeleteBtn;
   final bool hasValidator;
   final String? fileData;
   final String? resolution;
@@ -66,12 +68,12 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
           ),
         if (_file != null)
           Row(
+            spacing: 10,
             children: [
               FilePreview(
                 fileData: _file!,
               ),
-              const SizedBox(width: 10),
-              _buildDeleteButton(),
+              if (widget.enableDeleteBtn) _buildDeleteButton(),
             ],
           )
         else
@@ -87,7 +89,9 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
               if (widget.hasCameraButton) ...[
                 ElevatedButton(
                   onPressed: widget.readOnly ? null : _openCamera,
-                  child: Text(_getCameraButtonText()),
+                  child: const Text(
+                    'Open Camera',
+                  ),
                 ),
                 const SizedBox(width: 20),
               ],
@@ -95,10 +99,10 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                 const CircularProgressIndicator()
               else if (_file != null)
                 Row(
+                  spacing: 10,
                   children: [
                     Text(_fileName!),
-                    const SizedBox(width: 10),
-                    _buildDeleteButton(),
+                    if (widget.enableDeleteBtn) _buildDeleteButton(),
                   ],
                 )
               else if (widget.hasFilePicker)
@@ -108,16 +112,6 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
         const SizedBox(height: 10),
       ],
     );
-  }
-
-  String _getCameraButtonText() {
-    if (widget.isPhotoAllowed && widget.isVideoAllowed) {
-      return 'Take Photo/Video';
-    } else if (widget.isVideoAllowed) {
-      return 'Take Video';
-    } else {
-      return 'Take Photo';
-    }
   }
 
   Future<void> _openSingleFile() async {

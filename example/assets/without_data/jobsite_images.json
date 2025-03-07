@@ -33,7 +33,6 @@
       "items": {
         "ui:showArrayTitles": false,
         "file": {
-          "ui:title": "Upload file",
           "ui:widget": "file",
           "ui:options": {
             "camera": true,
@@ -46,7 +45,9 @@
       },
       "ui:options": {
         "addable": true,
-        "removable": true
+        "removable": true,
+        "addableText": "Add Photo/Video",
+        "addableAlignment": "center"
       }
     }
   },

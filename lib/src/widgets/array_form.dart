@@ -220,12 +220,6 @@ class _ArrayFormState extends State<_ArrayForm> {
         widget.onItemRemoved?.call();
       }
 
-      _addRemoveButtonIfNeeded(
-        items,
-        onRemovePressed,
-        isExpandable,
-      );
-
       final listOfMapsCastedFormData =
           DynamicUtils.tryParseListOfMaps(widget.formData);
 
@@ -233,11 +227,35 @@ class _ArrayFormState extends State<_ArrayForm> {
           ? listOfMapsCastedFormData[i]
           : widget.formData;
 
-      final newFormWidget = _createNewFormWidget(
-        _arrayItems[i],
-        newFormData,
-        i,
-        false,
+      final hasRemoveButton = !isExpandable &&
+          (widget.uiSchema?.options == null ||
+              (widget.uiSchema!.options!
+                      .containsKey(UiOptions.removable.name) &&
+                  widget.uiSchema!.options![UiOptions.removable.name] is bool &&
+                  (widget.uiSchema!.options![UiOptions.removable.name]
+                      as bool)));
+      // TODO: Convert this Row to a Stack so items can take full width.
+      final newFormWidget = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: _createNewFormWidget(
+              _arrayItems[i],
+              newFormData,
+              i,
+              false,
+            ),
+          ),
+          if (hasRemoveButton)
+            SizedBox(
+              child: widget.getReadOnly()
+                  ? null
+                  : IconButton(
+                      onPressed: onRemovePressed,
+                      icon: const Icon(Icons.delete),
+                    ),
+            ),
+        ],
       );
 
       if (isExpandable) {
@@ -317,96 +335,119 @@ class _ArrayFormState extends State<_ArrayForm> {
         _arrayItems.length + minItems >= widget.jsonSchema.maxItems!;
 
     final hasAddButton = widget.uiSchema?.options == null ||
-        (widget.uiSchema!.options!.containsKey(UiOptions.addable.name) &&
+        (widget.uiSchema!.options!.containsKey(
+              UiOptions.addable.name,
+            ) &&
             widget.uiSchema!.options![UiOptions.addable.name] is bool &&
             (widget.uiSchema!.options![UiOptions.addable.name] as bool));
 
+    final actionTitle = (widget.uiSchema?.options?.containsKey(
+              UiOptions.addableText.name,
+            ) ??
+            false)
+        ? (widget.uiSchema!.options![UiOptions.addableText.name] as String)
+        : null;
+
+    final alignment = (widget.uiSchema?.options?.containsKey(
+              UiOptions.addableAlignment.name,
+            ) ??
+            false)
+        ? (widget.uiSchema!.options![UiOptions.addableAlignment.name] as String)
+        : null;
+
     if (hasAddButton && !isMaxReached) {
       final addButton = Align(
-        alignment: Alignment.centerRight,
-        child: IconButton(
-          onPressed: widget.getReadOnly()
-              ? null
-              : () async {
-                  final hasAdditionalItems =
-                      widget.jsonSchema.additionalItems != null;
-
-                  final JsonSchema newJsonSchema;
-                  if (hasAdditionalItems) {
-                    newJsonSchema = widget.jsonSchema.additionalItems!;
-                  } else {
-                    newJsonSchema = widget.jsonSchema.items as JsonSchema;
-                  }
-
-                  final listOfMapsCastedFormData =
-                      DynamicUtils.tryParseListOfMaps(widget.formData);
-
-                  if (listOfMapsCastedFormData != null) {
-                    listOfMapsCastedFormData.add(<String, dynamic>{});
-                  } else if (widget.formData is List) {
-                    (widget.formData as List).add(
-                      DynamicUtils.isListOfMaps(widget.jsonSchema.items)
-                          ? <String, dynamic>{}
-                          : null,
-                    );
-                  }
-
-                  final newFormData = listOfMapsCastedFormData != null
-                      ? listOfMapsCastedFormData[_arrayItems.length]
-                      : widget.formData;
-
-                  final createArrayItemAs = (widget.uiSchema?.children?['items']
-                              ?.options?[UiOptions.createArrayItemAs.name]
-                          as String?) ??
-                      ArrayItemAs.inner.name;
-
-                  var isItemAdded = false;
-
-                  if (createArrayItemAs == ArrayItemAs.inner.name) {
-                    isItemAdded = true;
-                  } else if (createArrayItemAs == ArrayItemAs.dialog.name) {
-                    isItemAdded = await _createNewRoute(
-                      newJsonSchema,
-                      newFormData,
-                      isDialog: true,
-                    );
-                  } else if (createArrayItemAs == ArrayItemAs.screen.name) {
-                    isItemAdded = await _createNewRoute(
-                      newJsonSchema,
-                      newFormData,
-                      isDialog: false,
-                    );
-                  }
-
-                  if (isItemAdded) {
-                    _arrayItems.add(newJsonSchema);
-
-                    /// If the array has a required validator, then when there
-                    /// is an item added by the user, we will let the validator
-                    /// known that is valid because user added an item
-                    if (_arrayItems.length > _initialItems.length) {
-                      field?.didChange(true);
-                    }
-
-                    setState(() {});
-
-                    widget.onItemAdded?.call(newJsonSchema);
-                    widget.scrollToBottom?.call();
-                  } else {
-                    if (newFormData is List) {
-                      newFormData
-                          .removeAt(_arrayItems.length + _initialItems.length);
-                    }
-                  }
-                },
-          icon: const Icon(Icons.add),
-        ),
+        alignment: alignment.getAlignment(),
+        child: actionTitle != null
+            ? ElevatedButton(
+                onPressed:
+                    widget.getReadOnly() ? null : () => onAddPressed(field),
+                child: Text(actionTitle),
+              )
+            : IconButton(
+                onPressed: widget.getReadOnly()
+                    ? null
+                    : () => onAddPressed(
+                          field,
+                        ),
+                icon: const Icon(Icons.add),
+              ),
       );
 
       items.add(addButton);
     }
 
     return items;
+  }
+
+  Future<void> onAddPressed(FormFieldState<bool>? field) async {
+    final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
+
+    final JsonSchema newJsonSchema;
+    if (hasAdditionalItems) {
+      newJsonSchema = widget.jsonSchema.additionalItems!;
+    } else {
+      newJsonSchema = widget.jsonSchema.items as JsonSchema;
+    }
+
+    final listOfMapsCastedFormData =
+        DynamicUtils.tryParseListOfMaps(widget.formData);
+
+    if (listOfMapsCastedFormData != null) {
+      listOfMapsCastedFormData.add(<String, dynamic>{});
+    } else if (widget.formData is List) {
+      (widget.formData as List).add(
+        DynamicUtils.isListOfMaps(widget.jsonSchema.items)
+            ? <String, dynamic>{}
+            : null,
+      );
+    }
+
+    final newFormData = listOfMapsCastedFormData != null
+        ? listOfMapsCastedFormData[_arrayItems.length]
+        : widget.formData;
+
+    final createArrayItemAs = (widget.uiSchema?.children?['items']
+            ?.options?[UiOptions.createArrayItemAs.name] as String?) ??
+        ArrayItemAs.inner.name;
+
+    var isItemAdded = false;
+
+    if (createArrayItemAs == ArrayItemAs.inner.name) {
+      isItemAdded = true;
+    } else if (createArrayItemAs == ArrayItemAs.dialog.name) {
+      isItemAdded = await _createNewRoute(
+        newJsonSchema,
+        newFormData,
+        isDialog: true,
+      );
+    } else if (createArrayItemAs == ArrayItemAs.screen.name) {
+      isItemAdded = await _createNewRoute(
+        newJsonSchema,
+        newFormData,
+        isDialog: false,
+      );
+    }
+
+    if (isItemAdded) {
+      _arrayItems.add(newJsonSchema);
+
+      /// If the array has a required validator, then when there
+      /// is an item added by the user, we will let the validator
+      /// known that is valid because user added an item
+      if (_arrayItems.length > _initialItems.length) {
+        field?.didChange(true);
+      }
+
+      setState(() {});
+
+      widget.onItemAdded?.call(newJsonSchema);
+      widget.scrollToBottom?.call();
+    } else {
+      if (newFormData is List) {
+        newFormData.removeAt(_arrayItems.length + _initialItems.length);
+      }
+    }
   }
 
   Future<bool> _createNewRoute(
@@ -516,31 +557,6 @@ class _ArrayFormState extends State<_ArrayForm> {
       previousUiSchema: previousUiSchema,
       isNewRoute: isNewRoute,
     );
-  }
-
-  void _addRemoveButtonIfNeeded(
-    List<Widget> items,
-    VoidCallback onRemovePressed,
-    bool isExpandable,
-  ) {
-    final hasRemoveButton = !isExpandable &&
-        (widget.uiSchema?.options == null ||
-            (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
-                widget.uiSchema!.options![UiOptions.removable.name] is bool &&
-                (widget.uiSchema!.options![UiOptions.removable.name] as bool)));
-
-    if (hasRemoveButton) {
-      final removeButton = Align(
-        alignment: Alignment.centerRight,
-        child: widget.getReadOnly()
-            ? null
-            : IconButton(
-                onPressed: onRemovePressed,
-                icon: const Icon(Icons.remove),
-              ),
-      );
-      items.add(removeButton);
-    }
   }
 
   Widget _buildExpansionTile(

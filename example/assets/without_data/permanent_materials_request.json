@@ -1,151 +1,151 @@
 {
-    "jsonSchema":{
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "type",
-              "description",
-              "quantity",
-              "cost",
-              "acquireMethod"
-            ],
-            "properties": {
-              "cost": {
-                "type": "number",
-                "title": "Cost",
-                "default": 0,
-                "minimum": 0
-              },
-              "type": {
-                "enum": [
-                  "Parts",
-                  "Materials",
-                  "Equipment",
-                  "Additional Fees",
-                  "Units",
-                  "Tools",
-                  "Consumables"
-                ],
-                "type": "string",
-                "title": "Type"
-              },
-              "quantity": {
-                "type": "integer",
-                "title": "Quantity",
-                "default": 0,
-                "minimum": 0
-              },
-              "description": {
-                "type": "string",
-                "title": "Description",
-                "default": ""
-              },
-              "acquireMethod": {
-                "enum": [
-                  "I have it on-hand",
-                  "I can pick it up",
-                  "Need it delivered"
-                ],
-                "type": "string",
-                "title": "How will you acquire it?"
-              }
-            },
-            "dependencies": {
-              "acquireMethod": {
-                "oneOf": [
-                  {
-                    "required": [
-                      "deliveryAddress"
-                    ],
-                    "properties": {
-                      "acquireMethod": {
-                        "enum": [
-                          "Need it delivered"
-                        ]
-                      },
-                      "deliveryAddress": {
-                        "type": "string",
-                        "title": "Where do you need it delivered?",
-                        "default": ""
-                      }
-                    }
-                  },
-                  {
-                    "properties": {
-                      "acquireMethod": {
-                        "enum": [
-                          "I have it on-hand",
-                          "I can pick it up"
-                        ]
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "title": "Items"
-        }
-      },
-      "description": "Do you need anything to complete this job? If so, please use the form below to make your request."
-    },
-    "uiSchema": {
+  "jsonSchema": {
+    "type": "object",
+    "properties": {
       "items": {
+        "type": "array",
         "items": {
-          "cost": {
-            "ui:column": true,
-            "ui:widget": "updown",
-            "ui:options": {
-              "prefix": "$"
-            },
-            "ui:classNames": "w-1/2 pl-2",
-            "ui:placeholder": "0.00"
-          },
-          "type": {
-            "ui:widget": "select",
-            "ui:placeholder": "Select an option"
-          },
-          "quantity": {
-            "ui:column": true,
-            "ui:widget": "updown",
-            "ui:classNames": "w-1/2 pr-2",
-            "ui:placeholder": "0"
-          },
-          "ui:field": "QuantityCostField",
-          "ui:order": [
+          "type": "object",
+          "required": [
             "type",
             "description",
-            "*",
-            "acquireMethod",
-            "deliveryAddress"
+            "quantity",
+            "cost",
+            "acquireMethod"
           ],
-          "description": {
-            "ui:widget": "text",
-            "ui:placeholder": "Enter value"
-          },
-          "acquireMethod": {
-            "ui:widget": "radio",
-            "ui:options": {
-              "inline": false
+          "properties": {
+            "cost": {
+              "type": "number",
+              "title": "Cost",
+              "default": 0,
+              "minimum": 0
+            },
+            "type": {
+              "enum": [
+                "Parts",
+                "Materials",
+                "Equipment",
+                "Additional Fees",
+                "Units",
+                "Tools",
+                "Consumables"
+              ],
+              "type": "string",
+              "title": "Type"
+            },
+            "quantity": {
+              "type": "integer",
+              "title": "Quantity",
+              "default": 0,
+              "minimum": 0
+            },
+            "description": {
+              "type": "string",
+              "title": "Description",
+              "default": ""
+            },
+            "acquireMethod": {
+              "enum": [
+                "I have it on-hand",
+                "I can pick it up",
+                "Need it delivered"
+              ],
+              "type": "string",
+              "title": "How will you acquire it?"
             }
           },
-          "deliveryAddress": {
-            "ui:widget": "text",
-            "ui:placeholder": "Enter address (Street, City, State, ZIP)"
+          "dependencies": {
+            "acquireMethod": {
+              "oneOf": [
+                {
+                  "required": [
+                    "deliveryAddress"
+                  ],
+                  "properties": {
+                    "acquireMethod": {
+                      "enum": [
+                        "Need it delivered"
+                      ]
+                    },
+                    "deliveryAddress": {
+                      "type": "string",
+                      "title": "Where do you need it delivered?",
+                      "default": ""
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "acquireMethod": {
+                      "enum": [
+                        "I have it on-hand",
+                        "I can pick it up"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
           }
         },
-        "ui:options": {
-          "addText": "+ Add Item Request",
-          "addable": true,
-          "removable": true
-        }
+        "title": "Items"
       }
     },
-    "formData":{
-
+    "description": "Do you need anything to complete this job? If so, please use the form below to make your request."
+  },
+  "uiSchema": {
+    "items": {
+      "ui:action": "Add Material",
+      "ui:alignment": "center",
+      "items": {
+        "cost": {
+          "ui:column": true,
+          "ui:widget": "updown",
+          "ui:options": {
+            "prefix": "$"
+          },
+          "ui:classNames": "w-1/2 pl-2",
+          "ui:placeholder": "0.00"
+        },
+        "type": {
+          "ui:widget": "select",
+          "ui:placeholder": "Select an option"
+        },
+        "quantity": {
+          "ui:column": true,
+          "ui:widget": "updown",
+          "ui:classNames": "w-1/2 pr-2",
+          "ui:placeholder": "0"
+        },
+        "ui:field": "QuantityCostField",
+        "ui:order": [
+          "type",
+          "description",
+          "*",
+          "acquireMethod",
+          "deliveryAddress"
+        ],
+        "description": {
+          "ui:widget": "text",
+          "ui:placeholder": "Enter value"
+        },
+        "acquireMethod": {
+          "ui:widget": "radio",
+          "ui:options": {
+            "inline": false
+          }
+        },
+        "deliveryAddress": {
+          "ui:widget": "text",
+          "ui:placeholder": "Enter address (Street, City, State, ZIP)"
+        }
+      },
+      "ui:options": {
+        "addText": "+ Add Item Request",
+        "addable": true,
+        "removable": true
+      }
     }
+  },
+  "formData": {}
 }
