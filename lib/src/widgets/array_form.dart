@@ -359,25 +359,10 @@ class _ArrayFormState extends State<_ArrayForm> {
       final addButton = Align(
         alignment: alignment.getAlignment(),
         child: actionTitle != null
-            ? TextButton(
+            ? ElevatedButton(
                 onPressed:
                     widget.getReadOnly() ? null : () => onAddPressed(field),
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(8), // Keeps rounded corners
-                  ),
-                ).merge(
-                  Theme.of(context).textButtonTheme.style,
-                ), // Merge app's theme
-                child: Text(
-                  actionTitle,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge, // Uses default button text style
-                ),
+                child: Text(actionTitle),
               )
             : IconButton(
                 onPressed: widget.getReadOnly()
