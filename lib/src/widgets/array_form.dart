@@ -234,7 +234,7 @@ class _ArrayFormState extends State<_ArrayForm> {
                   widget.uiSchema!.options![UiOptions.removable.name] is bool &&
                   (widget.uiSchema!.options![UiOptions.removable.name]
                       as bool)));
-      //TODO:- This Row can be Stack so the items can take full width.
+      // TODO: Convert this Row to a Stack so items can take full width.
       final newFormWidget = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -360,33 +360,23 @@ class _ArrayFormState extends State<_ArrayForm> {
         alignment: alignment.getAlignment(),
         child: actionTitle != null
             ? TextButton(
-                onPressed: widget.getReadOnly()
-                    ? null
-                    : () => onAddPressed(
-                          field,
-                        ),
+                onPressed:
+                    widget.getReadOnly() ? null : () => onAddPressed(field),
                 style: TextButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  side: BorderSide(
-                    color: Theme.of(context).buttonTheme.colorScheme?.primary ??
-                        const Color(0xFF000000),
-                    width: 2,
-                  ), // Border color and width
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Rounded corners
+                    borderRadius:
+                        BorderRadius.circular(8), // Keeps rounded corners
                   ),
-                ),
+                ).merge(
+                  Theme.of(context).textButtonTheme.style,
+                ), // Merge app's theme
                 child: Text(
                   actionTitle,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontSize: 18,
-                        color: Theme.of(context)
-                                .buttonTheme
-                                .colorScheme
-                                ?.primary ??
-                            const Color(0xFF000000),
-                      ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge, // Uses default button text style
                 ),
               )
             : IconButton(

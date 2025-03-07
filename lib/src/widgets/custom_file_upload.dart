@@ -73,15 +73,6 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
               FilePreview(
                 fileData: _file!,
               ),
-              IconButton(
-                onPressed: widget.readOnly
-                    ? null
-                    : () {
-                        _file = null;
-                        widget.onFileChosen(null);
-                      },
-                icon: const Icon(Icons.delete),
-              ),
               if (widget.enableDeleteBtn) _buildDeleteButton(),
             ],
           )
