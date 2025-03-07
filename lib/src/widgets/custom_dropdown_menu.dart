@@ -8,6 +8,7 @@ class _CustomDropdownMenu<T> extends StatefulWidget {
     required this.items,
     required this.onDropdownValueSelected,
     required this.readOnly,
+    required this.hasValidator,
     this.selectedItem,
   });
 
@@ -17,6 +18,7 @@ class _CustomDropdownMenu<T> extends StatefulWidget {
   final List<T> items;
   final void Function(T) onDropdownValueSelected;
   final bool readOnly;
+  final bool hasValidator;
   final T? selectedItem;
 
   @override
@@ -65,6 +67,13 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
 
             _selectedItem = item;
             widget.onDropdownValueSelected(item);
+
+            ///If this widget is wrapped into a
+            ///CustomFormFieldValidator then the rebuild will be
+            ///trigger by the validator and setState is not needed
+            if (!widget.hasValidator) {
+              setState(() {});
+            }
           }
         },
         dropdownMenuEntries:

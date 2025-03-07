@@ -509,6 +509,20 @@ class _ArrayFormState extends State<_ArrayForm> {
         context: context,
         builder: (_) => AlertDialog(
           scrollable: true,
+          icon: Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              style: const ButtonStyle(
+                padding: WidgetStatePropertyAll(EdgeInsets.zero),
+              ),
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          iconPadding: const EdgeInsets.only(right: 10, top: 10),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           content: newFormWidget,
           actions: [addButon],
         ),
@@ -580,24 +594,28 @@ class _ArrayFormState extends State<_ArrayForm> {
       shape: const OutlineInputBorder(borderSide: BorderSide.none),
       tilePadding: EdgeInsets.zero,
       childrenPadding: EdgeInsets.zero,
-      trailing: PopupMenuButton(
-        icon: const Icon(Icons.more_vert_outlined),
-        padding: EdgeInsets.zero,
-        menuPadding: EdgeInsets.zero,
-        itemBuilder: (context) {
-          return [
-            if (onEditPressed != null)
-              PopupMenuItem<int>(
-                onTap: onEditPressed,
-                child: const Text('Edit'),
-              ),
-            PopupMenuItem<int>(
-              onTap: onRemovePressed,
-              child: const Text('Delete'),
+      trailing: (onEditPressed == null)
+          ? IconButton(
+              onPressed: onRemovePressed,
+              icon: const Icon(Icons.delete),
+            )
+          : PopupMenuButton(
+              icon: const Icon(Icons.more_vert_outlined),
+              padding: EdgeInsets.zero,
+              menuPadding: EdgeInsets.zero,
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem<int>(
+                    onTap: onEditPressed,
+                    child: const Text('Edit'),
+                  ),
+                  PopupMenuItem<int>(
+                    onTap: onRemovePressed,
+                    child: const Text('Delete'),
+                  ),
+                ];
+              },
             ),
-          ];
-        },
-      ),
       title: Text(
         title,
         style: Theme.of(context).textTheme.headlineSmall,

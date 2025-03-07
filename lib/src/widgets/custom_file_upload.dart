@@ -11,6 +11,7 @@ class _CustomFileUpload extends StatefulWidget {
     required this.onFileChosen,
     required this.readOnly,
     required this.enableDeleteBtn,
+    required this.hasValidator,
     this.fileData,
     this.resolution,
   });
@@ -24,6 +25,7 @@ class _CustomFileUpload extends StatefulWidget {
   final void Function(String? value) onFileChosen;
   final bool readOnly;
   final bool enableDeleteBtn;
+  final bool hasValidator;
   final String? fileData;
   final String? resolution;
 
@@ -71,16 +73,16 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
               FilePreview(
                 fileData: _file!,
               ),
-              if (widget.enableDeleteBtn)
-                IconButton(
-                  onPressed: widget.readOnly
-                      ? null
-                      : () {
-                          _file = null;
-                          widget.onFileChosen(null);
-                        },
-                  icon: const Icon(Icons.delete),
-                ),
+              IconButton(
+                onPressed: widget.readOnly
+                    ? null
+                    : () {
+                        _file = null;
+                        widget.onFileChosen(null);
+                      },
+                icon: const Icon(Icons.delete),
+              ),
+              if (widget.enableDeleteBtn) _buildDeleteButton(),
             ],
           )
         else
@@ -106,18 +108,10 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
                 const CircularProgressIndicator()
               else if (_file != null)
                 Row(
+                  spacing: 10,
                   children: [
                     Text(_fileName!),
-                    const SizedBox(width: 10),
-                    IconButton(
-                      onPressed: widget.readOnly
-                          ? null
-                          : () {
-                              _file = null;
-                              widget.onFileChosen(null);
-                            },
-                      icon: const Icon(Icons.delete),
-                    ),
+                    if (widget.enableDeleteBtn) _buildDeleteButton(),
                   ],
                 )
               else if (widget.hasFilePicker)
@@ -185,4 +179,21 @@ class _CustomFileUploadState extends State<_CustomFileUpload>
       widget.onFileChosen(base64);
     }
   }
+
+  Widget _buildDeleteButton() => IconButton(
+        onPressed: widget.readOnly
+            ? null
+            : () {
+                _file = null;
+                widget.onFileChosen(null);
+
+                ///If this widget is wrapped into a
+                ///CustomFormFieldValidator then the rebuild will be
+                ///trigger by the validator and setState is not needed
+                if (!widget.hasValidator) {
+                  setState(() {});
+                }
+              },
+        icon: const Icon(Icons.delete),
+      );
 }

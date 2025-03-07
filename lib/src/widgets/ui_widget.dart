@@ -163,6 +163,7 @@ class _UiWidgetState extends State<_UiWidget> {
             onDropdownValueSelected: (value) {
               _onFieldChangedWithValidator<String>(field, value);
             },
+            hasValidator: widget.getIsRequired(),
           );
         },
       ),
@@ -206,6 +207,7 @@ class _UiWidgetState extends State<_UiWidget> {
             onRadioValueSelected: (value) {
               _onFieldChangedWithValidator<String>(field, value);
             },
+            hasValidator: widget.getIsRequired(),
           );
         },
       ),
@@ -250,6 +252,7 @@ class _UiWidgetState extends State<_UiWidget> {
             onRadioValueSelected: (value) {
               _onFieldChangedWithValidator<bool>(field, value);
             },
+            hasValidator: widget.getIsRequired(),
           );
         },
       ),
@@ -296,6 +299,7 @@ class _UiWidgetState extends State<_UiWidget> {
               value.isNotEmpty && value.first,
             );
           },
+          hasValidator: widget.getIsRequired(),
         );
       },
     );
@@ -337,6 +341,7 @@ class _UiWidgetState extends State<_UiWidget> {
           onCheckboxValuesSelected: (value) {
             _onFieldChangedWithValidator<List<String>>(field, value);
           },
+          hasValidator: widget.getIsRequired(),
         );
       },
     );
@@ -485,6 +490,7 @@ class _UiWidgetState extends State<_UiWidget> {
             isVideoAllowed: isVideoAllowed,
             fileData: field?.value ?? initialValue,
             resolution: resolution,
+            hasValidator: widget.getIsRequired(),
           );
         },
       ),
