@@ -30,8 +30,6 @@
   },
   "uiSchema": {
     "jobsiteImages": {
-      "ui:action": "Add Photo/Video",
-      "ui:alignment": "center",
       "items": {
         "ui:showArrayTitles": false,
         "file": {
@@ -47,7 +45,9 @@
       },
       "ui:options": {
         "addable": true,
-        "removable": true
+        "removable": true,
+        "addableText": "Add Photo/Video",
+        "addableAlignment": "center"
       }
     }
   },

@@ -341,8 +341,19 @@ class _ArrayFormState extends State<_ArrayForm> {
             widget.uiSchema!.options![UiOptions.addable.name] is bool &&
             (widget.uiSchema!.options![UiOptions.addable.name] as bool));
 
-    final actionTitle = widget.uiSchema?.action;
-    final alignment = widget.uiSchema?.alignment ?? 'centerRight';
+    final actionTitle = (widget.uiSchema?.options?.containsKey(
+              UiOptions.addableText.name,
+            ) ??
+            false)
+        ? (widget.uiSchema!.options![UiOptions.addableText.name] as String)
+        : null;
+
+    final alignment = (widget.uiSchema?.options?.containsKey(
+              UiOptions.addableAlignment.name,
+            ) ??
+            false)
+        ? (widget.uiSchema!.options![UiOptions.addableAlignment.name] as String)
+        : null;
 
     if (hasAddButton && !isMaxReached) {
       final addButton = Align(
@@ -355,8 +366,11 @@ class _ArrayFormState extends State<_ArrayForm> {
                           field,
                         ),
                 style: TextButton.styleFrom(
-                  side: const BorderSide(
-                    color: Colors.blue,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  side: BorderSide(
+                    color: Theme.of(context).buttonTheme.colorScheme?.primary ??
+                        const Color(0xFF000000),
                     width: 2,
                   ), // Border color and width
                   shape: RoundedRectangleBorder(
@@ -365,10 +379,14 @@ class _ArrayFormState extends State<_ArrayForm> {
                 ),
                 child: Text(
                   actionTitle,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.blue,
-                  ),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontSize: 18,
+                        color: Theme.of(context)
+                                .buttonTheme
+                                .colorScheme
+                                ?.primary ??
+                            const Color(0xFF000000),
+                      ),
                 ),
               )
             : IconButton(

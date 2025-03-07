@@ -24,8 +24,6 @@ class UiSchema extends Equatable {
     this.emptyValue,
     this.placeholder,
     this.title,
-    this.action,
-    this.alignment,
     this.description,
     this.help,
     this.options,
@@ -74,8 +72,6 @@ class UiSchema extends Equatable {
       emptyValue: json['ui:emptyValue'] as String?,
       placeholder: json['ui:placeholder'] as String?,
       title: json['ui:title'] as String?,
-      action: json['ui:action'] as String?,
-      alignment: json['ui:alignment'] as String?,
       description: json['ui:description'] as String?,
       help: json['ui:help'] as String?,
       readonly: json['ui:readonly'] as bool?,
@@ -107,10 +103,6 @@ class UiSchema extends Equatable {
   /// The title of a field. If this is null, jsonSchema.title will be used and
   /// if jsonSchema.title is null the jsonKey will be used as title.
   final String? title;
-
-  final String? action;
-
-  final String? alignment;
 
   /// Sometimes it's convenient to change the description of a field. This will
   /// be shown as a Text widget above the field
