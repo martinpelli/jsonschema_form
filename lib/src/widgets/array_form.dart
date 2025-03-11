@@ -46,6 +46,8 @@ class _ArrayFormState extends State<_ArrayForm> {
 
   final List<Widget> _initialItems = [];
 
+  final List<ExpansionTileController> _expansionTileControllers = [];
+
   @override
   void initState() {
     super.initState();
@@ -193,14 +195,27 @@ class _ArrayFormState extends State<_ArrayForm> {
   List<Widget> _buildArrayItems(FormFieldState<bool>? field) {
     final items = <Widget>[];
 
+    final isExpandable = (widget.uiSchema?.children?['items']
+            ?.options?[UiOptions.expandable.name] as bool?) ??
+        false;
+
+    final listOfMapsCastedFormData =
+        DynamicUtils.tryParseListOfMaps(widget.formData);
+
+    final hasRemoveButton = !isExpandable &&
+        (widget.uiSchema?.options == null ||
+            (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
+                widget.uiSchema!.options![UiOptions.removable.name] is bool &&
+                (widget.uiSchema!.options![UiOptions.removable.name] as bool)));
+
+    final editArrayItemAs = (widget.uiSchema?.children?['items']
+            ?.options?[UiOptions.editArrayItemAs.name] as String?) ??
+        ArrayItemAs.dialog.name;
+
     /// Builds items that user has added using (+) button from the form
     /// They can be removed if [removable] is not present or is set to false
     /// in the corresponding [uiSchema] property
     for (var i = 0; i < _arrayItems.length; i++) {
-      final isExpandable = (widget.uiSchema?.children?['items']
-              ?.options?[UiOptions.expandable.name] as bool?) ??
-          false;
-
       void onRemovePressed() {
         if (widget.formData is List) {
           (widget.formData as List).removeAt(i + _initialItems.length);
@@ -220,21 +235,11 @@ class _ArrayFormState extends State<_ArrayForm> {
         widget.onItemRemoved?.call();
       }
 
-      final listOfMapsCastedFormData =
-          DynamicUtils.tryParseListOfMaps(widget.formData);
-
       final newFormData = listOfMapsCastedFormData != null
           ? listOfMapsCastedFormData[i]
           : widget.formData;
 
-      final hasRemoveButton = !isExpandable &&
-          (widget.uiSchema?.options == null ||
-              (widget.uiSchema!.options!
-                      .containsKey(UiOptions.removable.name) &&
-                  widget.uiSchema!.options![UiOptions.removable.name] is bool &&
-                  (widget.uiSchema!.options![UiOptions.removable.name]
-                      as bool)));
-      // TODO: Convert this Row to a Stack so items can take full width.
+      // TODO(qaysdwekat): convert this Row to a Stack to take full width.
       final newFormWidget = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -259,10 +264,6 @@ class _ArrayFormState extends State<_ArrayForm> {
       );
 
       if (isExpandable) {
-        final editArrayItemAs = (widget.uiSchema?.children?['items']
-                ?.options?[UiOptions.editArrayItemAs.name] as String?) ??
-            ArrayItemAs.dialog.name;
-
         Future<void> onEditPressed() async {
           final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
 
@@ -312,6 +313,7 @@ class _ArrayFormState extends State<_ArrayForm> {
         }
 
         final expandedNewFormWidget = _buildExpansionTile(
+          i,
           '${widget.jsonSchema.title}-${i + 1}',
           newFormWidget,
           editArrayItemAs == ArrayItemAs.inner.name ? null : onEditPressed,
@@ -357,13 +359,17 @@ class _ArrayFormState extends State<_ArrayForm> {
 
     if (hasAddButton && !isMaxReached) {
       final addButton = Padding(
-        padding: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 24),
         child: Align(
           alignment: actionAlignment.getAlignment(),
           child: actionTitle != null
               ? ElevatedButton(
-                  onPressed:
-                      widget.getReadOnly() ? null : () => onAddPressed(field),
+                  onPressed: widget.getReadOnly()
+                      ? null
+                      : () => onAddPressed(
+                            field,
+                            isExpandable: isExpandable,
+                          ),
                   child: Text(actionTitle),
                 )
               : IconButton(
@@ -371,6 +377,7 @@ class _ArrayFormState extends State<_ArrayForm> {
                       ? null
                       : () => onAddPressed(
                             field,
+                            isExpandable: isExpandable,
                           ),
                   icon: const Icon(Icons.add),
                 ),
@@ -383,7 +390,10 @@ class _ArrayFormState extends State<_ArrayForm> {
     return items;
   }
 
-  Future<void> onAddPressed(FormFieldState<bool>? field) async {
+  Future<void> onAddPressed(
+    FormFieldState<bool>? field, {
+    required bool isExpandable,
+  }) async {
     final hasAdditionalItems = widget.jsonSchema.additionalItems != null;
 
     final JsonSchema newJsonSchema;
@@ -433,6 +443,10 @@ class _ArrayFormState extends State<_ArrayForm> {
     }
 
     if (isItemAdded) {
+      if (isExpandable) {
+        _expansionTileControllers.add(ExpansionTileController());
+      }
+
       _arrayItems.add(newJsonSchema);
 
       /// If the array has a required validator, then when there
@@ -563,12 +577,23 @@ class _ArrayFormState extends State<_ArrayForm> {
   }
 
   Widget _buildExpansionTile(
+    int index,
     String title,
     Widget newFormWidget,
     void Function()? onEditPressed,
     void Function() onRemovePressed,
   ) {
     return ExpansionTile(
+      controller: _expansionTileControllers[index],
+      onExpansionChanged: (isExpanded) {
+        if (isExpanded) {
+          for (var i = 0; i < _expansionTileControllers.length; i++) {
+            if (i != index) {
+              _expansionTileControllers[i].collapse();
+            }
+          }
+        }
+      },
       shape: const OutlineInputBorder(borderSide: BorderSide.none),
       tilePadding: EdgeInsets.zero,
       childrenPadding: EdgeInsets.zero,
