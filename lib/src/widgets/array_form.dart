@@ -483,6 +483,9 @@ class _ArrayFormState extends State<_ArrayForm> {
     } else {
       if (newFormData is List) {
         newFormData.removeAt(_arrayItems.length + _initialItems.length);
+      } else if (widget.formData is List) {
+        (widget.formData as List)
+            .removeAt(_arrayItems.length + _initialItems.length);
       }
     }
   }
