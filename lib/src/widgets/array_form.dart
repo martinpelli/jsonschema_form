@@ -48,6 +48,8 @@ class _ArrayFormState extends State<_ArrayForm> {
 
   final List<ExpansionTileController> _expansionTileControllers = [];
 
+  late final bool isExpandable;
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +72,13 @@ class _ArrayFormState extends State<_ArrayForm> {
 
   void _initItems() {
     var initialItemsLength = _initialItems.length;
+
+    /// If [isExpandable] is true because is set to tre in its corresponding
+    /// ui:option then a controller needs to be added for each item in order to
+    /// expand or collapse a single item at a time
+    isExpandable = (widget.uiSchema?.children?['items']
+            ?.options?[UiOptions.expandable.name] as bool?) ??
+        false;
 
     /// If [additionalItems] property from the corresponding [jsonSchema] is
     /// present then the user is allowed to add additional items for the given
@@ -100,6 +109,10 @@ class _ArrayFormState extends State<_ArrayForm> {
             isNewRoute: widget.isNewRoute,
           ),
         );
+
+        if (isExpandable) {
+          _expansionTileControllers.add(ExpansionTileController());
+        }
       }
     }
 
@@ -127,6 +140,10 @@ class _ArrayFormState extends State<_ArrayForm> {
             isNewRoute: widget.isNewRoute,
           ),
         );
+
+        if (isExpandable) {
+          _expansionTileControllers.add(ExpansionTileController());
+        }
       }
     }
 
@@ -155,6 +172,10 @@ class _ArrayFormState extends State<_ArrayForm> {
           isNewRoute: widget.isNewRoute,
         ),
       );
+
+      if (isExpandable) {
+        _expansionTileControllers.add(ExpansionTileController());
+      }
     }
 
     initialItemsLength = _initialItems.length;
@@ -169,6 +190,9 @@ class _ArrayFormState extends State<_ArrayForm> {
               ? widget.jsonSchema.additionalItems!
               : widget.jsonSchema.items as JsonSchema,
         );
+        if (isExpandable) {
+          _expansionTileControllers.add(ExpansionTileController());
+        }
       }
     }
   }
@@ -194,10 +218,6 @@ class _ArrayFormState extends State<_ArrayForm> {
 
   List<Widget> _buildArrayItems(FormFieldState<bool>? field) {
     final items = <Widget>[];
-
-    final isExpandable = (widget.uiSchema?.children?['items']
-            ?.options?[UiOptions.expandable.name] as bool?) ??
-        false;
 
     final listOfMapsCastedFormData =
         DynamicUtils.tryParseListOfMaps(widget.formData);
