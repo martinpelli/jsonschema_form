@@ -1,4 +1,4 @@
-import 'package:appinio_video_player/appinio_video_player.dart';
+import 'package:appinio_video_player_plus/appinio_video_player_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +22,7 @@ class MediaPlayerView extends StatefulWidget {
 }
 
 class _MediaPlayerViewState extends State<MediaPlayerView> {
-  late CachedVideoPlayerController _videoPlayerController;
+  late CachedVideoPlayerPlusController _videoPlayerController;
 
   late CustomVideoPlayerController _customVideoPlayerController;
   late CustomVideoPlayerWebController _customVideoPlayerWebController;
@@ -40,8 +40,8 @@ class _MediaPlayerViewState extends State<MediaPlayerView> {
   void initState() {
     super.initState();
 
-    _videoPlayerController = CachedVideoPlayerController.network(
-      widget.path,
+    _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
+      Uri.https(widget.path),
     )..initialize().then((value) => setState(() {}));
     _customVideoPlayerController = CustomVideoPlayerController(
       context: context,
