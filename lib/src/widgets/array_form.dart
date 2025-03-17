@@ -169,6 +169,7 @@ class _ArrayFormState extends State<_ArrayForm> {
               ? widget.jsonSchema.additionalItems!
               : widget.jsonSchema.items as JsonSchema,
         );
+        _expansionTileControllers.add(ExpansionTileController());
       }
     }
   }

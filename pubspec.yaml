@@ -10,7 +10,7 @@ environment:
   flutter: ^3.27.3
 
 dependencies:
-  appinio_video_player: ^1.3.0
+  appinio_video_player_plus: ^1.0.7
   collection: ^1.18.0
   equatable: ^2.0.3
   extended_image: ^9.1.0
