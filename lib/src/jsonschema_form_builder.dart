@@ -277,6 +277,13 @@ class JsonschemaFormBuilderState extends State<JsonschemaFormBuilder> {
       if (formFieldKey.currentState != null &&
           formFieldKey.currentContext != null) {
         if (formFieldKey.currentState!.hasError) {
+          /// If the fied with an error is inside an expansion tile, then the
+          /// expansion tile is opened
+          final expansionTile = formFieldKey.currentContext
+              ?.findAncestorWidgetOfExactType<ExpansionTile>();
+
+          expansionTile?.controller?.expand();
+
           return formFieldKey.currentContext!;
         }
       }
