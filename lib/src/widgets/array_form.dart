@@ -607,6 +607,7 @@ class _ArrayFormState extends State<_ArrayForm> {
     void Function() onRemovePressed,
   ) {
     return ExpansionTile(
+      maintainState: true,
       controller: _expansionTileControllers[index],
       onExpansionChanged: (isExpanded) {
         if (isExpanded) {
