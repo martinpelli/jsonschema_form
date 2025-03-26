@@ -24,6 +24,10 @@
           "bio": {
             "type": "string",
             "title": "Bio"
+          },
+          "weight": {
+            "type": "float",
+            "title": "Weight"
           }
         }
       },
