@@ -9,6 +9,9 @@ enum JsonType {
   /// Represents an int in dart
   integer,
 
+  /// Represents a double in dart
+  float,
+
   /// Represents a bool in dart
   boolean,
 

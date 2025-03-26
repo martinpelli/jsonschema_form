@@ -626,7 +626,10 @@ class _UiWidgetState extends State<_UiWidget> {
     final isEmailTextFormField =
         widget.jsonSchema.format == JsonSchemaFormat.email;
 
-    final isNumberTextFormFiled = widget.jsonSchema.type == JsonType.number;
+    final isNumberTextFormField = widget.jsonSchema.type == JsonType.number ||
+        widget.jsonSchema.type == JsonType.integer;
+
+    final isFloatTextformField = widget.jsonSchema.type == JsonType.float;
 
     if (isEmailTextFormField) {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -639,6 +642,18 @@ class _UiWidgetState extends State<_UiWidget> {
 
         return null;
       });
+    }
+
+    TextInputType? getKeyboardType() {
+      if (isEmailTextFormField) {
+        return TextInputType.emailAddress;
+      } else if (isNumberTextFormField) {
+        return TextInputType.number;
+      } else if (isFloatTextformField) {
+        return const TextInputType.numberWithOptions(decimal: true);
+      }
+
+      return null;
     }
 
     _addMinLengthValidator(validators);
@@ -662,14 +677,12 @@ class _UiWidgetState extends State<_UiWidget> {
         maxLines: widget.uiSchema?.maxLines == 0
             ? null
             : widget.uiSchema?.maxLines ?? 1,
-        inputFormatters: isNumberTextFormFiled
-            ? [FilteringTextInputFormatter.digitsOnly]
-            : null,
-        keyboardType: isEmailTextFormField
-            ? TextInputType.emailAddress
-            : isNumberTextFormFiled
-                ? TextInputType.number
-                : null,
+        inputFormatters: [
+          if (isNumberTextFormField) FilteringTextInputFormatter.digitsOnly,
+          if (isFloatTextformField)
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+        ],
+        keyboardType: getKeyboardType(),
         hasRequiredValidator: widget.getIsRequired(),
         validator: validators.isEmpty
             ? null
