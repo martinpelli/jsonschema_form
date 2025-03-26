@@ -62,8 +62,8 @@ class JsonSchema extends Equatable {
   final dynamic defaultValue;
 
   /// Defines the data type of a field or schema element.
-  /// Possible types include "string", "number", "integer", "boolean", "array",
-  /// and "object"
+  /// Possible types include "string", "number", "integer", "float", "boolean",
+  /// "array" and "object"
   /// It tells the UI what kind of input widget needs to be rendered
   final JsonType? type;
 
