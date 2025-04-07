@@ -63,12 +63,6 @@ class _StatefulWrapperState extends State<_StatefulWrapper> {
   }
 
   @override
-  void dispose() {
-    _instances.remove(widget.id);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return _InheritedProvider(data: this, child: widget.buildFormSection());
   }
