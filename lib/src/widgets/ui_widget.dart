@@ -88,8 +88,6 @@ class _UiWidgetState extends State<_UiWidget> {
     } else if (_isCheckboxGroup()) {
       final initialValues = (widget.formData as List).cast<String>();
       return _buildCheckboxGroup(initialValues);
-    } else if (_isUpDown()) {
-      return _buildUpDown(initialStringValue);
     } else if (_isFile()) {
       return _buildFile(initialStringValue);
     } else if (_isDate()) {
@@ -345,31 +343,6 @@ class _UiWidgetState extends State<_UiWidget> {
     );
   }
 
-  bool _isUpDown() => widget.uiSchema?.widget == UiType.updown;
-
-  Widget _buildUpDown(String? initialValue) {
-    final title = widget.getTitle();
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: _CustomTextFormField(
-        formFieldKey: _formFieldKey,
-        readOnly: widget.getReadOnly(),
-        onChanged: _onFieldChanged,
-        hasRequiredValidator: widget.getIsRequired(),
-        labelText:
-            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        defaultValue: initialValue,
-        emptyValue: widget.uiSchema?.emptyValue,
-        placeholder: widget.uiSchema?.placeholder,
-        helperText: widget.uiSchema?.help,
-        autofocus: widget.uiSchema?.autofocus,
-      ),
-    );
-  }
-
   bool _isFile() =>
       widget.uiSchema?.widget == UiType.file ||
       widget.jsonSchema.format == JsonSchemaFormat.dataUrl;
@@ -583,7 +556,11 @@ class _UiWidgetState extends State<_UiWidget> {
     final isNumberTextFormField = widget.jsonSchema.type == JsonType.number ||
         widget.jsonSchema.type == JsonType.integer;
 
-    final isFloatTextformField = widget.jsonSchema.type == JsonType.float;
+    final isFloatTextFormField = widget.jsonSchema.type == JsonType.float;
+
+    final isTextArea = widget.uiSchema?.widget == UiType.textarea;
+
+    final isUpDown = widget.uiSchema?.widget == UiType.updown;
 
     if (isEmailTextFormField) {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -601,9 +578,9 @@ class _UiWidgetState extends State<_UiWidget> {
     TextInputType? getKeyboardType() {
       if (isEmailTextFormField) {
         return TextInputType.emailAddress;
-      } else if (isNumberTextFormField) {
+      } else if (isNumberTextFormField || (isUpDown && !isFloatTextFormField)) {
         return TextInputType.number;
-      } else if (isFloatTextformField) {
+      } else if (isFloatTextFormField || (isUpDown && !isNumberTextFormField)) {
         return const TextInputType.numberWithOptions(decimal: true);
       }
 
@@ -615,8 +592,6 @@ class _UiWidgetState extends State<_UiWidget> {
     _addMaxLengthValidator(validators);
 
     final title = widget.getTitle();
-
-    final isTextArea = widget.uiSchema?.widget == UiType.textarea;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -635,8 +610,9 @@ class _UiWidgetState extends State<_UiWidget> {
             ? null
             : widget.uiSchema?.maxLines ?? (isTextArea ? null : 1),
         inputFormatters: [
-          if (isNumberTextFormField) FilteringTextInputFormatter.digitsOnly,
-          if (isFloatTextformField)
+          if (isNumberTextFormField || (isUpDown && !isFloatTextFormField))
+            FilteringTextInputFormatter.digitsOnly,
+          if (isFloatTextFormField || (isUpDown && !isNumberTextFormField))
             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
         ],
         keyboardType: getKeyboardType(),
