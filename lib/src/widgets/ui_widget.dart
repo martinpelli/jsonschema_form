@@ -88,8 +88,6 @@ class _UiWidgetState extends State<_UiWidget> {
     } else if (_isCheckboxGroup()) {
       final initialValues = (widget.formData as List).cast<String>();
       return _buildCheckboxGroup(initialValues);
-    } else if (_isTextArea()) {
-      return _buildTextArea(initialStringValue);
     } else if (_isUpDown()) {
       return _buildUpDown(initialStringValue);
     } else if (_isFile()) {
@@ -344,50 +342,6 @@ class _UiWidgetState extends State<_UiWidget> {
           hasValidator: widget.getIsRequired(),
         );
       },
-    );
-  }
-
-  bool _isTextArea() => widget.uiSchema?.widget == UiType.textarea;
-
-  Widget _buildTextArea(
-    String? initialValue,
-  ) {
-    final validators = <String? Function(String?)>[];
-
-    _addMinLengthValidator(validators);
-
-    _addMaxLengthValidator(validators);
-
-    final title = widget.getTitle();
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: _CustomTextFormField(
-        formFieldKey: _formFieldKey,
-        readOnly: widget.getReadOnly(),
-        onChanged: _onFieldChanged,
-        hasRequiredValidator: widget.getIsRequired(),
-        labelText:
-            title != null ? "$title${widget.getIsRequired() ? '*' : ''}" : null,
-        minLines: 4,
-        maxLines: null,
-        defaultValue: initialValue,
-        emptyValue: widget.uiSchema?.emptyValue,
-        placeholder: widget.uiSchema?.placeholder,
-        helperText: widget.uiSchema?.help,
-        autofocus: widget.uiSchema?.autofocus,
-        validator: validators.isEmpty
-            ? null
-            : (value) {
-                for (final validator in validators) {
-                  final error = validator(value);
-                  if (error != null) {
-                    return error;
-                  }
-                }
-                return null;
-              },
-      ),
     );
   }
 
@@ -662,6 +616,8 @@ class _UiWidgetState extends State<_UiWidget> {
 
     final title = widget.getTitle();
 
+    final isTextArea = widget.uiSchema?.widget == UiType.textarea;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: _CustomTextFormField(
@@ -674,9 +630,10 @@ class _UiWidgetState extends State<_UiWidget> {
         emptyValue: widget.uiSchema?.emptyValue,
         helperText: widget.uiSchema?.help,
         autofocus: widget.uiSchema?.autofocus,
+        minLines: isTextArea ? 4 : null,
         maxLines: widget.uiSchema?.maxLines == 0
             ? null
-            : widget.uiSchema?.maxLines ?? 1,
+            : widget.uiSchema?.maxLines ?? (isTextArea ? null : 1),
         inputFormatters: [
           if (isNumberTextFormField) FilteringTextInputFormatter.digitsOnly,
           if (isFloatTextformField)
