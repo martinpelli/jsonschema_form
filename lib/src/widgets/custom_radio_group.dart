@@ -81,7 +81,6 @@ class _CustomRadioGroupState<T> extends State<_CustomRadioGroup<T>> {
   List<Widget> _getItems() => widget.items
       .mapIndexed(
         (index, item) => Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
             Radio(
               hoverColor: widget.readOnly ? Colors.transparent : null,
