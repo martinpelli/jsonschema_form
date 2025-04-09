@@ -15,7 +15,7 @@ class _CustomPhoneFormField extends StatefulWidget {
   });
 
   final GlobalKey<FormFieldState<dynamic>>? formFieldKey;
-  final void Function(PhoneNumber) onChanged;
+  final void Function(String) onChanged;
   final String? labelText;
   final String? helperText;
   final String? defaultValue;
@@ -85,7 +85,7 @@ class _CustomPhoneFormFieldState extends State<_CustomPhoneFormField> {
         if (value.international.isEmpty && widget.emptyValue != null) {
           _controller.value = PhoneNumber.parse(widget.emptyValue!);
         }
-        widget.onChanged(value);
+        widget.onChanged(value.international);
       },
       validator: PhoneValidator.compose([
         if (widget.hasRequiredValidator) PhoneValidator.required(context),
