@@ -163,6 +163,8 @@ extension StringExt on String {
       case 'video/x-matroska':
       case 'video/3gpp':
       case 'video/x-flv':
+      case 'weba':
+      case 'audio/weba':
         return FileType.video;
       default:
         return FileType.unknown;

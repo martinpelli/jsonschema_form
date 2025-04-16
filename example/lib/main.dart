@@ -17,17 +17,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Jsonschema Form Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const Scaffold(
-          body: Padding(
-            padding: EdgeInsets.all(20),
-            child: _Form(),
-          ),
-        ));
+      title: 'Jsonschema Form Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const Scaffold(
+        body: Padding(padding: EdgeInsets.all(20), child: _Form()),
+      ),
+    );
   }
 }
 
@@ -68,7 +66,7 @@ class _FormState extends State<_Form> {
     "jobsite_images",
     "permanent_materials_request",
     "site_safety",
-    "permanent_solution"
+    "permanent_solution",
   ];
 
   String? selectedFileName;
@@ -96,9 +94,10 @@ class _FormState extends State<_Form> {
 
     final jsonFileHasFormData = selectedFileName!.endsWith("data");
 
-    final relativePath = jsonFileHasFormData
-        ? "assets/with_data/$selectedFileName.json"
-        : "assets/without_data/$selectedFileName.json";
+    final relativePath =
+        jsonFileHasFormData
+            ? "assets/with_data/$selectedFileName.json"
+            : "assets/without_data/$selectedFileName.json";
 
     final jsonString = await rootBundle.loadString(relativePath);
     final decodedJson = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -145,36 +144,39 @@ class _FormState extends State<_Form> {
                   children: [
                     Expanded(
                       child: JsonschemaFormBuilder(
-                          key: _jsonschemaFormKey,
-                          jsonSchemaForm: _jsonschemaForm,
-                          suffixFormDataMapper: (current, old) {
-                            if (current is Map &&
-                                current.containsKey('jobsiteImages') &&
-                                old != null) {
-                              for (int i = 0;
-                                  i < (current['jobsiteImages'].length);
-                                  i++) {
-                                var currentImage = current['jobsiteImages'][i];
-                                var oldImage = old['jobsiteImages'][i];
+                        key: _jsonschemaFormKey,
+                        jsonSchemaForm: _jsonschemaForm,
+                        suffixFormDataMapper: (current, old) {
+                          if (current is Map &&
+                              current.containsKey('jobsiteImages') &&
+                              old != null) {
+                            for (
+                              int i = 0;
+                              i < (current['jobsiteImages'].length);
+                              i++
+                            ) {
+                              var currentImage = current['jobsiteImages'][i];
+                              var oldImage = old['jobsiteImages'][i];
 
-                                // If the file in current is a URL (starts with "http" or "https"), replace it with the "id" from old
-                                if (currentImage['file']
-                                    .toString()
-                                    .startsWith('http')) {
-                                  // Replace the URL with the id from the old image
-                                  currentImage['file'] =
-                                      "s3file:${oldImage['file']['id']}";
-                                }
+                              // If the file in current is a URL (starts with "http" or "https"), replace it with the "id" from old
+                              if (currentImage['file'].toString().startsWith(
+                                'http',
+                              )) {
+                                // Replace the URL with the id from the old image
+                                currentImage['file'] =
+                                    "s3file:${oldImage['file']['id']}";
                               }
                             }
-                            return current;
-                          },
-                          prefixFormDataMapper: (key, data) {
-                            if (key == 'file' && data is Map) {
-                              return data['getUrl'];
-                            }
-                            return data;
-                          }),
+                          }
+                          return current;
+                        },
+                        prefixFormDataMapper: (key, data) {
+                          if (key == 'file' && data is Map) {
+                            return data['getUrl'];
+                          }
+                          return data;
+                        },
+                      ),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
@@ -201,31 +203,40 @@ class _FormState extends State<_Form> {
 
   Wrap _buildButtons(BuildContext context) {
     return Wrap(
-        runSpacing: 10,
-        spacing: 10,
-        children: _fileNames.map((fileName) {
-          final jsonFileHasFormData = fileName.endsWith("data");
+      runSpacing: 10,
+      spacing: 10,
+      children:
+          _fileNames.map((fileName) {
+            final jsonFileHasFormData = fileName.endsWith("data");
 
-          final selectedJsonName = jsonFileHasFormData
-              ? fileName.replaceAll('_', ' ').substring(0, fileName.length - 9)
-              : fileName.replaceAll('_', ' ');
+            final selectedJsonName =
+                jsonFileHasFormData
+                    ? fileName
+                        .replaceAll('_', ' ')
+                        .substring(0, fileName.length - 9)
+                    : fileName.replaceAll('_', ' ');
 
-          return ElevatedButton(
+            return ElevatedButton(
               style: ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(
-                      selectedFileName == fileName
-                          ? Theme.of(context).primaryColorLight
-                          : null),
-                  backgroundColor: WidgetStatePropertyAll(
-                      selectedFileName == fileName
-                          ? Theme.of(context).primaryColor
-                          : null)),
+                foregroundColor: WidgetStatePropertyAll(
+                  selectedFileName == fileName
+                      ? Theme.of(context).primaryColorLight
+                      : null,
+                ),
+                backgroundColor: WidgetStatePropertyAll(
+                  selectedFileName == fileName
+                      ? Theme.of(context).primaryColor
+                      : null,
+                ),
+              ),
               onPressed: () {
                 selectedFileName = fileName;
                 _loadJson();
               },
-              child: Text(selectedJsonName));
-        }).toList());
+              child: Text(selectedJsonName),
+            );
+          }).toList(),
+    );
   }
 }
 
@@ -269,9 +280,10 @@ class _JsonsTexts extends StatelessWidget {
           const SizedBox(height: 5),
           Flexible(
             child: Container(
-                width: double.infinity,
-                color: Colors.grey.shade100,
-                child: JsonPrettifier(jsonInput: jsonData)),
+              width: double.infinity,
+              color: Colors.grey.shade100,
+              child: JsonPrettifier(jsonInput: jsonData),
+            ),
           ),
         ],
       ),

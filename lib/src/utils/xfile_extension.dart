@@ -118,6 +118,7 @@ extension XFileExtension on XFile {
       case '3gp':
       case 'flv':
       case 'audio/weba':
+      case 'weba':
         return FileType.video;
       case 'video/mp4':
       case 'video/webm':
