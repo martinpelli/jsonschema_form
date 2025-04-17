@@ -55,7 +55,6 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
               : null,
         ),
         enabled: !widget.readOnly,
-        enableSearch: false,
         requestFocusOnTap: true,
         label: widget.label == null ? null : Text(widget.label!),
         initialSelection: _selectedItem,

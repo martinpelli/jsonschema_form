@@ -7,6 +7,7 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
     required this.initialValue,
     required this.isEnabled,
     this.isEmpty,
+    this.validator,
   });
 
   final GlobalKey<FormFieldState<dynamic>>? formFieldKey;
@@ -14,6 +15,7 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
   final T? initialValue;
   final bool isEnabled;
   final bool Function(T)? isEmpty;
+  final String? Function(T?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class _CustomFormFieldValidator<T> extends StatelessWidget {
           return 'This field is required';
         }
 
-        return null;
+        return validator?.call(value);
       },
       builder: (field) {
         return Column(
