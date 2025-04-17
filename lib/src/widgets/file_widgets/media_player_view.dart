@@ -41,7 +41,7 @@ class _MediaPlayerViewState extends State<MediaPlayerView> {
     super.initState();
 
     _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
-      Uri.https(widget.path),
+      Uri.parse(widget.path),
     )..initialize().then((value) => setState(() {}));
     _customVideoPlayerController = CustomVideoPlayerController(
       context: context,

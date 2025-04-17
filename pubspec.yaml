@@ -10,7 +10,10 @@ environment:
   flutter: ^3.27.3
 
 dependencies:
-  appinio_video_player_plus: ^1.0.7
+  appinio_video_player_plus: 
+    git:
+      url: git@github.com:qaysdwekat/appinio_video_player_plus.git
+      ref: main
   collection: ^1.18.0
   equatable: ^2.0.3
   extended_image: ^9.1.0
