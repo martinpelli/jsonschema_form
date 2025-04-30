@@ -47,6 +47,8 @@ class _CustomDropdownMenuState<T> extends State<_CustomDropdownMenu<T>> {
     return Padding(
       padding: const EdgeInsets.only(top: 10, bottom: 5),
       child: DropdownMenu<T>(
+        enableFilter: true,
+        menuHeight: 200,
         expandedInsets: EdgeInsets.zero,
         inputDecorationTheme: InputDecorationTheme(
           filled: widget.readOnly,
