@@ -63,6 +63,7 @@ class _CustomPhoneFormFieldState extends State<_CustomPhoneFormField> {
   @override
   Widget build(BuildContext context) {
     return PhoneFormField(
+      shouldLimitLengthByCountry: true,
       autovalidateMode: AutovalidateMode.disabled,
       key: widget.formFieldKey,
       enabled: widget.enabled,
