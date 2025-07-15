@@ -415,7 +415,7 @@ class _UiWidgetState extends State<_UiWidget> {
             },
             isPhotoAllowed: isPhotoAllowed,
             isVideoAllowed: isVideoAllowed,
-            fileData: field?.value ?? initialValue,
+            fileData: initialValue,
             resolution: resolution,
             hasValidator: widget.getIsRequired(),
           );

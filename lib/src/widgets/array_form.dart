@@ -219,9 +219,6 @@ class _ArrayFormState extends State<_ArrayForm> {
   List<Widget> _buildArrayItems(FormFieldState<bool>? field) {
     final items = <Widget>[];
 
-    final listOfMapsCastedFormData =
-        DynamicUtils.tryParseListOfMaps(widget.formData);
-
     final hasRemoveButton = !isExpandable &&
         (widget.uiSchema?.options == null ||
             (widget.uiSchema!.options!.containsKey(UiOptions.removable.name) &&
@@ -254,6 +251,9 @@ class _ArrayFormState extends State<_ArrayForm> {
 
         widget.onItemRemoved?.call();
       }
+
+      final listOfMapsCastedFormData =
+          DynamicUtils.tryParseListOfMaps(widget.formData);
 
       final newFormData = listOfMapsCastedFormData != null
           ? listOfMapsCastedFormData[i]
